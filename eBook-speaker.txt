@@ -1,0 +1,54 @@
+NAME
+eBook-speaker - read aloud eBooks using a software speech-synthesizer
+SYNOPSIS
+eBook-speaker eBook_file [-l language]
+DESCRIPTION
+eBook-speaker reads the specified eBook_file and uses espeak for output.
+
+A list of items on the eBook will appear. Press <ENTER> to start playing. When reading of an item has finished, eBook-speaker will play the next item and the cursor will automatically skip to that item, so that an attached braille-terminal will display the name of that item.
+
+eBook-speaker supports the following languages: english, german and dutch.
+OPTIONS
+eBook_file  Give an eBook_file as argument to eBook-speaker. Currently only the EPUB format is supported.
+-l language  eBook-speaker tries to detect the language of the specified eBook. With this option the detected language can be overridden. By some eBooks this option is mandatory.
+SCREEN
+The name and version of this program and the name of the author will be displayed left aligned at the top of the screen. The name of the current loaded book will be displayed right aligned.
+
+The second row of the screen will display the number of pages of the current loaded book (if any), the current selected level and the total number of levels, the current displayed screen and the total number of screens.
+
+The next rows will display the title of the item, the first page of the item within brackets (if there are pages) and the total number of phrases in this item. Items in higher levels will be indented. (Three spaces each level.) When "just playing this item" is active, a "J" will be viewed at the first column of that item.
+CONTROL KEYS
+eBook-speaker recognizes the following keyboard-commands:
+cursor down     move cursor to the next item
+cursor up       move cursor to the previous item
+cursor right    skip to next phrase
+cursor left     skip to previous phrase
+page-down       view next screen
+page-up         view previous screen
+enter           Start playing
+space           pause/resume playing
+home            play on normal speed
+/               search for a label
+D               decrease playing speed
+f               find the currently playing item and place the cursor there
+g               go to page number (if any)
+h or ?          give this help
+j               just play current item and place a "J" at the first column.
+l               switch to next level
+L               switch to previous level
+n               search forewards
+N               search backwards
+o               select next output sound device
+p               place a bookmark
+q               quit eBook-speaker. The playing-point will be saved as bookmark.
+s               stop playing
+U               increase playing speed
+FILES
+~/.eBook-speaker/  This directory contains the bookmarks. Each file has the name of the book and contains the name of the current item, the start-phrase of that item and the current level, each on a own line.
+~/.eBook-speaker.rc  This file contains the name of the desired audio device and the desired playing speed.
+AUTHOR
+Jos Lemmens <jos@jlemmens.nl>
+COPYRIGHT
+Copyright (C)2011 Jos Lemmens <jos@jlemmens.nl>
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program (see the file COPYING); if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA

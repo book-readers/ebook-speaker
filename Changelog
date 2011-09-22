@@ -1,0 +1,10 @@
+1.0	This source is a modification of daisy-player.
+1.1	Display the number of phrases in an item.
+	When an item is playing, display the number of the currently
+	spoken phrase and the number of the phrases not read yet.
+1.2	Previous versions of eBook-speaker ran  too ropy.
+	While running, the eBook file was constantly reread.
+	From this version on, the eBook is first read into a struct
+	and the struct is read while running. this makes it react
+	much smoother on keyboard commands.
+	Remove bookmark when reading is finished.

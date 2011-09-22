@@ -1,0 +1,4 @@
+The file error.wav is a copy of the file default_alarm.wav and comes
+from the evolution package.
+
+   http://projects.gnome.org/evolution/
