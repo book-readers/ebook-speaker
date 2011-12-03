@@ -7,9 +7,8 @@ eBook-speaker reads the specified eBook_file and uses espeak for output.
 
 A list of items on the eBook will appear. Press <ENTER> to start playing. When reading of an item has finished, eBook-speaker will play the next item and the cursor will automatically skip to that item, so that an attached braille-terminal will display the name of that item.
 
-eBook-speaker supports the following languages: english, german and dutch.
 OPTIONS
-eBook_file  Give an eBook_file as argument to eBook-speaker. Currently only the EPUB format is supported.
+eBook_file  Give an eBook_file as argument to eBook-speaker. Currently the EPUB format and the Microsoft Reader eBook format (lit) are supported.
 -l language  eBook-speaker tries to detect the language of the specified eBook. With this option the detected language can be overridden. By some eBooks this option is mandatory.
 SCREEN
 The name and version of this program and the name of the author will be displayed left aligned at the top of the screen. The name of the current loaded book will be displayed right aligned.
@@ -45,7 +44,7 @@ s               stop playing
 U               increase playing speed
 FILES
 ~/.eBook-speaker/  This directory contains the bookmarks. Each file has the name of the book and contains the name of the current item, the start-phrase of that item and the current level, each on a own line.
-~/.eBook-speaker.rc  This file contains the name of the desired audio device and the desired playing speed.
+~/.eBook-speaker.rc  This file contains the name of the desired audio device, the desired playing speed and the desired language.
 AUTHOR
 Jos Lemmens <jos@jlemmens.nl>
 COPYRIGHT

@@ -33,6 +33,7 @@
 #include <libintl.h>
 #include "entities.h"
 #include <stringprep.h>
+#include <magic.h>
 #include <sox.h>
 #include <errno.h>
 #include <zip.h>
@@ -43,11 +44,11 @@ double read_time (char *);
 void get_clips ();
 void put_bookmark ();
 void get_bookmark ();
-void html_entities_to_utf8 (char *);
 void get_attributes (char *);
-int get_element_tag_or_label (struct zip_file *);
+int get_tag_or_label (struct zip_file *);
 void get_tag ();
 void get_page_number ();
+void read_eBook_struct ();
 int get_next_clips (struct zip_file *);
 void view_screen ();
 void get_label (int, int);
@@ -77,3 +78,11 @@ void read_out_eBook (const char *);
 const char *read_eBook (char *);
 void get_eBook_struct (int);
 int get_element_tag_or_label (struct zip_file *);
+
+struct
+{                    
+   int x, y, screen, n_phrases;
+   char text_file[255], anchor[255], label[255];
+   char class[100];
+   int level, page_number;
+} eBook_struct[2000];

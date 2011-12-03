@@ -1,8 +1,8 @@
 CC      = gcc
-CFLAGS  = -Wall -g
+CFLAGS  = -Wall -g 
 PREFIX  = /usr/local/
 LD      = $(CC)
-LDLIBS  = -lncursesw -lidn -lsox -lzip
+LDLIBS  = -lncursesw -lidn -lsox -lzip -lmagic
 OFILES  = eBook-speaker.o
 
 all: $(OFILES)

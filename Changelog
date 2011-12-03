@@ -8,3 +8,4 @@
 	and the struct is read while running. this makes it react
 	much smoother on keyboard commands.
 	Remove bookmark when reading is finished.
+2.0	Added support for Microsoft Reader eBook (lit) books.
