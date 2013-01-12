@@ -1,14 +1,15 @@
 To compile eBook-speaker, be sure the following extra packages are installed:
 
+   libncurses5-dev
    libncursesw5-dev
-   libidn11-dev
    libsox-dev
-   libzip-dev
    libmagic-dev
+   libxml2-dev
+   libidn11-dev
 
 Give the following command:
 
-   $ make
+   $ make          
 
 run the script install.sh, as user root, to install eBook-speaker onto
 your system:

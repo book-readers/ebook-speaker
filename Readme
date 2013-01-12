@@ -1,31 +1,42 @@
 eBook-speaker - read eBooks with Linux using a speech-synthesizer
-(C)2011 J. Lemmens
+(C)2013 J. Lemmens
 
 DESCRIPTION
-eBook-speaker reads an eBook and uses the espeak speech synthisizer
-for output.
-Currently the EPUB format and the Microsoft Reader eBook format (lit) are
-supported.
-(http://en.wikipedia.org/wiki/Comparison_of_e-book_formats#EPUB)
-(http://en.wikipedia.org/wiki/Comparison_of_e-book_formats#Microsoft_LIT)
+eBook-speaker reads an eBook and uses a speech synthisizer for output.
+eBook-speaker reads the EPUB format. If the given file is not an
+EPUB it will be converted using several tools like calibre, lowriter,
+pandoc, pdftohtml, scanimage, html2, 2html or ocrfeeder.
+(http://en.wikipedia.org/wiki/Comparison_of_e-book_formats)
+eBook-speaker can use any TTS (Text-To_speech) tool, as long as the TTS
+can read the text from a file and writes the audio to a .wav file.
+The file ~/.eBook-speaker.xml contains TTS tools to use.
 
 REQUIREMENTS
 Be sure the following extra packages exist on your system:
 
+   libncurses5
    libncursesw5
-   libidn11
    libsox1b
    libmagic1
+   libxml2
+   unzip
+   gettext
+   language-pack-nl
+   language-pack-de
+   espeak
+   libreoffice-writer
+   calibre
+   pandoc
+   xml2
+   poppler-utils
+   ghostscript
+   ocrfeeder
+   sane-utils
 
 The following packages are needed to make the manual and the html document:
 
    txt2man
    man2html
-
-The following packages are needed to read .lit files.
-
-   convlit
-   zip
 
 FILES
 Download and unpack the file 'eBook-speaker-<version>.tar.bz2'.
@@ -35,26 +46,21 @@ following files:
 - Changelog: Changes made in the previous versions
 - COMPILE: Information about how to compile and install eBook-speaker
 - COPYING: copyright information.
-- eBook-speaker.1: formatted manual page
 - eBook-speaker.c: source code
 - eBook-speaker.de.po: translations for the german language
 - eBook-speaker.desktop: file for the graphical interface
 - eBook-speaker.h: source code
-- eBook-speaker.html: manual page in HTML format
 - eBook-speaker.nl.po: translations for the dutch language
 - eBook-speaker.txt: manual page in ASCII format
-- entities.h: source code
-- entities.txt: informatio
+- daisy.h@: source code
+- daisy3.c: source code
 - error.txt: information about error.wav
 - error.wav: soundfile will be played when an error occured
-- icons: directory containing icons
 - install.sh script to install eBook-speaker
 - License: The text of the GPL version 3 license of eBook-speaker
 - Makefile: needed to compile from source
 - Readme: the text you are reading now.
 - TODO: things to do.
-- UCkd.h: source code
-- UCkd.txt: information about UCkd.h
 
 INSTALLATION
 As user 'root' on the command line, run the install.sh script to
@@ -69,7 +75,7 @@ As a mortal user, give on the command line,:
 
 This starts reading the eBook and printing the content on
 the screen. After giving an [ENTER], the eBook will be read using the
-espeak speech synthisizer.
+espeak speech synthisizer. One can select another TTS using the 't'command.
 
 A list of items on the eBook will appear. Press <ENTER>
 to start playing. When reading of an item has finished, eBook-speaker will

@@ -1,0 +1,161 @@
+# message catalog file for eBook-speaker - german version
+#
+# Copyright (C)2013 J. Lemmens
+#
+# This file is distributed under the same license as the eBook-speaker package.
+# J. Lemmens <jos@jlemmens.nl>, 2013
+#
+# translated by Klaus Knopper <knopper@knopper.net>
+#
+msgid "\nCannot read %s\n"
+msgstr "\nKann %s nicht lesen\n"
+
+msgid "Maybe a read-error occurred!"
+msgstr "Möglicherweise trat ein Lesefehler auf!"
+
+msgid "'h' for help "
+msgstr "'h' für Hilfe "
+
+msgid " level: %d of %d "
+msgstr " Level: %d von %d "
+
+msgid " %d pages "
+msgstr " %d Seiten "
+
+msgid "Corrupt eBook structure %s\n"
+msgstr "Kaputte eBook Struktur %s\n"
+
+msgid "\nThese commands are available in this version:\n"
+msgstr "\nFolgende Befehle sind in dieser Version vorhanden:\n"
+
+msgid "cursor down     - move cursor to the next item\n"
+msgstr "Pfeil runter    - verschiebt den Cursor auf das nächste Element\n"
+
+msgid "cursor up       - move cursor to the previous item\n"
+msgstr "Pfeil hoch      - verschiebt den Cursor auf das vorhergehende Element\n"
+
+msgid "cursor right    - skip to next phrase\n"
+msgstr "Pfeil rechts    - springe zur nächsten Phrase\n"
+
+msgid "cursor left     - skip to previous phrase\n"
+msgstr "Pfeil links     - springe zur vorhergehenden Phrase\n"
+
+msgid "page-down       - view next page\n"
+msgstr "Seite runter    - zur nächsten Seite\n"
+
+msgid "page-up         - view previous page\n"
+msgstr "Seite hoch      - zur vorigen Seite\n"
+
+msgid "enter           - start playing\n"
+msgstr "Eingabetaste    - abspielen\n"
+
+msgid "space           - pause/resume playing\n"
+msgstr "Leertaste       - Pause-/Weiter\n"
+
+msgid "home            - play on normal speed\n"
+msgstr "home            - spiele mit normaler Geschwindigkeit\n"
+
+msgid "Press any key for next page..."
+msgstr "Taste drücken für nächste Seite..."
+
+msgid "\n/               - search for a label\n"
+msgstr "\n/               - suche nach einem Begriff\n"
+
+msgid "D               - decrease playing speed\n"
+msgstr "D               - verringere Abspielgeschwindigkeit\n"
+
+msgid "f               - find the currently playing item and place the cursor there\n"
+msgstr  "f               - aktuell spielendes Element finden und den Cursor dort\n                  platzieren\n"
+
+msgid "g               - go to page number (if any)\n"
+msgstr "g               - zur Seitenzahl gehen (falls vorhanden)\n"
+
+msgid "h or ?          - give this help\n"
+msgstr "h oder ?        - diese Hilfe anzeigen\n"
+
+msgid "j               - just play current item\n"
+msgstr "j               - nur das aktuelle Element abspielen\n"
+
+msgid "l               - switch to next level\n"
+msgstr "l               - zum nächsten Level wechseln\n"
+
+msgid "L               - switch to previous level\n"
+msgstr "L               - zum vorigen Level wechseln\n"
+
+msgid "n               - search forwards\n"
+msgstr "n               - Suche vorwärts\n"
+
+msgid "N               - search backwards\n"
+msgstr "N               - Suche rückwärts\n"
+
+msgid "o               - select next output sound device\n"
+msgstr "o               - nächstes sound device für Ausgabe wählen\n"
+
+msgid "p               - place a bookmark\n"
+msgstr "p               - Lesezeichen setzen\n"
+
+msgid "q               - quit eBook-speaker and place a bookmark\n"
+msgstr "q               - eBook-speaker verlassen und Lesezeichen setzen\n"
+
+msgid "s               - stop playing\n"
+msgstr "s               - Abspielen stoppen\n"
+
+msgid "U               - increase playing speed\n"
+msgstr "U               - erhöhe Abspielgeschwindigkeit\n"
+
+msgid "\nPress any key to leave help..."
+msgstr "\nTaste drücken, um die Hilfe zu verlassen..."
+
+msgid "What do you search?                           "
+msgstr "Suchen nach...?                               "
+
+msgid "Go to page number:        "
+msgstr "Gehe zur Seitenzahl:      "
+
+msgid "Something is wrong with the %s file\n"
+msgstr "Etwas stimmt nicht mit der Datei %s\n"
+
+msgid "Cannot read /proc/asound/cards"
+msgstr "Kann /proc/asound/cards nicht lesen"
+
+msgid "eBook-speaker - Version %s\n"
+msgstr "eBook-speaker - Version %s\n"
+
+msgid "\nUsage: %s eBook_file [-l language]\n"
+msgstr "\nAufruf: %s eBook_Datei [-l Sprache]\n"
+
+msgid "eBook-speaker needs the espeak package."
+msgstr "eBook-speaker benödigt das espeak Programm."
+
+msgid "eBook-speaker needs the libreoffice-writer package."
+msgstr "eBook-speaker benödigt das libreoffice-writer Programm."
+
+msgid "eBook-speaker needs the pandoc package."
+msgstr "eBook-speaker benödigt das pandoc Programm."
+
+msgid "eBook-speaker needs the xml2 package."
+msgstr "eBook-speaker benödigt das xml2 Programm."
+
+msgid "eBook-speaker needs the poppler-utils package."
+msgstr "eBook-speaker benödigt das poppler-utils Programm."
+
+msgid "eBook-speaker needs the ghostscript package."
+msgstr "eBook-speaker benödigt das ghostscript Programm."
+
+msgid "eBook-speaker needs the ocrfeeder package."
+msgstr "eBook-speaker benödigt das ocrfeeder Programm."
+
+msgid "Please install it and try again.\n"
+msgstr "Bringen Sie es bitte an und versuchen Sie noch einmal.\n"
+
+msgid "Plays eBooks on Linux"
+msgstr "Ein Programm, um eBooks unter Linux abzuspielen"
+
+msgid "eBook-speaker - Version %s - (C)2013 J. Lemmens"
+msgstr "eBook-speaker - Version %s - (C)2013 J. Lemmens"
+
+msgid "Press 'h' for help "
+msgstr "'h' für Hilfe drücken "           
+
+msgid "This file doesn't contain an eBook!\n"
+msgstr "Diesem Datei enthalt nicht ein eBook!\n"

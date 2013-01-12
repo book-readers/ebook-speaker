@@ -11,12 +11,14 @@ else
    PREFIX="/usr/local/"
 fi
 
+clear
+
 # Compile from source
 make clean
 make
 
 # Install eBook-speaker
-install -s -D eBook-speaker  ${PREFIX}/bin/eBook-speaker
+install -D eBook-speaker  ${PREFIX}/bin/eBook-speaker
 
 # generate manpage
 txt2man -p eBook-speaker.txt > eBook-speaker.1
@@ -32,8 +34,8 @@ cp -r COPYING Changelog License Readme TODO eBook-speaker.desktop eBook-speaker.
 # create .mo files
 # de for german
 install -d ${PREFIX}/share/locale/de/LC_MESSAGES
-msgfmt eBook-speaker.de.po -o ${PREFIX}/share/locale/de/LC_MESSAGES/eBook-speaker.mo
+msgfmt po/eBook-speaker.de.po -o ${PREFIX}/share/locale/de/LC_MESSAGES/eBook-speaker.mo
 
 # nl for dutch
 install -d ${PREFIX}/share/locale/nl/LC_MESSAGES
-msgfmt eBook-speaker.nl.po -o ${PREFIX}/share/locale/nl/LC_MESSAGES/eBook-speaker.mo
+msgfmt po/eBook-speaker.nl.po -o ${PREFIX}/share/locale/nl/LC_MESSAGES/eBook-speaker.mo
