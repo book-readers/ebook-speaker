@@ -1,0 +1,139 @@
+NAME
+eBook-speaker - read aloud eBooks and other text formats using a software speech-synthesizer
+SYNOPSIS
+eBook-speaker [eBook_file | -s] [-t TTS_command]
+DESCRIPTION
+eBook-speaker reads aloud eBooks and other text formats and even scanned documents using a software speech-synthesizer. By default the tool espeak is used for speech output.
+eBook-speaker also can scan a documant by itself using the scanimage application.
+
+A list of items on the eBook will appear. Press <ENTER> to start reading. When reading of an item has finished, eBook-speaker will read the next item and the cursor will automatically skip to that item, so that an attached braille-terminal will display the name of that item.
+OPTIONS
+eBook_file  Give an eBook_file as argument to eBook-speaker.  Many eBook formats are supported. eBook-speaker also tries to read scanned documents through Optical Character Recognition.
+
+		Supported formats
+		-----------------
+		AportisDoc
+		ASCII mail text
+		ASCII text
+		Broadband eBooks (BBeB)
+		Composite Document File (Microsoft Office Word)
+		DAISY3 DTBook
+		EPUB ebook data
+		GIF image data
+		GutenPalm zTXT
+		HTML document
+		ISO-8859 text
+		JPEG image data
+		Microsoft Reader eBook Data
+		Microsoft Windows HtmlHelp Data
+		Microsoft Word 2007+
+		Mobipocket E-book
+		MS Windows HtmlHelp Data
+		Netpbm PPM data
+		OpenDocument Text
+		PDF document
+		PeanutPress PalmOS
+		PNG image data
+		PostScript document
+		Rich Text Format
+		UTF-8 Unicode mail text
+		UTF-8 Unicode text
+		WordPerfect
+
+When no input-file is suplied, eBook-speaker will bring up a file-manager.
+
+Keyboard-commands in the file-manager:
+
+	enter or cursor right Start eBook-speaker with current file as input.
+	cursor left           Select previous directory and open it.
+	cursor down           Move cursor to the next file.
+	cursor up             Move cursor to the previous file.
+	page-down             View next page.
+	page-up               View previous page.
+	q                     Quit eBook-speaker.
+	/                     Search for a file.
+                                               
+-l  Deprecated. eBook-speaker now determines the file-type using the libmagic library.
+
+-s  Scan a document using a hardware scanner.
+
+-t TTS-command  Be sure that the TTS reads from the file eBook-speaker.txt and that it writes to the file eBook-speaker.wav.
+
+Examples:
+
+- eBook-speaker some.epub -t "espeak -f eBook-speaker.txt -w eBook-speaker.wav -v nl"
+
+- eBook-speaker some.epub -t "flite eBook-speaker.txt eBook-speaker.wav"
+
+- eBook-speaker some.epub -t "text2wave eBook-speaker.txt -o eBook-speaker.wav"
+
+SCREEN
+The name and version of this program and the name of the author is displayed left aligned at the top of the screen. The name of the current loaded book is displayed right aligned.
+
+The second row of the screen displays the number of pages of the current loaded book (if any), the current selected level and the total number of levels, the total number of phrases and the current displayed screen and the total number of screens.
+
+The next rows displays the title of the item, the first page of the item within brackets (if there are pages) and the total number of phrases in this item. Items in higher levels are indented. (Three spaces each level.) When "just reading this item" is active, a "J" is viewed at the first column of that item.
+CONTROL KEYS
+eBook-speaker recognizes the following keyboard-commands:
+cursor down     Move cursor to the next item.
+cursor up       Move cursor to the previous item.
+cursor right    Skip to next phrase.
+cursor left     Skip to previous phrase.
+page-down       View next screen.
+page-up         View previous screen.
+enter           Start reading.
+space           Pause/resume reading.
+home            Read on normal speed.
+/               Search for a label.
+D               Decrease reading speed.
+f               Find the currently reading item and place the cursor there.
+g               Go to phrase in current item.
+h or ?          Give this help.
+j               Just read current item and place a "J" at the first column.
+l               Switch to next level.
+L               Switch to previous level.
+n               Search forewards.
+N               Search backwards.
+o               Select an output sound device.
+p               Place a bookmark.
+q               Quit eBook-speaker. The reading-point is saved as bookmark.
+s               Stop reading.
+t               Select a TTS.
+U               Increase reading speed.
+TTS
+When pressing the 't'-command, the TTS-selector appears. A few TTS-applications are defined by default.
+
+- Choose one by moving the cursor with the cursor-keys and select it by pressing the ENTER-key.
+
+- To delete a TTS-command press the DEL-key.
+
+- A new TTS-command can be provided by adding the TTS-command to the TTS-line.
+
+- To edit an existing TTS-command one has to edit the ~/.eBook-speaker.xml file by hand.
+
+Be sure that the new TTS reads its information from the file eBook-speaker.txt and that it writes to the file eBook-speaker.wav.
+TTS EXAMPLES
+Here are some examples to insert into the TTS-selector:
+
+   espeak \-f eBook-speaker.txt \-w eBook-speaker.wav
+   espeak \-f eBook-speaker.txt \-w eBook-speaker.wav \-v mb-en1
+   espeak \-f eBook-speaker.txt \-w eBook-speaker.wav \-v de
+   espeak \-f eBook-speaker.txt \-w eBook-speaker.wav \-v nl
+   espeak \-f eBook-speaker.txt \-w eBook-speaker.wav \-v mb-nl2
+   flite eBook-speaker.txt eBook-speaker.wav
+   swift \-n Lawrence \-f eBook-speaker.txt \-o eBook-speaker.wav
+   text2wave eBook-speaker.txt \-o eBook-speaker.wav
+   text2wave \-eval '(voice_en1_mbrola)' eBook-speaker.txt \-o eBook-speaker.wav
+   pico2wave -w eBook-speaker.wav "`cat eBook-speaker.txt`"
+FILES
+~/.eBook-speaker/  This directory contains the bookmarks in XML-format. Each file has the name of the book and contains the name of the current item, the start-phrase of that item, the current level, the desired TTS and the desired reading speed.
+~/.eBook-speaker.xml  This file, in XML-format,  contains the name of the desired audio device and the TTS's to use. (See TTS EXAMPLES)
+/tmp/eBook-speaker.XXXXXX  eBook-speaker makes use of a temporary directory. It is removed after quiting.
+SEE ALSO
+ebook-convert(1), calibre(1), lowriter(1), tesseract(1), espeak(1), flite(1), text2wave(1), mbrola(1), pico2wave(1), scanimage(1), magic(5)
+AUTHOR
+Jos Lemmens <jos@jlemmens.nl>
+COPYRIGHT
+Copyright (C)2013 Jos Lemmens <jos@jlemmens.nl>
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program (see the file COPYING); if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA

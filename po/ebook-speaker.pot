@@ -1,0 +1,258 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Jos Lemmens <jos@jlemmens.nl>
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: ebook-speaker 2.4\n"
+"Report-Msgid-Bugs-To: <jos@jlemmens.nl>\n"
+"POT-Creation-Date: 2013-07-25 19:07+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/daisy3.c:273
+#, c-format
+msgid ""
+"\n"
+"Cannot read\n"
+msgstr ""
+
+#: src/daisy3.c:336 src/daisy3.c:387 src/daisy3.c:421 src/daisy3.c:488
+#: src/daisy3.c:528 src/daisy3.c:547 src/daisy3.c:618 src/daisy3.c:687
+#: src/daisy3.c:826 src/eBook-speaker.c:1149
+#, c-format
+msgid ""
+"\n"
+"Cannot read %s\n"
+msgstr ""
+
+#: src/daisy3.c:774
+#, c-format
+msgid ""
+"\n"
+"No DAISY-CD or Audio-cd found\n"
+msgstr ""
+
+#: src/eBook-speaker.c:577
+msgid "'h' for help "
+msgstr ""
+
+#: src/eBook-speaker.c:581
+#, c-format
+msgid " %d pages "
+msgstr ""
+
+#: src/eBook-speaker.c:583
+#, c-format
+msgid " level: %d of %d "
+msgstr ""
+
+#: src/eBook-speaker.c:584
+#, c-format
+msgid " total phrases: %d "
+msgstr ""
+
+#: src/eBook-speaker.c:711
+msgid ""
+"\n"
+"These commands are available in this version:\n"
+msgstr ""
+
+#: src/eBook-speaker.c:714
+msgid "cursor down     - move cursor to the next item\n"
+msgstr ""
+
+#: src/eBook-speaker.c:715
+msgid "cursor up       - move cursor to the previous item\n"
+msgstr ""
+
+#: src/eBook-speaker.c:716
+msgid "cursor right    - skip to next phrase\n"
+msgstr ""
+
+#: src/eBook-speaker.c:717
+msgid "cursor left     - skip to previous phrase\n"
+msgstr ""
+
+#: src/eBook-speaker.c:718
+msgid "page-down       - view next page\n"
+msgstr ""
+
+#: src/eBook-speaker.c:719
+msgid "page-up         - view previous page\n"
+msgstr ""
+
+#: src/eBook-speaker.c:720
+msgid "enter           - start playing\n"
+msgstr ""
+
+#: src/eBook-speaker.c:721
+msgid "space           - pause/resume playing\n"
+msgstr ""
+
+#: src/eBook-speaker.c:722
+msgid "home            - play on normal speed\n"
+msgstr ""
+
+#: src/eBook-speaker.c:724
+msgid "Press any key for next page..."
+msgstr ""
+
+#: src/eBook-speaker.c:729
+msgid ""
+"\n"
+"/               - search for a label\n"
+msgstr ""
+
+#: src/eBook-speaker.c:730
+msgid "D               - decrease playing speed\n"
+msgstr ""
+
+#: src/eBook-speaker.c:731
+msgid ""
+"f               - find the currently playing item and place the cursor "
+"there\n"
+msgstr ""
+
+#: src/eBook-speaker.c:732
+msgid "g               - go to phrase in current item\n"
+msgstr ""
+
+#: src/eBook-speaker.c:733
+msgid "h or ?          - give this help\n"
+msgstr ""
+
+#: src/eBook-speaker.c:734
+msgid "j               - just play current item\n"
+msgstr ""
+
+#: src/eBook-speaker.c:735
+msgid "l               - switch to next level\n"
+msgstr ""
+
+#: src/eBook-speaker.c:736
+msgid "L               - switch to previous level\n"
+msgstr ""
+
+#: src/eBook-speaker.c:737
+msgid "n               - search forwards\n"
+msgstr ""
+
+#: src/eBook-speaker.c:738
+msgid "N               - search backwards\n"
+msgstr ""
+
+#: src/eBook-speaker.c:739
+msgid "o               - select next output sound device\n"
+msgstr ""
+
+#: src/eBook-speaker.c:740
+msgid "p               - place a bookmark\n"
+msgstr ""
+
+#: src/eBook-speaker.c:741
+msgid "q               - quit eBook-speaker and place a bookmark\n"
+msgstr ""
+
+#: src/eBook-speaker.c:742
+msgid "s               - stop playing\n"
+msgstr ""
+
+#: src/eBook-speaker.c:743
+msgid "t               - select next TTS\n"
+msgstr ""
+
+#: src/eBook-speaker.c:744
+msgid "U               - increase playing speed\n"
+msgstr ""
+
+#: src/eBook-speaker.c:745
+msgid ""
+"\n"
+"Press any key to leave help..."
+msgstr ""
+
+#: src/eBook-speaker.c:989
+msgid "What do you search?                           "
+msgstr ""
+
+#: src/eBook-speaker.c:1079
+msgid "Cannot read /proc/asound/cards"
+msgstr ""
+
+#: src/eBook-speaker.c:1132
+msgid "Go to phrase in current item: "
+msgstr ""
+
+#: src/eBook-speaker.c:1419
+#, c-format
+msgid ""
+"Usage: eBook-speaker [eBook_file | -s] [-t TTS_command]\n"
+"       Be sure that the TTS reads from the file eBook-speaker.txt and\n"
+"       that it writes to the file eBook-speaker.wav.\n"
+"\n"
+"       Examples:\n"
+"\n"
+msgstr ""
+
+#: src/eBook-speaker.c:1464
+msgid "eBook-speaker needs the libreoffice-writer package."
+msgstr ""
+
+#: src/eBook-speaker.c:1487 src/eBook-speaker.c:1515 src/eBook-speaker.c:1830
+#, c-format
+msgid "Unknown format\n"
+msgstr ""
+
+#: src/eBook-speaker.c:1507
+msgid "eBook-speaker needs the pandoc package."
+msgstr ""
+
+#: src/eBook-speaker.c:1534
+msgid "eBook-speaker needs the poppler-utils package."
+msgstr ""
+
+#: src/eBook-speaker.c:1584
+#, c-format
+msgid "eBook-speaker - Version %s - (C)2013 J. Lemmens"
+msgstr ""
+
+#: src/eBook-speaker.c:1586
+msgid "Please wait..."
+msgstr ""
+
+#: src/eBook-speaker.c:1591
+msgid "eBook-speaker needs the espeak package."
+msgstr ""
+
+#: src/eBook-speaker.c:1592
+#, c-format
+msgid "Please install it and try again.\n"
+msgstr ""
+
+#: src/eBook-speaker.c:1633
+msgid "eBook-speaker needs the sane-utils package."
+msgstr ""
+
+#: src/eBook-speaker.c:1730 src/eBook-speaker.c:1749
+msgid "eBook-speaker needs the xml2 package."
+msgstr ""
+
+#: src/eBook-speaker.c:1797
+msgid "eBook-speaker needs the calibre package."
+msgstr ""
+
+#: src/eBook-speaker.c:1820
+msgid "eBook-speaker needs the tesseract-ocr package."
+msgstr ""
+
+#: src/eBook-speaker.c:1845
+msgid "Press 'h' for help "
+msgstr ""
