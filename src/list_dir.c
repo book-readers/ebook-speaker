@@ -20,132 +20,195 @@
 
 #include "daisy.h"
 
-void ls (int n, int total, struct dirent **namelist,
-         WINDOW *titlewin, WINDOW *screenwin)
+void fill_ls (int total, struct dirent **namelist, char **file_type)
 {
    magic_t myt;
-   char name[45];
+   int n;
+
+   myt = magic_open (MAGIC_CONTINUE | MAGIC_SYMLINK);
+   magic_load (myt, NULL);
+   for (n = 0; n <= total; n++)
+   {
+      file_type[n] = malloc (50);
+      strncpy (file_type[n], magic_file (myt, namelist[n]->d_name), 40);
+   } // for
+   magic_close (myt);
+} // fill_ls
+
+void ls (int n, int total, struct dirent **namelist, char **file_type,
+         WINDOW *titlewin, WINDOW *screenwin)
+{
    int y, page;
 
-   page = (n - 1) / 23 + 1;
+   page = n / 23 + 1;
    mvwprintw (titlewin, 0, 73, "%3d/%3d", page, (total - 1) / 23 + 1);
    wrefresh (titlewin);
    wclear (screenwin);
-   myt = magic_open (MAGIC_CONTINUE | MAGIC_SYMLINK);
-   magic_load (myt, NULL);
    for (y = 0; y < 23; y++)
    {
       int index;
 
-      index = (page - 1) * 23 + y + 1;
+      index = (page - 1) * 23 + y;
       if (index > total)
          break;
-      snprintf (name, 40, "%s", namelist[index]->d_name);
-      mvwprintw (screenwin, y, 1, "%s", name);
-      snprintf (name, 40, "%s", magic_file (myt, namelist[index]->d_name));
-      mvwprintw (screenwin, y, 41, "%s", name);
+      mvwprintw (screenwin, y, 1, "%.39s", namelist[index]->d_name);
+      mvwprintw (screenwin, y, 41, "%.39s", file_type[index]);
    } // for
-   magic_close (myt);
-   wmove (screenwin, n - (page - 1) * 23 - 1, 0);
+   wmove (screenwin, n - (page - 1) * 23, 0);
 } // ls
+
+int hidden_files (const struct dirent *entry)
+{
+   if (*entry->d_name == '.')
+      return 0;
+   return 1;
+} // hidden)files
+
+int search_in_dir (int start, int total, char mode, WINDOW *titlewin,
+             char *search_str, struct dirent **namelist)
+{
+   static int c;
+   int found = 0;
+
+   if (*search_str == 0)
+   {
+      mvwaddstr (titlewin, 1, 0, "----------------------------------------");
+      waddstr (titlewin, "----------------------------------------");
+      mvwprintw (titlewin, 1, 0, gettext ("What do you search? "));
+      echo ();
+      wgetnstr (titlewin, search_str, 25);
+      noecho ();
+   } // if
+   if (mode == '/' || mode == 'n')
+   {
+      for (c = start; c <= total; c++)
+      {
+         if (strcasestr (namelist[c]->d_name, search_str))
+         {
+            found = 1;
+            break;
+         } // if
+      } // for
+      if (! found)
+      {
+         for (c = 0; c < start; c++)
+         {
+            if (strcasestr (namelist[c]->d_name, search_str))
+            {
+               found = 1;
+               break;
+            } // if
+         } // for
+      } // if
+   }
+   else
+   { // mode == 'N'
+      for (c = start; c > 0; c--)
+      {
+         if (strcasestr (namelist[c]->d_name, search_str))
+         {
+            found = 1;
+            break;
+         } // if
+      } // for
+      if (! found)
+      {
+         for (c = total - 1; c > start; c--)
+         {
+            if (strcasestr (namelist[c]->d_name, search_str))
+            {
+               found = 1;
+               break;
+            } // if
+         } // for
+      } // if
+   } // if
+   if (found)
+   {
+      return c;
+   }
+   else
+   {
+      beep ();
+      return -1;
+   } // if
+} // search_in_dir
 
 char *get_input_file (char *src_dir, char *copyright,
                       WINDOW *titlewin, WINDOW *screenwin)
 {
    struct dirent **namelist;
-   int n, tot, page;
-   DIR *dir;
+   char *file_type[50], search_str[MAX_STR];
+   int n, tot, page, show_hidden_files = 0;
    static char name[MAX_STR];
 
    nodelay (screenwin, FALSE);
    wclear (titlewin);
    mvwprintw (titlewin, 0, 0, "%s - Choose an input-file", copyright);
    wrefresh (titlewin);
-   if (! (dir = opendir (src_dir)))
-   {
-      int e;
-
-      e = errno;
-      endwin ();
-      beep ();
-      printf ("\n%s\n", strerror (e));
-      fflush (stdout);
-      _exit (1);
-   } // if
-   tot = scandir (src_dir, &namelist, NULL, alphasort) - 1;
-   closedir (dir);
-   n = 1;
+   if (show_hidden_files)
+      tot = scandir (src_dir, &namelist, NULL, alphasort) - 1;
+   else
+      tot = scandir (src_dir, &namelist, &hidden_files, alphasort) - 1;
+   fill_ls (tot, namelist, file_type);
+   n = 0;
+   *search_str = 0;
    for (;;)
    {
+      int search_flag;
+
       mvwprintw (titlewin, 1,  0, "----------------------------------------");
       waddstr (titlewin, "----------------------------------------");
       mvwprintw (titlewin, 1, 0, "%s ", get_current_dir_name ());
       wrefresh (titlewin);
-      ls (n, tot, namelist, titlewin, screenwin);
+      ls (n, tot, namelist, file_type, titlewin, screenwin);
       switch (wgetch (screenwin))
       {
       case 13: // ENTER
       case KEY_RIGHT:
       case '6':
-      {
-         magic_t myt;
-
-         myt = magic_open (MAGIC_CONTINUE | MAGIC_SYMLINK);
-         magic_load (myt, NULL);
-         if (strncmp (magic_file (myt, namelist[n]->d_name), "directory",
-             9) == 0)
+         if (strncmp (file_type[n], "directory", 9) == 0)
          {
-            magic_close (myt);
             switch (chdir (namelist[n]->d_name))
             {
             default:
             // discart return-code.
                break;
             } // switch
-            if (! (dir = opendir (".")))
-            {
-               int e;
-
-               e = errno;
-               endwin ();
-               beep ();
-               printf ("\n%s\n", strerror (e));
-               fflush (stdout);
-               _exit (1);
-            } // if
-            tot = scandir (src_dir, &namelist, NULL, alphasort) - 1;
-            closedir (dir);
-            n = 1;
+            free (namelist);
+            if (show_hidden_files)
+               tot = scandir (src_dir, &namelist, NULL, alphasort) - 1;
+            else
+               tot = scandir (src_dir, &namelist, &hidden_files, alphasort) - 1;
+            fill_ls (tot, namelist, file_type);
+            n = 0;
             break;
          } // if
-         magic_close (myt);
          snprintf (name, MAX_STR - 1, "%s/%s",
                    get_current_dir_name (), namelist[n]->d_name);
+         for (n = 0; n <= tot; n++)
+            free (namelist[n]);
          free (namelist);
          return name;
-      }
       case KEY_LEFT:
       case '4':
+         if (strcmp (get_current_dir_name (), "/") == 0)
+         {
+            beep ();
+            break;
+         } // if
          switch (chdir (".."))
          {
          default:
          // discart return-code.
             break;
          } // switch
-         if (! (dir = opendir (".")))
-         {
-            int e;
-
-            e = errno;
-            endwin ();
-            beep ();
-            printf ("\n%s\n", strerror (e));
-            fflush (stdout);
-            _exit (1);
-         } // if
-         tot = scandir (src_dir, &namelist, NULL, alphasort) - 1;
-         closedir (dir);
-         n = 1;
+         if (show_hidden_files)
+            tot = scandir (src_dir, &namelist, NULL, alphasort) - 1;
+         else
+            tot = scandir (src_dir, &namelist, &hidden_files, alphasort) - 1;
+         fill_ls (tot, namelist, file_type);
+         n = 0;
          break;
       case KEY_DOWN:
       case '2':
@@ -157,57 +220,66 @@ char *get_input_file (char *src_dir, char *copyright,
       case KEY_UP:
       case '8':
          n--;
-         if (n < 1)
+         if (n < 0)
          {
-            n = 1;
+            n = 0;
             beep ();
          } // if
          break;
       case KEY_NPAGE:
       case '3':
-         page = (n - 1) / 23 + 1;
+         page = n / 23 + 1;
          if (page * 23 >= tot)
             beep ();
          else
-            n = page * 23 + 1;
+            n = page * 23;
          break;
       case KEY_PPAGE:
       case '9':
-         page = (n - 1) / 23 + 1;
-         if (page == 1)
+         page = n / 23 - 1;
+         if (page < 0)
+         {
+            page = 0;
             beep ();
+         }
          else
-            n = (page - 2) * 23 + 1;
+            n = page * 23;
+         break;
+      case '/':
+         *search_str = 0;
+         if ((search_flag = search_in_dir (n + 1, tot, '/', titlewin,
+                                           search_str, namelist)) != -1)
+            n = search_flag;
+         break;
+      case 'B':
+         n = tot;
+         break;
+      case 'h':
+         show_hidden_files = 1 - show_hidden_files;
+         free (namelist);
+         if (show_hidden_files)
+            tot = scandir (src_dir, &namelist, NULL, alphasort) - 1;
+         else
+            tot = scandir (src_dir, &namelist, &hidden_files, alphasort) - 1;
+         fill_ls (tot, namelist, file_type);
+         n = 0;
+         break;
+      case 'n':
+         if ((search_flag = search_in_dir (n + 1, tot, 'n', titlewin,
+                                           search_str, namelist)) != -1)
+            n = search_flag;
+         break;
+      case 'N':
+         if ((search_flag = search_in_dir (n - 1, tot, 'N', titlewin,
+                                           search_str, namelist)) != -1)
+            n = search_flag;
          break;
       case 'q':
          free (namelist);
          return "";
-      case '/':
-      {
-         int s, found = 0;
-         char search_str[MAX_STR];
-
-         mvwaddstr (titlewin, 1, 0, "----------------------------------------");
-         waddstr (titlewin, "----------------------------------------");
-         mvwprintw (titlewin, 1, 0, gettext ("What do you search?        "));
-         echo ();
-         wmove (titlewin, 1, 20);
-         wgetnstr (titlewin, search_str, 25);
-         noecho ();
-         for (s = n + 1; s <= tot; s++)
-         {
-            if (strcasestr (namelist[s]->d_name, search_str))
-            {
-               found = 1;
-               break;
-            } // if
-         } // for
-         if (found)
-            n = s;
-         else
-            beep ();
+      case 'T':
+         n = 0;
          break;
-      }
       default:
          beep ();
          break;

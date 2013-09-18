@@ -19,21 +19,23 @@
 #include "daisy.h"
 
 extern struct my_attribute my_attribute;
-int current, displaying, max_y, total_items, current_page_number;
-int phrase_nr, tts_no, level, depth, total_time, audiocd, total_phrases;
-float speed;
+extern int current, displaying, max_y, total_items, current_page_number;
+extern int tts_no, level, depth, total_time, total_phrases, phrase_nr;
+int audiocd;
+extern float speed;
 extern char daisy_title[], bookmark_title[], prog_name[];
 extern char tag[], label[], sound_dev[], cd_dev[], cddb_flag;
 extern char daisy_version[], daisy_mp[], opf_name[], ncx_name[], NCC_HTML[];
 float clip_begin, clip_end;
-int total_pages;
-char ncc_totalTime[MAX_STR];
+extern int total_pages;
+extern char ncc_totalTime[MAX_STR];
 char daisy_language[MAX_STR];
 extern daisy_t daisy[];
 time_t seconds;
 
 void parse_ncx (char *);
-void check_phrases ();
+void check_phrases ();    
+void get_label (int, int);
 
 float read_time (char *p)
 {
@@ -183,7 +185,7 @@ void get_attributes (xmlTextReaderPtr reader)
    } // if
    snprintf (attr, MAX_STR - 1, "%s", (char*)
        xmlTextReaderGetAttribute (reader, (const xmlChar *) "playorder"));
-   if (strcmp (attr, "(null)"))                                  
+   if (strcmp (attr, "(null)"))
       snprintf (my_attribute.playorder, MAX_STR - 1, "%s", attr);
    snprintf (attr, MAX_STR - 1, "%s", (char*)
        xmlTextReaderGetAttribute (reader, (const xmlChar *) "phrase"));
@@ -235,7 +237,7 @@ void get_attributes (xmlTextReaderPtr reader)
       snprintf (my_attribute.value, MAX_STR - 1, "%s", attr);
 } // get_attributes
 
-int get_tag_or_label (xmlTextReaderPtr local_reader)
+int get_tag_or_label (xmlTextReaderPtr reader)
 {
    int type;
 
@@ -245,24 +247,29 @@ int get_tag_or_label (xmlTextReaderPtr local_reader)
    *my_attribute.playorder = * my_attribute.smilref = *my_attribute.src =
    *my_attribute.toc = 0, *my_attribute.value = 0;
 
-   if (! local_reader)
+   if (! reader)
       return 0;
-   switch (xmlTextReaderRead (local_reader))
+   switch (xmlTextReaderRead (reader))
    {
    case -1:
+   {
+      int e;
+
+      e = errno;
       endwin ();
-      printf ("%s\n", strerror (errno));
+      printf ("%s\n", strerror (e));
       printf ("Can't handle this DTB structure!\n");
       printf ("Don't know how to handle it yet, sorry. :-(\n");
       beep ();
       fflush (stdout);
       _exit (1);
+   }
    case 0:
       return 0;
    case 1:
       break;
    } // swwitch
-   type = xmlTextReaderNodeType (local_reader);
+   type = xmlTextReaderNodeType (reader);
    switch (type)
    {
    int n, i;
@@ -270,19 +277,19 @@ int get_tag_or_label (xmlTextReaderPtr local_reader)
    case -1:
       endwin ();
       beep ();
-      printf (gettext ("\nCannot read\n"));
+      printf (gettext ("\nCannot read type: %d\n"), type);
       fflush (stdout);
       _exit (1);
    case XML_READER_TYPE_ELEMENT:
-      strncpy (tag, (char *) xmlTextReaderConstName (local_reader),
+      strncpy (tag, (char *) xmlTextReaderConstName (reader),
                MAX_TAG - 1);
-      n = xmlTextReaderAttributeCount (local_reader);
+      n = xmlTextReaderAttributeCount (reader);
       for (i = 0; i < n; i++)
-         get_attributes (local_reader);
+         get_attributes (reader);
       return 1;
    case XML_READER_TYPE_END_ELEMENT:
       snprintf (tag, MAX_TAG - 1, "/%s",
-                (char *) xmlTextReaderName (local_reader));
+                (char *) xmlTextReaderName (reader));
       return 1;
    case XML_READER_TYPE_TEXT:
    {
@@ -291,12 +298,12 @@ int get_tag_or_label (xmlTextReaderPtr local_reader)
       x = 0;
       while (1)
       {
-         if (isspace (xmlTextReaderConstValue (local_reader)[x]))
+         if (isspace (xmlTextReaderConstValue (reader)[x]))
             x++;
          else
             break;
       } // while
-      strncpy (label, (char *) xmlTextReaderConstValue (local_reader) + x,
+      strncpy (label, (char *) xmlTextReaderConstValue (reader) + x,
                       max_phrase_len);
       for (x = strlen (label) - 1; x >= 0 && isspace (label[x]); x--)
          label[x] = 0;
@@ -308,19 +315,20 @@ int get_tag_or_label (xmlTextReaderPtr local_reader)
    case XML_READER_TYPE_ENTITY_REFERENCE:
    case XML_READER_TYPE_DOCUMENT_TYPE:
    case XML_READER_TYPE_SIGNIFICANT_WHITESPACE:
-//      snprintf (tag, MAX_TAG - 1, "/%s",
-//                (char *) xmlTextReaderName (local_reader));
+      snprintf (tag, MAX_TAG - 1, "/%s",
+                (char *) xmlTextReaderName (reader));
       return 1;
    default:
       return 1;
    } // switch
    return 0;
-} // get_tag_or_label        
+} // get_tag_or_label
 
 void parse_text_file (char *text_file)
 // page-number
 {
    xmlTextReaderPtr textptr;
+   xmlDocPtr doc;
    char *anchor = 0;
 
    if (strchr (text_file, '#'))
@@ -328,7 +336,7 @@ void parse_text_file (char *text_file)
       anchor = strdup (strchr (text_file, '#') + 1);
       *strchr (text_file, '#') = 0;
    } // if
-   xmlDocPtr doc = xmlRecoverFile (text_file);
+   doc = xmlRecoverFile (text_file);
    if (! (textptr = xmlReaderWalker (doc)))
    {
       endwin ();
@@ -391,12 +399,20 @@ void get_page_number_3 (xmlTextReaderPtr reader)
    do
    {
       if (! get_tag_or_label (page))
+      {
+         xmlTextReaderClose (page);
+         xmlFreeDoc (doc);
          return;
+      } // if
    } while (strcasecmp (my_attribute.id, anchor) != 0);
    do
    {
       if (! get_tag_or_label (page))
+      {
+         xmlTextReaderClose (page);
+         xmlFreeDoc (doc);
          return;
+      } // if
    } while (! *label);
    xmlTextReaderClose (page);
    xmlFreeDoc (doc);
@@ -407,13 +423,14 @@ void parse_smil_3 ()
 {
    int x;
    xmlTextReaderPtr parse;
+   xmlDocPtr doc;
 
    total_time = 0;
    for (x = 0; x < total_items; x++)
    {
       if (*daisy[x].smil_file == 0)
          continue;
-      xmlDocPtr doc = xmlRecoverFile (daisy[x].smil_file);
+      doc = xmlRecoverFile (daisy[x].smil_file);
       if (! (parse = xmlReaderWalker (doc)))
       {
          endwin ();
@@ -568,7 +585,7 @@ void parse_xml (char *name)
           strcasecmp (tag, "h4") == 0 ||
           strcasecmp (tag, "h5") == 0 ||
           strcasecmp (tag, "h6") == 0)
-      {
+      {                       
          int l;
 
          l = tag[1] - '0';
@@ -773,6 +790,7 @@ void read_daisy_3 (char *daisy_mp)
       endwin ();
       printf (gettext ("\nNo DAISY-CD or Audio-cd found\n"));
       beep ();
+      fflush (stdout);
       _exit (0);
    } // if
    strncpy (ncx_name, basename (path), MAX_STR - 1);

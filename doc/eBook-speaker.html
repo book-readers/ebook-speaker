@@ -1,7 +1,337 @@
-
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<HTML><HEAD><TITLE>File not found</TITLE></HEAD>
-<BODY>
-<H1>File not found</H1>
-Could not open ./eBook-speaker.1.1
-</BODY></HTML>
+<HTML><HEAD><TITLE>Man page of eBook-speaker</TITLE>
+</HEAD><BODY>
+<H1>eBook-speaker</H1>
+Section: Linux Reference Manual (1)<BR>Updated: 18 September 2013<BR><A HREF="#index">Index</A>
+<A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
+
+<A NAME="lbAB">&nbsp;</A>
+<H2>NAME</H2>
+
+<B>eBook-speaker </B>- read aloud eBooks and other text formats using a software speech-synthesizer
+<A NAME="lbAC">&nbsp;</A>
+<H2>SYNOPSIS</H2>
+
+<PRE>
+<B>eBook-speaker</B> [<I>eBook_file</I> | <B>-s</B>] [<B>-t</B> <I>TTS_command</I>]
+</PRE>
+
+
+
+<A NAME="lbAD">&nbsp;</A>
+<H2>DESCRIPTION</H2>
+
+<B>eBook-speaker</B> reads aloud eBooks and other text formats and even scanned documents using a software speech-synthesizer. By default the tool espeak is used for speech output.
+<B>eBook-speaker</B> also can scan a documant by itself using the scanimage application.
+<P>
+
+A list of items on the eBook will appear. Press &lt;ENTER&gt; to start reading. When reading of an item has finished, <B>eBook-speaker</B> will read the next item and the cursor will automatically skip to that item, so that an attached braille-terminal will display the name of that item.
+<A NAME="lbAE">&nbsp;</A>
+<H2>OPTIONS</H2>
+
+<DL COMPACT>
+<DT><B></B><I>eBook_file</I>
+
+<DD>
+Give an <I>eBook_file</I> as argument to <B>eBook-speaker</B>.  Many eBook formats are supported. <B>eBook-speaker</B> also tries to read scanned documents through Optical Character Recognition.
+</DL>
+<P>
+
+<PRE>
+                Supported formats
+                -----------------
+                AportisDoc
+                ASCII mail text
+                ASCII text
+                Broadband eBooks (BBeB)
+                Composite Document File (Microsoft Office Word)
+                DAISY3 DTBook
+                EPUB ebook data
+                GIF image data
+                GutenPalm zTXT
+                HTML document
+                ISO-8859 text
+                JPEG image data
+                Microsoft Reader eBook Data
+                Microsoft Windows HtmlHelp Data
+                Microsoft Word 2007+
+                Mobipocket E-book
+                MS Windows HtmlHelp Data
+                Netpbm PPM data
+                OpenDocument Text
+                PDF document
+                PeanutPress PalmOS
+                PNG image data
+                PostScript document
+                Rich Text Format
+                UTF-8 Unicode mail text
+                UTF-8 Unicode text
+                WordPerfect
+
+</PRE>
+
+When no input-file is supplied, <B>eBook-speaker</B> will bring up a file-manager.
+<P>
+
+Keyboard-commands in the file-manager:
+<P>
+
+<PRE>
+        enter or cursor right Start eBook-speaker with current file as input.
+        cursor left           Select previous directory and open it.
+        cursor down           Move cursor to the next file.
+        cursor up             Move cursor to the previous file.
+        page-down             View next page.
+        page-up               View previous page.
+        /                     Search for a file.
+        B                     Move cursor to the last file.
+        h                     Toggle hidden files displaying on or off.
+        n                     Search next.
+        N                     Search previous.
+        q                     Quit eBook-speaker.
+        T                     Move cursor to the first file.
+
+</PRE>
+
+<DL COMPACT>
+<DT><B>-l</B>
+
+<DD>
+Deprecated. <B>eBook-speaker</B> now determines the file-type using the libmagic library.
+<DT><B>-s</B>
+
+<DD>
+Scan a document using a hardware scanner.
+<DT><B>-t</B> TTS-command
+
+<DD>
+Be sure that the TTS reads from the file eBook-speaker.txt and that it writes to the file eBook-speaker.wav.
+</DL>
+<P>
+
+Examples:
+<DL COMPACT>
+<DT>&bull;<DD>
+<B>eBook-speaker</B> some.epub <B>-t</B> &quot;espeak <B>-f</B> eBook-speaker.txt <B>-w</B> eBook-speaker.wav <B>-v</B> nl&quot;
+<DT>&bull;<DD>
+<B>eBook-speaker</B> some.epub <B>-t</B> &quot;flite eBook-speaker.txt eBook-speaker.wav&quot;
+<DT>&bull;<DD>
+<B>eBook-speaker</B> some.epub <B>-t</B> &quot;text2wave eBook-speaker.txt <B>-o</B> eBook-speaker.wav&quot;
+</DL>
+<A NAME="lbAF">&nbsp;</A>
+<H2>SCREEN</H2>
+
+The name and version of this program and the name of the author is displayed left aligned at the top of the screen. The name of the current loaded book is displayed right aligned.
+<P>
+
+The second row of the screen displays the number of pages of the current loaded book (if any), the current selected level and the total number of levels, the total number of phrases and the current displayed screen and the total number of screens.
+<P>
+
+The next rows displays the title of the item, the first page of the item within brackets (if there are pages) and the total number of phrases in this item. Items in higher levels are indented. (Three spaces each level.) When &quot;just reading this item&quot; is active, a &quot;J&quot; is viewed at the first column of that item.
+<A NAME="lbAG">&nbsp;</A>
+<H2>CONTROL KEYS</H2>
+
+<B>eBook-speaker</B> recognizes the following keyboard-commands:
+<DL COMPACT>
+<DT><B>cursor down</B>
+
+<DD>
+Move cursor to the next item.
+<DT><B>cursor up</B>
+
+<DD>
+Move cursor to the previous item.
+<DT><B>cursor right</B>
+
+<DD>
+Skip to next phrase.
+<DT><B>cursor left</B>
+
+<DD>
+Skip to previous phrase.
+<DT><B>page-down</B>
+
+<DD>
+View next screen.
+<DT><B>page-up</B>
+
+<DD>
+View previous screen.
+<DT><B>enter</B>
+
+<DD>
+Start reading.
+<DT><B>space</B>
+
+<DD>
+Pause/resume reading.
+<DT><B>home</B>
+
+<DD>
+Read on normal speed.
+<DT><B>/</B>
+
+<DD>
+Search for a label.
+<DT><B>B</B>
+
+<DD>
+Move cursor to the last item.
+<DT><B>D</B>
+
+<DD>
+Decrease reading speed.
+<DT><B>f</B>
+
+<DD>
+Find the currently reading item and place the cursor there.
+<DT><B>g</B>
+
+<DD>
+Go to phrase in current item.
+<DT><B>h or ?</B>
+
+<DD>
+Give this help.
+<DT><B>j</B>
+
+<DD>
+Just read current item and place a &quot;J&quot; at the first column.
+<DT><B>l</B>
+
+<DD>
+Switch to next level.
+<DT><B>L</B>
+
+<DD>
+Switch to previous level.
+<DT><B>n</B>
+
+<DD>
+Search forewards.
+<DT><B>N</B>
+
+<DD>
+Search backwards.
+<DT><B>o</B>
+
+<DD>
+Select an output sound device.
+<DT><B>p</B>
+
+<DD>
+Place a bookmark.
+<DT><B>q</B>
+
+<DD>
+Quit <B>eBook-speaker</B>. The reading-point is saved as bookmark.
+<DT><B>s</B>
+
+<DD>
+Stop reading.
+<DT><B>t</B>
+
+<DD>
+Select a TTS.
+<DT><B>T</B>
+
+<DD>
+Move cursor to the first item.
+<DT><B>U</B>
+
+<DD>
+Increase reading speed.
+</DL>
+<A NAME="lbAH">&nbsp;</A>
+<H2>TTS</H2>
+
+When pressing the 't'<B>-command</B>, the TTS-selector appears. A few TTS-applications are defined by default.
+<DL COMPACT>
+<DT>&bull;<DD>
+Choose one by moving the cursor with the cursor-keys and select it by pressing the ENTER-key.
+<DT>&bull;<DD>
+To delete a TTS-command press the DEL-key.
+<DT>&bull;<DD>
+A new TTS-command can be provided by adding the TTS-command to the TTS-line.
+<DT>&bull;<DD>
+To edit an existing TTS-command one has to edit the ~/.eBook-speaker.xml file by hand.
+</DL>
+<P>
+
+Be sure that the new TTS reads its information from the file eBook-speaker.txt and that it writes to the file eBook-speaker.wav.
+<A NAME="lbAI">&nbsp;</A>
+<H2>TTS EXAMPLES</H2>
+
+Here are some examples to insert into the TTS-selector:
+<P>
+
+<PRE>
+   espeak -f eBook-speaker.txt -w eBook-speaker.wav
+   espeak -f eBook-speaker.txt -w eBook-speaker.wav -v mb-en1
+   espeak -f eBook-speaker.txt -w eBook-speaker.wav -v de
+   espeak -f eBook-speaker.txt -w eBook-speaker.wav -v nl
+   espeak -f eBook-speaker.txt -w eBook-speaker.wav -v mb-nl2
+   flite eBook-speaker.txt eBook-speaker.wav
+   swift -n Lawrence -f eBook-speaker.txt -o eBook-speaker.wav
+   text2wave eBook-speaker.txt -o eBook-speaker.wav
+   text2wave -eval '(voice_en1_mbrola)' eBook-speaker.txt -o eBook-speaker.wav
+   pico2wave -w eBook-speaker.wav &quot;`cat eBook-speaker.txt`&quot;
+</PRE>
+
+<A NAME="lbAJ">&nbsp;</A>
+<H2>FILES</H2>
+
+<DL COMPACT>
+<DT><B>~/.eBook-speaker</B>/
+
+<DD>
+This directory contains the bookmarks in XML-format. Each file has the name of the book and contains the name of the current item, the start-phrase of that item, the current level, the desired TTS and the desired reading speed.
+<DT><B>~/.eBook-speaker.xml</B>
+
+<DD>
+This file, in XML-format,  contains the name of the desired audio device and the TTS's to use. (See TTS EXAMPLES)
+<DT><B>/tmp/eBook-speaker.XXXXXX</B>
+
+<DD>
+<B>eBook-speaker</B> makes use of a temporary directory. It is removed after quiting.
+</DL>
+<A NAME="lbAK">&nbsp;</A>
+<H2>SEE ALSO</H2>
+
+<B><A HREF="/cgi-bin/man/man2html?1+ebook-convert">ebook-convert</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+calibre">calibre</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+lowriter">lowriter</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+tesseract">tesseract</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+espeak">espeak</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+flite">flite</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+text2wave">text2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+mbrola">mbrola</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pico2wave">pico2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+scanimage">scanimage</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?5+magic">magic</A></B>(5)
+<A NAME="lbAL">&nbsp;</A>
+<H2>AUTHOR</H2>
+
+Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
+<A NAME="lbAM">&nbsp;</A>
+<H2>COPYRIGHT</H2>
+
+Copyright (C)2013 Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
+<P>
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program (see the file COPYING); if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+<P>
+
+<HR>
+<A NAME="index">&nbsp;</A><H2>Index</H2>
+<DL>
+<DT><A HREF="#lbAB">NAME</A><DD>
+<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAE">OPTIONS</A><DD>
+<DT><A HREF="#lbAF">SCREEN</A><DD>
+<DT><A HREF="#lbAG">CONTROL KEYS</A><DD>
+<DT><A HREF="#lbAH">TTS</A><DD>
+<DT><A HREF="#lbAI">TTS EXAMPLES</A><DD>
+<DT><A HREF="#lbAJ">FILES</A><DD>
+<DT><A HREF="#lbAK">SEE ALSO</A><DD>
+<DT><A HREF="#lbAL">AUTHOR</A><DD>
+<DT><A HREF="#lbAM">COPYRIGHT</A><DD>
+</DL>
+<HR>
+This document was created by
+<A HREF="/cgi-bin/man/man2html">man2html</A>,
+using the manual pages.<BR>
+Time: 16:44:20 GMT, September 18, 2013
+</BODY>
+</HTML>

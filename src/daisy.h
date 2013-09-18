@@ -45,7 +45,6 @@
 #include <cdio/paranoia.h>
 #include <cdio/disc.h>
 #include <magic.h>
-#include <sys/mount.h>
 
 #define max_phrase_len 50000
 #define MAX_CMD 512
@@ -90,34 +89,3 @@ typedef struct my_attribute
         toc[MAX_STR],
         value[MAX_STR];
 } my_attribute_t;
-
-void put_bookmark ();
-void get_bookmark ();
-void get_tag ();
-void get_page_number ();
-void view_screen ();
-void player_ended ();
-void play_now ();
-void open_text_file (char *, char *);
-void pause_resume ();
-void help ();
-void previous_item ();
-void next_item ();
-void skip_left ();
-void skip_right ();
-void change_level (char);
-void read_rc ();
-void get_label (int, int);
-void save_rc ();
-void search (int , char);
-void kill_player ();
-void go_to_page_number ();
-void select_next_output_device ();
-void browse ();
-char *sort_by_playorder ();
-void read_out_eBook (const char *);
-const char *read_eBook (char *);
-void get_eBook_struct (int);
-void parse_smil ();
-void start_element (void *, const char *, const char **);
-void end_element (void *, const char *);

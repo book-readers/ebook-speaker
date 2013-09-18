@@ -40,7 +40,7 @@ eBook_file  Give an eBook_file as argument to eBook-speaker.  Many eBook formats
 		UTF-8 Unicode text
 		WordPerfect
 
-When no input-file is suplied, eBook-speaker will bring up a file-manager.
+When no input-file is supplied, eBook-speaker will bring up a file-manager.
 
 Keyboard-commands in the file-manager:
 
@@ -50,9 +50,14 @@ Keyboard-commands in the file-manager:
 	cursor up             Move cursor to the previous file.
 	page-down             View next page.
 	page-up               View previous page.
-	q                     Quit eBook-speaker.
 	/                     Search for a file.
-                                               
+	B                     Move cursor to the last file.
+	h                     Toggle hidden files displaying on or off.
+	n                     Search next.
+	N                     Search previous.
+	q                     Quit eBook-speaker.
+	T                     Move cursor to the first file.
+
 -l  Deprecated. eBook-speaker now determines the file-type using the libmagic library.
 
 -s  Scan a document using a hardware scanner.
@@ -85,6 +90,7 @@ enter           Start reading.
 space           Pause/resume reading.
 home            Read on normal speed.
 /               Search for a label.
+B               Move cursor to the last item.
 D               Decrease reading speed.
 f               Find the currently reading item and place the cursor there.
 g               Go to phrase in current item.
@@ -99,6 +105,7 @@ p               Place a bookmark.
 q               Quit eBook-speaker. The reading-point is saved as bookmark.
 s               Stop reading.
 t               Select a TTS.
+T               Move cursor to the first item.
 U               Increase reading speed.
 TTS
 When pressing the 't'-command, the TTS-selector appears. A few TTS-applications are defined by default.
