@@ -44,3 +44,7 @@
 	View total phrases on the status-line.
 	Bookmarks written when killed with "killall". (SIGTERM)
 	Switch hidden files displaying on/off in directory listing.
+2.5.1	help-screen in directory listing.
+	With the 'd' key, current item will be written to disk as a
+	WAV-file.
+	When option -s is used, the bookmark is  ignored.

@@ -134,6 +134,33 @@ int search_in_dir (int start, int total, char mode, WINDOW *titlewin,
    } // if
 } // search_in_dir
 
+void help_list (WINDOW *screenwin)
+{
+   wclear (screenwin);
+   waddstr (screenwin, gettext ("\nThese commands are available in this version:\n"));
+   waddstr (screenwin, "========================================");
+   waddstr (screenwin, "========================================\n");
+   waddstr (screenwin, gettext ("cursor down     - move cursor to the next item\n"));
+   waddstr (screenwin, gettext ("cursor up       - move cursor to the previous item\n"));
+   waddstr (screenwin, gettext ("cursor right    - open this directory or file\n"));
+   waddstr (screenwin, gettext ("enter           - open this directory or file\n"));
+   waddstr (screenwin, gettext ("cursor left     - open previous directory\n"));
+   waddstr (screenwin, gettext ("page-down       - view next page\n"));
+   waddstr (screenwin, gettext ("page-up         - view previous page\n"));
+   waddstr (screenwin, gettext ("/               - search for a label\n"));
+   waddstr (screenwin, gettext ("B               - move cursor to the last item\n"));
+   waddstr (screenwin, gettext ("h or ?          - give this help\n"));
+   waddstr (screenwin, gettext ("H               - display \"hidden\" files on/off\n"));
+   waddstr (screenwin, gettext ("n               - search forwards\n"));
+   waddstr (screenwin, gettext ("N               - search backwards\n"));
+   waddstr (screenwin, gettext ("q               - quit eBook-speaker\n"));
+   waddstr (screenwin, gettext ("T               - move cursor to the first item\n"));
+   waddstr (screenwin, gettext ("\nPress any key to leave help..."));
+   nodelay (screenwin, FALSE);
+   wgetch (screenwin);
+   nodelay (screenwin, TRUE);
+} // help_list
+
 char *get_input_file (char *src_dir, char *copyright,
                       WINDOW *titlewin, WINDOW *screenwin)
 {
@@ -144,7 +171,8 @@ char *get_input_file (char *src_dir, char *copyright,
 
    nodelay (screenwin, FALSE);
    wclear (titlewin);
-   mvwprintw (titlewin, 0, 0, "%s - Choose an input-file", copyright);
+   mvwprintw (titlewin, 0, 0,
+              gettext ("%s - Choose an input-file"), copyright);
    wrefresh (titlewin);
    if (show_hidden_files)
       tot = scandir (src_dir, &namelist, NULL, alphasort) - 1;
@@ -159,7 +187,8 @@ char *get_input_file (char *src_dir, char *copyright,
 
       mvwprintw (titlewin, 1,  0, "----------------------------------------");
       waddstr (titlewin, "----------------------------------------");
-      mvwprintw (titlewin, 1, 0, "%s ", get_current_dir_name ());
+      mvwprintw (titlewin, 1, 0, gettext ("'h' for help "));
+      wprintw (titlewin, "- %s ", get_current_dir_name ());
       wrefresh (titlewin);
       ls (n, tot, namelist, file_type, titlewin, screenwin);
       switch (wgetch (screenwin))
@@ -255,6 +284,20 @@ char *get_input_file (char *src_dir, char *copyright,
          n = tot;
          break;
       case 'h':
+      case '?':
+         help_list (screenwin);
+         nodelay (screenwin, FALSE);
+         wclear (titlewin);
+         mvwprintw (titlewin, 0, 0,
+                    gettext ("%s - Choose an input-file"), copyright);
+         wrefresh (titlewin);
+         if (show_hidden_files)
+            tot = scandir (src_dir, &namelist, NULL, alphasort) - 1;
+         else
+            tot = scandir (src_dir, &namelist, &hidden_files, alphasort) - 1;
+         fill_ls (tot, namelist, file_type);
+         break;
+      case 'H':
          show_hidden_files = 1 - show_hidden_files;
          free (namelist);
          if (show_hidden_files)
