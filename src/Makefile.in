@@ -51,7 +51,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = eBook-speaker$(EXEEXT) ebook-speaker$(EXEEXT)
+bin_PROGRAMS = eBook-speaker$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -73,10 +73,6 @@ am_eBook_speaker_OBJECTS = daisy3.$(OBJEXT) eBook-speaker.$(OBJEXT) \
 	list_dir.$(OBJEXT)
 eBook_speaker_OBJECTS = $(am_eBook_speaker_OBJECTS)
 eBook_speaker_LDADD = $(LDADD)
-am_ebook_speaker_OBJECTS = daisy3.$(OBJEXT) eBook-speaker.$(OBJEXT) \
-	list_dir.$(OBJEXT)
-ebook_speaker_OBJECTS = $(am_ebook_speaker_OBJECTS)
-ebook_speaker_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -85,8 +81,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(eBook_speaker_SOURCES) $(ebook_speaker_SOURCES)
-DIST_SOURCES = $(eBook_speaker_SOURCES) $(ebook_speaker_SOURCES)
+SOURCES = $(eBook_speaker_SOURCES)
+DIST_SOURCES = $(eBook_speaker_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -219,7 +215,6 @@ AM_LDFLAGS = -l ncursesw -l sox -l xml2 -l magic # -l cdio -l cdio_cdda \
              -l cdio_paranoia
 
 eBook_speaker_SOURCES = daisy3.c eBook-speaker.c daisy.h list_dir.c
-ebook_speaker_SOURCES = daisy3.c eBook-speaker.c daisy.h list_dir.c
 all: all-am
 
 .SUFFIXES:
@@ -297,9 +292,6 @@ clean-binPROGRAMS:
 eBook-speaker$(EXEEXT): $(eBook_speaker_OBJECTS) $(eBook_speaker_DEPENDENCIES) $(EXTRA_eBook_speaker_DEPENDENCIES) 
 	@rm -f eBook-speaker$(EXEEXT)
 	$(LINK) $(eBook_speaker_OBJECTS) $(eBook_speaker_LDADD) $(LIBS)
-ebook-speaker$(EXEEXT): $(ebook_speaker_OBJECTS) $(ebook_speaker_DEPENDENCIES) $(EXTRA_ebook_speaker_DEPENDENCIES) 
-	@rm -f ebook-speaker$(EXEEXT)
-	$(LINK) $(ebook_speaker_OBJECTS) $(ebook_speaker_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

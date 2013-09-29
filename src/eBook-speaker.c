@@ -20,7 +20,7 @@
      
 #include "src/daisy.h"
 
-#define MY_VERSION "2.5.1"
+#define MY_VERSION "2.5.3"
 
 WINDOW *screenwin, *titlewin;
 daisy_t daisy[2000];
@@ -73,7 +73,7 @@ void read_daisy_3 (char *);
 int get_tag_or_label (xmlTextReaderPtr);
 void save_bookmark_and_xml ();
 xmlTextReaderPtr open_text_file (xmlTextReaderPtr, xmlDocPtr, char *, char *);
-extern char *get_input_file (char *, char *, WINDOW *, WINDOW *);
+char *get_input_file (char *, char *, WINDOW *, WINDOW *);
 void put_bookmark ();
 xmlTextReaderPtr skip_left (xmlTextReaderPtr, xmlDocPtr);
 void store_to_disk (xmlTextReaderPtr, xmlDocPtr);
@@ -181,7 +181,7 @@ void select_tts ()
    int n, y, x = 2;
 
    wclear (screenwin);
-   wprintw (screenwin, "\nSelect a Text-To-Speech application\n\n");
+   wprintw (screenwin, gettext ("\nSelect a Text-To-Speech application\n\n"));
    for (n = 0; n < 10; n++)
    {
       char str[MAX_STR];
@@ -192,12 +192,13 @@ void select_tts ()
       str[72] = 0;
       wprintw (screenwin, "    %d %s\n", n, str);
    } // for
-   wprintw (screenwin, "\n\
-    Provide a new TTS.\n\
-    Be sure that the new TTS reads its information from the file\n\
-    eBook-speaker.txt and that it writes to the file eBook-speaker.wav.\n\n\
-    Press DEL to delete a TTS\n\n\
-    -------------------------------------------------------------");
+   wprintw (screenwin, gettext (
+"\nProvide a new TTS.\n\
+Be sure that the new TTS reads its information from the file\n\
+Book-speaker.txt and that it writes to the file eBook-speaker.wav.\n\n\
+Press DEL to delete a TTS\n\n"));
+   wprintw (screenwin,
+           "-------------------------------------------------------------");
    y = tts_no + 3;
    nodelay (screenwin, FALSE);
    for (;;)
@@ -1265,7 +1266,7 @@ void select_next_output_device ()
    char *list[10], *trash;
 
    wclear (screenwin);
-   wprintw (screenwin, "\nSelect a soundcard:\n\n");
+   wprintw (screenwin, gettext ("\nSelect a soundcard:\n\n"));
    if (! (r = fopen ("/proc/asound/cards", "r")))
    {
       endwin ();
@@ -1638,24 +1639,6 @@ void browse (int scan_flag)
    } // for
 } // browse
 
-void usage ()
-{
-   endwin ();
-   beep ();
-   puts (copyright);
-   printf (gettext ("Usage: eBook-speaker [eBook_file | -s] [-t TTS_command]\n\
-       Be sure that the TTS reads from the file eBook-speaker.txt and\n\
-       that it writes to the file eBook-speaker.wav.\n\n\
-       Examples:\n\n"));
-   puts ("\
-       eBook-speaker eBook.epub -t \"espeak -f eBook-speaker.txt -w eBook-speaker.wav -v nl\"\n\
-       eBook-speaker eBook.lit -t \"flite eBook-speaker.txt eBook-speaker.wav\"\n\
-       eBook-speaker eBook.rtf -t \"text2wave eBook-speaker.txt -o eBook-speaker.wav\"\n\
-       eBook-speaker eBook.pdf -t \"swift -n Lawrence -f eBook-speaker.txt -m text -o eBook-speaker.wav\"");
-   fflush (stdout);
-   _exit (1);
-} // usage
-
 void read_epub (char *file)
 {
    char cmd[MAX_CMD];
@@ -1817,16 +1800,23 @@ void store_to_disk (xmlTextReaderPtr reader, xmlDocPtr doc)
 int main (int argc, char *argv[])
 {
    int opt, scan_flag = 0;
-   char file[MAX_STR];
+   char file[MAX_STR], str[MAX_STR];
 
    fclose (stderr);
    setbuf (stdout, NULL);
-   setlocale (LC_ALL, getenv ("LANG"));
-   setlocale (LC_NUMERIC, "C");
-   textdomain ("eBook-speaker");
-   bindtextdomain ("eBook-speaker", LOCALEDIR"/");
-   textdomain ("eBook-speaker");
+   if (setlocale (LC_ALL, getenv ("LC_ALL")) == NULL)
+   {
+      int e;
+      
+      e = errno;
+      endwin ();
+      printf ("something wrong with your locale: %s\n", strerror (e));
+      _exit (0);
+   } // if
    strncpy (prog_name, basename (argv[0]), MAX_STR - 1);
+   textdomain (prog_name);
+   snprintf (str, MAX_STR, "%s/", LOCALEDIR);
+   bindtextdomain (prog_name, str);
    initscr ();
    titlewin = newwin (2, 80,  0, 0);
    screenwin = newwin (23, 80, 2, 0);
@@ -1912,12 +1902,6 @@ int main (int argc, char *argv[])
          snprintf (file, MAX_STR - 1, "%s",
                    get_input_file (".", copyright, titlewin,
                    screenwin));
-         if (! *file)
-         {
-            endwin ();
-            puts ("\n\n\n");
-            usage ();
-         } // if
       }
       else
       {

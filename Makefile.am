@@ -1,13 +1,13 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = doc man src po
+SUBDIRS = man doc src po
 
 ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = config.rpath m4/Makefile.in doc/COMPILE \
              doc/COPYING doc/Changelog doc/License doc/Readme doc/TODO \
-             doc/eBook-speaker.* doc/ebook-speaker.* \
+             doc/eBook-speaker.* \
              doc/icons_copyright.txt doc/screenshot.html \
-             man/eBook-speaker.1 man/ebook-speaker.1
+             man/eBook-speaker.1
 
 check-gettext:                         
 	@if test x$(USE_NLS) != "xyes" ; then \

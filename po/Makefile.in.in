@@ -11,53 +11,53 @@
 # Origin: gettext-0.18
 GETTEXT_MACRO_VERSION = 0.18
 
-PACKAGE = eBook-speaker
-VERSION = 2.5.1
-PACKAGE_BUGREPORT = jos@jlemmens.nl
+PACKAGE = @PACKAGE@
+VERSION = @VERSION@
+PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 
 SHELL = /bin/sh
+@SET_MAKE@
 
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
 
-srcdir = .
-top_srcdir = ..
-
-
-prefix = /usr/local
-exec_prefix = ${prefix}
-datarootdir = ${prefix}/share
-datadir = ${datarootdir}
-localedir = ${datarootdir}/locale
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+datarootdir = @datarootdir@
+datadir = @datadir@
+localedir = @localedir@
 gettextsrcdir = $(datadir)/gettext/po
 
-INSTALL = /usr/bin/install -c
-INSTALL_DATA = ${INSTALL} -m 644
+INSTALL = @INSTALL@
+INSTALL_DATA = @INSTALL_DATA@
 
 # We use $(mkdir_p).
 # In automake <= 1.9.x, $(mkdir_p) is defined either as "mkdir -p --" or as
 # "$(mkinstalldirs)" or as "$(install_sh) -d". For these automake versions,
-# ${SHELL} /home/jos/src/own_stuff/eBook-speaker/install-sh does not start with $(SHELL), so we add it.
-# In automake >= 1.10, /bin/mkdir -p is derived from ${MKDIR_P}, which is defined
+# @install_sh@ does not start with $(SHELL), so we add it.
+# In automake >= 1.10, @mkdir_p@ is derived from ${MKDIR_P}, which is defined
 # either as "/path/to/mkdir -p" or ".../install-sh -c -d". For these automake
 # versions, $(mkinstalldirs) and $(install_sh) are unused.
-mkinstalldirs = $(SHELL) ${SHELL} /home/jos/src/own_stuff/eBook-speaker/install-sh -d
-install_sh = $(SHELL) ${SHELL} /home/jos/src/own_stuff/eBook-speaker/install-sh
-MKDIR_P = /bin/mkdir -p
-mkdir_p = /bin/mkdir -p
+mkinstalldirs = $(SHELL) @install_sh@ -d
+install_sh = $(SHELL) @install_sh@
+MKDIR_P = @MKDIR_P@
+mkdir_p = @mkdir_p@
 
-GMSGFMT_ = /usr/bin/msgfmt
-GMSGFMT_no = /usr/bin/msgfmt
-GMSGFMT_yes = /usr/bin/msgfmt
+GMSGFMT_ = @GMSGFMT@
+GMSGFMT_no = @GMSGFMT@
+GMSGFMT_yes = @GMSGFMT_015@
 GMSGFMT = $(GMSGFMT_$(USE_MSGCTXT))
-MSGFMT_ = /usr/bin/msgfmt
-MSGFMT_no = /usr/bin/msgfmt
-MSGFMT_yes = /usr/bin/msgfmt
+MSGFMT_ = @MSGFMT@
+MSGFMT_no = @MSGFMT@
+MSGFMT_yes = @MSGFMT_015@
 MSGFMT = $(MSGFMT_$(USE_MSGCTXT))
-XGETTEXT_ = /usr/bin/xgettext
-XGETTEXT_no = /usr/bin/xgettext
-XGETTEXT_yes = /usr/bin/xgettext
+XGETTEXT_ = @XGETTEXT@
+XGETTEXT_no = @XGETTEXT@
+XGETTEXT_yes = @XGETTEXT_015@
 XGETTEXT = $(XGETTEXT_$(USE_MSGCTXT))
 MSGMERGE = msgmerge
-MSGMERGE_UPDATE = /usr/bin/msgmerge --update
+MSGMERGE_UPDATE = @MSGMERGE@ --update
 MSGINIT = msginit
 MSGCONV = msgconv
 MSGFILTER = msgfilter
@@ -96,15 +96,15 @@ CATALOGS = @CATALOGS@
 	mv t-$@ $@
 
 
-all: check-macro-version all-yes
+all: check-macro-version all-@USE_NLS@
 
 all-yes: stamp-po
 all-no:
 
 # Ensure that the gettext macros and this Makefile.in.in are in sync.
 check-macro-version:
-	@test "$(GETTEXT_MACRO_VERSION)" = "0.18" \
-	  || { echo "*** error: gettext infrastructure mismatch: using a Makefile.in.in from gettext version $(GETTEXT_MACRO_VERSION) but the autoconf macros are from gettext version 0.18" 1>&2; \
+	@test "$(GETTEXT_MACRO_VERSION)" = "@GETTEXT_MACRO_VERSION@" \
+	  || { echo "*** error: gettext infrastructure mismatch: using a Makefile.in.in from gettext version $(GETTEXT_MACRO_VERSION) but the autoconf macros are from gettext version @GETTEXT_MACRO_VERSION@" 1>&2; \
 	       exit 1; \
 	     }
 
@@ -138,7 +138,7 @@ stamp-po: $(srcdir)/$(DOMAIN).pot
 # This target rebuilds $(DOMAIN).pot; it is an expensive operation.
 # Note that $(DOMAIN).pot is not touched if it doesn't need to be changed.
 $(DOMAIN).pot-update: $(POTFILES) $(srcdir)/POTFILES.in remove-potcdate.sed
-	if LC_ALL=C grep 'GNU eBook-speaker' $(top_srcdir)/* 2>/dev/null | grep -v 'libtool:' >/dev/null; then \
+	if LC_ALL=C grep 'GNU @PACKAGE@' $(top_srcdir)/* 2>/dev/null | grep -v 'libtool:' >/dev/null; then \
 	  package_gnu='GNU '; \
 	else \
 	  package_gnu=''; \
@@ -151,18 +151,18 @@ $(DOMAIN).pot-update: $(POTFILES) $(srcdir)/POTFILES.in remove-potcdate.sed
 	case `$(XGETTEXT) --version | sed 1q | sed -e 's,^[^0-9]*,,'` in \
 	  '' | 0.[0-9] | 0.[0-9].* | 0.1[0-5] | 0.1[0-5].* | 0.16 | 0.16.[0-1]*) \
 	    $(XGETTEXT) --default-domain=$(DOMAIN) --directory=$(top_srcdir) \
-	      --add-comments=TRANSLATORS: $(XGETTEXT_OPTIONS)  \
+	      --add-comments=TRANSLATORS: $(XGETTEXT_OPTIONS) @XGETTEXT_EXTRA_OPTIONS@ \
 	      --files-from=$(srcdir)/POTFILES.in \
 	      --copyright-holder='$(COPYRIGHT_HOLDER)' \
 	      --msgid-bugs-address="$$msgid_bugs_address" \
 	    ;; \
 	  *) \
 	    $(XGETTEXT) --default-domain=$(DOMAIN) --directory=$(top_srcdir) \
-	      --add-comments=TRANSLATORS: $(XGETTEXT_OPTIONS)  \
+	      --add-comments=TRANSLATORS: $(XGETTEXT_OPTIONS) @XGETTEXT_EXTRA_OPTIONS@ \
 	      --files-from=$(srcdir)/POTFILES.in \
 	      --copyright-holder='$(COPYRIGHT_HOLDER)' \
-	      --package-name="$${package_gnu}eBook-speaker" \
-	      --package-version='2.4' \
+	      --package-name="$${package_gnu}@PACKAGE@" \
+	      --package-version='@VERSION@' \
 	      --msgid-bugs-address="$$msgid_bugs_address" \
 	    ;; \
 	esac
@@ -209,7 +209,7 @@ $(POFILES): $(srcdir)/$(DOMAIN).pot
 
 install: install-exec install-data
 install-exec:
-install-data: install-data-yes
+install-data: install-data-@USE_NLS@
 	if test "$(PACKAGE)" = "gettext-tools"; then \
 	  $(mkdir_p) $(DESTDIR)$(gettextsrcdir); \
 	  for file in $(DISTFILES.common) Makevars.template; do \
@@ -233,6 +233,8 @@ install-data-yes: all
 	  if test -r $$cat; then realcat=$$cat; else realcat=$(srcdir)/$$cat; fi; \
 	  $(INSTALL_DATA) $$realcat $(DESTDIR)$$dir/$(DOMAIN).mo; \
 	  echo "installing $$realcat as $(DESTDIR)$$dir/$(DOMAIN).mo"; \
+	  rm -f $(DESTDIR)$$dir/eBook-speaker.mo; \
+	  ln -s $(DESTDIR)$$dir/$(DOMAIN).mo $(DESTDIR)$$dir/eBook-speaker.mo; \
 	  for lc in '' $(EXTRA_LOCALE_CATEGORIES); do \
 	    if test -n "$$lc"; then \
 	      if (cd $(DESTDIR)$(localedir)/$$lang && LC_ALL=C ls -l -d $$lc 2>/dev/null) | grep ' -> ' >/dev/null; then \
@@ -267,7 +269,7 @@ install-strip: install
 
 installdirs: installdirs-exec installdirs-data
 installdirs-exec:
-installdirs-data: installdirs-data-yes
+installdirs-data: installdirs-data-@USE_NLS@
 	if test "$(PACKAGE)" = "gettext-tools"; then \
 	  $(mkdir_p) $(DESTDIR)$(gettextsrcdir); \
 	else \
@@ -311,7 +313,7 @@ installcheck:
 
 uninstall: uninstall-exec uninstall-data
 uninstall-exec:
-uninstall-data: uninstall-data-yes
+uninstall-data: uninstall-data-@USE_NLS@
 	if test "$(PACKAGE)" = "gettext-tools"; then \
 	  for file in $(DISTFILES.common) Makevars.template; do \
 	    rm -f $(DESTDIR)$(gettextsrcdir)/$$file; \
@@ -431,11 +433,11 @@ update-gmo: Makefile $(GMOFILES)
 
 # Recreate Makefile by invoking config.status. Explicitly invoke the shell,
 # because execution permission bits may not work on the current file system.
-# Use /bin/bash, which is the shell determined by autoconf for the use by its
+# Use @SHELL@, which is the shell determined by autoconf for the use by its
 # scripts, not $(SHELL) which is hardwired to /bin/sh and may be deficient.
 Makefile: Makefile.in.in Makevars $(top_builddir)/config.status @POMAKEFILEDEPS@
 	cd $(top_builddir) \
-	  && /bin/bash ./config.status $(subdir)/$@.in po-directories
+	  && @SHELL@ ./config.status $(subdir)/$@.in po-directories
 
 force:
 

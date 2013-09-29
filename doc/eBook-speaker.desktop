@@ -8,6 +8,7 @@ Icon=eBook-speaker
 Terminal=true
 Type=Application
 Categories=AudioVideo;Audio;Accessibility;ConsoleOnly;
+Keywords=documents;voice;audio;reading;listen;listening;braille;text;
 GenericName=Speaking e-reader
 GenericName[en]=Speaking e-reader
 GenericName[de]=Sprechendes E-Reader
