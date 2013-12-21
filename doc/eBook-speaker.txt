@@ -1,7 +1,6 @@
-NAME
 eBook-speaker - read aloud eBooks and other text formats using a software speech-synthesizer
 SYNOPSIS
-eBook-speaker [eBook_file | -s] [-t TTS_command]
+eBook-speaker [eBook_file | -s] [-d ALSA_sound_device] [-t TTS_command]
 DESCRIPTION
 eBook-speaker reads aloud eBooks and other text formats and even scanned documents using a software speech-synthesizer. By default the tool espeak is used for speech output.
 eBook-speaker also can scan a documant by itself using the scanimage application.
@@ -52,11 +51,14 @@ Keyboard-commands in the file-manager:
 	page-up               View previous page.
 	/                     Search for a file.
 	B                     Move cursor to the last file.
-	h                     Toggle hidden files displaying on or off.
+	h or ?                Give this help.
+	H                     Toggle hidden files displaying on or off.
 	n                     Search next.
 	N                     Search previous.
 	q                     Quit eBook-speaker.
 	T                     Move cursor to the first file.
+
+-d ALSA_sound_device  eBook-speaker will play on this sound device. Default is "hw:0".
 
 -l  Deprecated. eBook-speaker now determines the file-type using the libmagic library.
 
@@ -77,6 +79,8 @@ The name and version of this program and the name of the author is displayed lef
 
 The second row of the screen displays the number of pages of the current loaded book (if any), the current selected level and the total number of levels, the total number of phrases and the current displayed screen and the total number of screens.
 
+The spoken phrase will be displayed on the bottom-line of the screen, so one can follow along on a braille-terminal what he hears.
+
 The next rows displays the title of the item, the first page of the item within brackets (if there are pages) and the total number of phrases in this item. Items in higher levels are indented. (Three spaces each level.) When "just reading this item" is active, a "J" is viewed at the first column of that item.
 CONTROL KEYS
 eBook-speaker recognizes the following keyboard-commands:
@@ -92,7 +96,7 @@ home            Read on normal speed.
 /               Search for a label.
 B               Move cursor to the last item.
 d               Store current item to disk in WAV-format.
-D               Decrease reading speed.                  
+D               Decrease reading speed.
 f               Find the currently reading item and place the cursor there.
 g               Go to phrase in current item.
 h or ?          Give this help.

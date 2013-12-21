@@ -2,23 +2,22 @@
 <HTML><HEAD><TITLE>Man page of eBook-speaker</TITLE>
 </HEAD><BODY>
 <H1>eBook-speaker</H1>
-Section: Linux Reference Manual (1)<BR>Updated: 11 October 2013<BR><A HREF="#index">Index</A>
+Section: Linux Reference Manual (1)<BR>Updated: 24 December 2013<BR><A HREF="#index">Index</A>
 <A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
 
+<DL COMPACT><DT><DD>
+eBook-speaker - read aloud eBooks and other text formats using a software speech-synthesizer
+</DL>
 <A NAME="lbAB">&nbsp;</A>
-<H2>NAME</H2>
-
-<B>eBook-speaker </B>- read aloud eBooks and other text formats using a software speech-synthesizer
-<A NAME="lbAC">&nbsp;</A>
 <H2>SYNOPSIS</H2>
 
 <PRE>
-<B>eBook-speaker</B> [<I>eBook_file</I> | <B>-s</B>] [<B>-t</B> <I>TTS_command</I>]
+<B>eBook-speaker</B> [<I>eBook_file</I> | <B>-s</B>] [<B>-d</B> <I>ALSA_sound_device</I>] [<B>-t</B> <I>TTS_command</I>]
 </PRE>
 
 
 
-<A NAME="lbAD">&nbsp;</A>
+<A NAME="lbAC">&nbsp;</A>
 <H2>DESCRIPTION</H2>
 
 <B>eBook-speaker</B> reads aloud eBooks and other text formats and even scanned documents using a software speech-synthesizer. By default the tool espeak is used for speech output.
@@ -26,7 +25,7 @@ Section: Linux Reference Manual (1)<BR>Updated: 11 October 2013<BR><A HREF="#ind
 <P>
 
 A list of items on the eBook will appear. Press &lt;ENTER&gt; to start reading. When reading of an item has finished, <B>eBook-speaker</B> will read the next item and the cursor will automatically skip to that item, so that an attached braille-terminal will display the name of that item.
-<A NAME="lbAE">&nbsp;</A>
+<A NAME="lbAD">&nbsp;</A>
 <H2>OPTIONS</H2>
 
 <DL COMPACT>
@@ -85,7 +84,8 @@ Keyboard-commands in the file-manager:
         page-up               View previous page.
         /                     Search for a file.
         B                     Move cursor to the last file.
-        h                     Toggle hidden files displaying on or off.
+        h or ?                Give this help.
+        H                     Toggle hidden files displaying on or off.
         n                     Search next.
         N                     Search previous.
         q                     Quit eBook-speaker.
@@ -94,6 +94,10 @@ Keyboard-commands in the file-manager:
 </PRE>
 
 <DL COMPACT>
+<DT><B>-d</B> <I>ALSA_sound_device</I>
+
+<DD>
+<B>eBook-speaker</B> will play on this sound device. Default is &quot;hw:0&quot;.
 <DT><B>-l</B>
 
 <DD>
@@ -118,7 +122,7 @@ Examples:
 <DT>&bull;<DD>
 <B>eBook-speaker</B> some.epub <B>-t</B> &quot;text2wave eBook-speaker.txt <B>-o</B> eBook-speaker.wav&quot;
 </DL>
-<A NAME="lbAF">&nbsp;</A>
+<A NAME="lbAE">&nbsp;</A>
 <H2>SCREEN</H2>
 
 The name and version of this program and the name of the author is displayed left aligned at the top of the screen. The name of the current loaded book is displayed right aligned.
@@ -127,8 +131,11 @@ The name and version of this program and the name of the author is displayed lef
 The second row of the screen displays the number of pages of the current loaded book (if any), the current selected level and the total number of levels, the total number of phrases and the current displayed screen and the total number of screens.
 <P>
 
+The spoken phrase will be displayed on the bottom-line of the screen, so one can follow along on a braille-terminal what he hears.
+<P>
+
 The next rows displays the title of the item, the first page of the item within brackets (if there are pages) and the total number of phrases in this item. Items in higher levels are indented. (Three spaces each level.) When &quot;just reading this item&quot; is active, a &quot;J&quot; is viewed at the first column of that item.
-<A NAME="lbAG">&nbsp;</A>
+<A NAME="lbAF">&nbsp;</A>
 <H2>CONTROL KEYS</H2>
 
 <B>eBook-speaker</B> recognizes the following keyboard-commands:
@@ -184,7 +191,7 @@ Store current item to disk in WAV-format.
 <DT><B>D</B>
 
 <DD>
-Decrease reading speed.                  
+Decrease reading speed.
 <DT><B>f</B>
 
 <DD>
@@ -246,7 +253,7 @@ Move cursor to the first item.
 <DD>
 Increase reading speed.
 </DL>
-<A NAME="lbAH">&nbsp;</A>
+<A NAME="lbAG">&nbsp;</A>
 <H2>TTS</H2>
 
 When pressing the 't'<B>-command</B>, the TTS-selector appears. A few TTS-applications are defined by default.
@@ -263,7 +270,7 @@ To edit an existing TTS-command one has to edit the ~/.eBook-speaker.xml file by
 <P>
 
 Be sure that the new TTS reads its information from the file eBook-speaker.txt and that it writes to the file eBook-speaker.wav.
-<A NAME="lbAI">&nbsp;</A>
+<A NAME="lbAH">&nbsp;</A>
 <H2>TTS EXAMPLES</H2>
 
 Here are some examples to insert into the TTS-selector:
@@ -282,7 +289,7 @@ Here are some examples to insert into the TTS-selector:
    pico2wave -w eBook-speaker.wav &quot;`cat eBook-speaker.txt`&quot;
 </PRE>
 
-<A NAME="lbAJ">&nbsp;</A>
+<A NAME="lbAI">&nbsp;</A>
 <H2>FILES</H2>
 
 <DL COMPACT>
@@ -299,15 +306,15 @@ This file, in XML-format,  contains the name of the desired audio device and the
 <DD>
 <B>eBook-speaker</B> makes use of a temporary directory. It is removed after quiting.
 </DL>
-<A NAME="lbAK">&nbsp;</A>
+<A NAME="lbAJ">&nbsp;</A>
 <H2>SEE ALSO</H2>
 
 <B><A HREF="/cgi-bin/man/man2html?1+ebook-convert">ebook-convert</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+calibre">calibre</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+lowriter">lowriter</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+tesseract">tesseract</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+espeak">espeak</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+flite">flite</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+text2wave">text2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+mbrola">mbrola</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pico2wave">pico2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+scanimage">scanimage</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?5+magic">magic</A></B>(5)
-<A NAME="lbAL">&nbsp;</A>
+<A NAME="lbAK">&nbsp;</A>
 <H2>AUTHOR</H2>
 
 Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
-<A NAME="lbAM">&nbsp;</A>
+<A NAME="lbAL">&nbsp;</A>
 <H2>COPYRIGHT</H2>
 
 Copyright (C)2013 Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
@@ -319,23 +326,22 @@ This program is free software; you can redistribute it and/or modify it under th
 <HR>
 <A NAME="index">&nbsp;</A><H2>Index</H2>
 <DL>
-<DT><A HREF="#lbAB">NAME</A><DD>
-<DT><A HREF="#lbAC">SYNOPSIS</A><DD>
-<DT><A HREF="#lbAD">DESCRIPTION</A><DD>
-<DT><A HREF="#lbAE">OPTIONS</A><DD>
-<DT><A HREF="#lbAF">SCREEN</A><DD>
-<DT><A HREF="#lbAG">CONTROL KEYS</A><DD>
-<DT><A HREF="#lbAH">TTS</A><DD>
-<DT><A HREF="#lbAI">TTS EXAMPLES</A><DD>
-<DT><A HREF="#lbAJ">FILES</A><DD>
-<DT><A HREF="#lbAK">SEE ALSO</A><DD>
-<DT><A HREF="#lbAL">AUTHOR</A><DD>
-<DT><A HREF="#lbAM">COPYRIGHT</A><DD>
+<DT><A HREF="#lbAB">SYNOPSIS</A><DD>
+<DT><A HREF="#lbAC">DESCRIPTION</A><DD>
+<DT><A HREF="#lbAD">OPTIONS</A><DD>
+<DT><A HREF="#lbAE">SCREEN</A><DD>
+<DT><A HREF="#lbAF">CONTROL KEYS</A><DD>
+<DT><A HREF="#lbAG">TTS</A><DD>
+<DT><A HREF="#lbAH">TTS EXAMPLES</A><DD>
+<DT><A HREF="#lbAI">FILES</A><DD>
+<DT><A HREF="#lbAJ">SEE ALSO</A><DD>
+<DT><A HREF="#lbAK">AUTHOR</A><DD>
+<DT><A HREF="#lbAL">COPYRIGHT</A><DD>
 </DL>
 <HR>
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 09:36:32 GMT, October 11, 2013
+Time: 18:42:31 GMT, December 24, 2013
 </BODY>
 </HTML>

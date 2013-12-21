@@ -1,7 +1,7 @@
 AM_CFLAGS  = -D LOCALEDIR=\"$(prefix)/share/locale\" -D EBOOK_SPEAKER \
              -Wall -Wextra -Wunused -Wlogical-op -g \
              -I /usr/include/libxml2/ -O2 -fstack-protector-all \
-             --param=ssp-buffer-size=4 \
+             -Wstack-protector --param=ssp-buffer-size=4 \
              -Wuninitialized -Winit-self -fno-common \
              -D PROGRAMNAME_LOCALEDIR=\"${PROGRAMNAME_LOCALEDIR}\"
 AM_LDFLAGS = -l ncursesw -l sox -l xml2 -l magic # -l cdio -l cdio_cdda \

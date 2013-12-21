@@ -36,8 +36,8 @@
 	An argument now is optional.
 	When no argument is given on the command-line, a file-manager
 	will appear..
-2.4.1	Control-key B in file-manager to move cursor to last file/item.
-	Control-key T in file-manager to move cursor to first file/item.
+2.4.1	'B' in file-manager to move cursor to last file/item.
+	'T' in file-manager to move cursor to first file/item.
 	The file-manager will first fill an array with filenames and
 	their magic info, so that it reacts smoother.
 2.5	Memory bug solved - eBook speaker took increasingly more memory.
@@ -50,3 +50,17 @@
 	When option -s is used, the bookmark is  ignored.
 2.5.2	When in file manager viewing hidden files is switch on/off, cursor
 	will resides on same filename.
+2.6	Added option "-d ALSA_sound_device".
+	Better testing for audio device.
+2.6.1	-   setlocale (LC_ALL, getenv ("LC_ALL"));
+	-   setlocale (LC_ALL, getenv ("LANGUAGE"));
+	-   setlocale (LC_ALL, getenv ("LANG"));
+	+   setlocale (LC_ALL, "");
+	+   setlocale (LC_NUMERIC, "C"); added to force a decimal point
+	independently of the used language.
+2.7	The spoken phrase will now be displayed on the bottom-line of the
+	screen, so one can follow along on a braille-terminal what
+	he hears.
+	Words with an A-umlaut and those characters are now correctly
+	passed on to the TTS used for better speech.
+2.7.1	remove items with 0 phrases.

@@ -20,6 +20,8 @@
 
 #include "daisy.h"
 
+void quit_eBook_speaker ();
+
 void fill_ls (int total, struct dirent **namelist, char **file_type)
 {
    magic_t myt;
@@ -220,7 +222,8 @@ char *get_input_file (char *src_dir, char *copyright,
          return name;
       case KEY_LEFT:
       case '4':
-         if (strcmp (get_current_dir_name (), "/") == 0)
+         if (strlen (get_current_dir_name ()) == 1)
+         // topdir
          {
             beep ();
             break;
@@ -231,6 +234,7 @@ char *get_input_file (char *src_dir, char *copyright,
          // discart return-code.
             break;
          } // switch
+         free (namelist);
          if (show_hidden_files)
             tot = scandir (src_dir, &namelist, NULL, alphasort) - 1;
          else
@@ -334,7 +338,7 @@ char *get_input_file (char *src_dir, char *copyright,
          break;
       case 'q':
          free (namelist);
-         return "";
+         quit_eBook_speaker ();
       case 'T':
          n = 0;
          break;
@@ -342,5 +346,5 @@ char *get_input_file (char *src_dir, char *copyright,
          beep ();
          break;
       } // switch
-   } // for
+   } // while
 } // get_input_file
