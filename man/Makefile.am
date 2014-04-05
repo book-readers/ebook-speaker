@@ -1,6 +1,6 @@
-man_MANS = eBook-speaker.1 
+man_MANS = eBook-speaker.1
 
-all: eBook-speaker 
+all: eBook-speaker
 
 eBook-speaker:
 	@which txt2man > /dev/null && txt2man -p ${srcdir}/../doc/$@.txt > \

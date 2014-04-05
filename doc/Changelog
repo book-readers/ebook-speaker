@@ -64,3 +64,18 @@
 	Words with an A-umlaut and those characters are now correctly
 	passed on to the TTS used for better speech.
 2.7.1	remove items with 0 phrases.
+2.7.2	bugfix in manual.
+2.7.2.1	Was forgotten to remove debug lines in 2.7.2
+2.7.2.2	Added option "-s" to the tempo effect of sox. This causes
+	smoother sound by very low tempo.
+2.7.3	When a directory was given as argument. eBook-speaker crashed.
+	Solved.
+	Added support for troff files. (e.g. Linux man-pages). Conversion
+	done by man2html.
+	unzip dropped in favour of unar.
+2.8	Added option "-o" for the OCR language to use.
+	Give a 3-character ISO 639-2 language code as argument.
+	See 'man tesseract' for codes.
+	Added 'r'-command. When a document is place upsside-down on
+	the scanner, tesseract cannot OCR it. this command rotates
+	the scanned document.

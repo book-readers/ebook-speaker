@@ -1,5 +1,5 @@
 /* eBook-speaker - read aloud an eBook using a speech synthesizer
- *  Copyright (C) 2013 J. Lemmens
+ *  Copyright (C) 2014 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -20,7 +20,9 @@
 
 #include "daisy.h"
 
-void quit_eBook_speaker ();
+extern misc_t misc;
+
+extern void quit_eBook_speaker ();
 
 void fill_ls (int total, struct dirent **namelist, char **file_type)
 {
@@ -37,15 +39,14 @@ void fill_ls (int total, struct dirent **namelist, char **file_type)
    magic_close (myt);
 } // fill_ls
 
-void ls (int n, int total, struct dirent **namelist, char **file_type,
-         WINDOW *titlewin, WINDOW *screenwin)
+void ls (int n, int total, struct dirent **namelist, char **file_type)
 {
    int y, page;
 
    page = n / 23 + 1;
-   mvwprintw (titlewin, 0, 73, "%3d/%3d", page, (total - 1) / 23 + 1);
-   wrefresh (titlewin);
-   wclear (screenwin);
+   mvwprintw (misc.titlewin, 1, 74, " %d/%d -", page, (total - 1) / 23 + 1);
+   wrefresh (misc.titlewin);
+   wclear (misc.screenwin);
    for (y = 0; y < 23; y++)
    {
       int index;
@@ -53,10 +54,10 @@ void ls (int n, int total, struct dirent **namelist, char **file_type,
       index = (page - 1) * 23 + y;
       if (index > total)
          break;
-      mvwprintw (screenwin, y, 1, "%.39s", namelist[index]->d_name);
-      mvwprintw (screenwin, y, 41, "%.39s", file_type[index]);
+      mvwprintw (misc.screenwin, y, 1, "%.39s", namelist[index]->d_name);
+      mvwprintw (misc.screenwin, y, 41, "%.39s", file_type[index]);
    } // for
-   wmove (screenwin, n - (page - 1) * 23, 0);
+   wmove (misc.screenwin, n - (page - 1) * 23, 0);
 } // ls
 
 int hidden_files (const struct dirent *entry)
@@ -66,19 +67,19 @@ int hidden_files (const struct dirent *entry)
    return 1;
 } // hidden)files
 
-int search_in_dir (int start, int total, char mode, WINDOW *titlewin,
-             char *search_str, struct dirent **namelist)
+int search_in_dir (int start, int total, char mode,
+                   char *search_str, struct dirent **namelist)
 {
    static int c;
    int found = 0;
 
    if (*search_str == 0)
    {
-      mvwaddstr (titlewin, 1, 0, "----------------------------------------");
-      waddstr (titlewin, "----------------------------------------");
-      mvwprintw (titlewin, 1, 0, gettext ("What do you search? "));
+      mvwaddstr (misc.titlewin, 1, 0, "----------------------------------------");
+      waddstr (misc.titlewin, "----------------------------------------");
+      mvwprintw (misc.titlewin, 1, 0, gettext ("What do you search? "));
       echo ();
-      wgetnstr (titlewin, search_str, 25);
+      wgetnstr (misc.titlewin, search_str, 25);
       noecho ();
    } // if
    if (mode == '/' || mode == 'n')
@@ -136,47 +137,51 @@ int search_in_dir (int start, int total, char mode, WINDOW *titlewin,
    } // if
 } // search_in_dir
 
-void help_list (WINDOW *screenwin)
+void help_list ()
 {
-   wclear (screenwin);
-   waddstr (screenwin, gettext ("\nThese commands are available in this version:\n"));
-   waddstr (screenwin, "========================================");
-   waddstr (screenwin, "========================================\n");
-   waddstr (screenwin, gettext ("cursor down     - move cursor to the next item\n"));
-   waddstr (screenwin, gettext ("cursor up       - move cursor to the previous item\n"));
-   waddstr (screenwin, gettext ("cursor right    - open this directory or file\n"));
-   waddstr (screenwin, gettext ("cursor left     - open previous directory\n"));
-   waddstr (screenwin, gettext ("page-down       - view next page\n"));
-   waddstr (screenwin, gettext ("page-up         - view previous page\n"));
-   waddstr (screenwin,
+   wclear (misc.screenwin);
+   waddstr (misc.screenwin, gettext ("\nThese commands are available in this version:\n"));
+   waddstr (misc.screenwin, "========================================");
+   waddstr (misc.screenwin, "========================================\n");
+   waddstr (misc.screenwin, gettext ("cursor down     - move cursor to the next item\n"));
+   waddstr (misc.screenwin, gettext ("cursor up       - move cursor to the previous item\n"));
+   waddstr (misc.screenwin, gettext ("cursor right    - open this directory or file\n"));
+   waddstr (misc.screenwin, gettext ("cursor left     - open previous directory\n"));
+   waddstr (misc.screenwin, gettext ("page-down       - view next page\n"));
+   waddstr (misc.screenwin, gettext ("page-up         - view previous page\n"));
+   waddstr (misc.screenwin,
             gettext ("enter           - open this directory or file\n"));
-   waddstr (screenwin, gettext ("/               - search for a label\n"));
-   waddstr (screenwin, gettext ("B               - move cursor to the last item\n"));
-   waddstr (screenwin, gettext ("h or ?          - give this help\n"));
-   waddstr (screenwin, gettext ("H               - display \"hidden\" files on/off\n"));
-   waddstr (screenwin, gettext ("n               - search forwards\n"));
-   waddstr (screenwin, gettext ("N               - search backwards\n"));
-   waddstr (screenwin, gettext ("q               - quit eBook-speaker\n"));
-   waddstr (screenwin, gettext ("T               - move cursor to the first item\n"));
-   waddstr (screenwin, gettext ("\nPress any key to leave help..."));
-   nodelay (screenwin, FALSE);
-   wgetch (screenwin);
-   nodelay (screenwin, TRUE);
+   waddstr (misc.screenwin, gettext ("/               - search for a label\n"));
+   waddstr (misc.screenwin, gettext ("B               - move cursor to the last item\n"));
+   waddstr (misc.screenwin, gettext ("h or ?          - give this help\n"));
+   waddstr (misc.screenwin, gettext ("H               - display \"hidden\" files on/off\n"));
+   waddstr (misc.screenwin, gettext ("n               - search forwards\n"));
+   waddstr (misc.screenwin, gettext ("N               - search backwards\n"));
+   waddstr (misc.screenwin, gettext ("q               - quit eBook-speaker\n"));
+   waddstr (misc.screenwin, gettext ("T               - move cursor to the first item\n"));
+   waddstr (misc.screenwin, gettext ("\nPress any key to leave help..."));
+   nodelay (misc.screenwin, FALSE);
+   wgetch (misc.screenwin);
+   nodelay (misc.screenwin, TRUE);
 } // help_list
 
-char *get_input_file (char *src_dir, char *copyright,
-                      WINDOW *titlewin, WINDOW *screenwin)
+char *get_input_file (char *src_dir)
 {
+   switch (chdir (src_dir))
+   {
+   default:
+      break;
+   } // switch
    struct dirent **namelist;
    char *file_type[50], search_str[MAX_STR];
    int n, tot, page, show_hidden_files = 0;
    static char name[MAX_STR];
-
-   nodelay (screenwin, FALSE);
-   wclear (titlewin);
-   mvwprintw (titlewin, 0, 0,
-              gettext ("%s - Choose an input-file"), copyright);
-   wrefresh (titlewin);
+       
+   nodelay (misc.screenwin, FALSE);
+   wclear (misc.titlewin);
+   mvwprintw (misc.titlewin, 0, 0,
+              gettext ("%s - Choose an input-file"), misc.copyright);
+   wrefresh (misc.titlewin);
    if (show_hidden_files)
       tot = scandir (src_dir, &namelist, NULL, alphasort) - 1;
    else
@@ -188,13 +193,13 @@ char *get_input_file (char *src_dir, char *copyright,
    {
       int search_flag;
 
-      mvwprintw (titlewin, 1,  0, "----------------------------------------");
-      waddstr (titlewin, "----------------------------------------");
-      mvwprintw (titlewin, 1, 0, gettext ("'h' for help "));
-      wprintw (titlewin, "- %s ", get_current_dir_name ());
-      wrefresh (titlewin);
-      ls (n, tot, namelist, file_type, titlewin, screenwin);
-      switch (wgetch (screenwin))
+      mvwprintw (misc.titlewin, 1,  0, "----------------------------------------");
+      waddstr (misc.titlewin, "----------------------------------------");
+      mvwprintw (misc.titlewin, 1, 0, gettext ("'h' for help "));
+      wprintw (misc.titlewin, "- %s ", get_current_dir_name ());
+      wrefresh (misc.titlewin);
+      ls (n, tot, namelist, file_type);
+      switch (wgetch (misc.screenwin))
       {
       case 13: // ENTER
       case KEY_RIGHT:
@@ -279,7 +284,7 @@ char *get_input_file (char *src_dir, char *copyright,
          break;
       case '/':
          *search_str = 0;
-         if ((search_flag = search_in_dir (n + 1, tot, '/', titlewin,
+         if ((search_flag = search_in_dir (n + 1, tot, '/',
                                            search_str, namelist)) != -1)
             n = search_flag;
          break;
@@ -288,12 +293,12 @@ char *get_input_file (char *src_dir, char *copyright,
          break;
       case 'h':
       case '?':
-         help_list (screenwin);
-         nodelay (screenwin, FALSE);
-         wclear (titlewin);
-         mvwprintw (titlewin, 0, 0,
-                    gettext ("%s - Choose an input-file"), copyright);
-         wrefresh (titlewin);
+         help_list ();
+         nodelay (misc.screenwin, FALSE);
+         wclear (misc.titlewin);
+         mvwprintw (misc.titlewin, 0, 0,
+                    gettext ("%s - Choose an input-file"), misc.copyright);
+         wrefresh (misc.titlewin);
          if (show_hidden_files)
             tot = scandir (src_dir, &namelist, NULL, alphasort) - 1;
          else
@@ -327,12 +332,12 @@ char *get_input_file (char *src_dir, char *copyright,
          break;
       }
       case 'n':
-         if ((search_flag = search_in_dir (n + 1, tot, 'n', titlewin,
+         if ((search_flag = search_in_dir (n + 1, tot, 'n',
                                            search_str, namelist)) != -1)
             n = search_flag;
          break;
       case 'N':
-         if ((search_flag = search_in_dir (n - 1, tot, 'N', titlewin,
+         if ((search_flag = search_in_dir (n - 1, tot, 'N', 
                                            search_str, namelist)) != -1)
             n = search_flag;
          break;

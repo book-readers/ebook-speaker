@@ -6,6 +6,9 @@ To compile eBook-speaker, be sure the following extra packages are installed:
    libmagic-dev
    libxml2-dev
    libidn11-dev
+   libcdio-dev
+   libcdio-cdda-dev
+   libcdio-paranoia-dev
 
 Give the following command:
 

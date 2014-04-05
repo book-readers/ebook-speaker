@@ -1,5 +1,5 @@
 eBook-speaker - read eBooks with Linux using a speech-synthesizer
-(C)2013 J. Lemmens
+(C)2014 J. Lemmens
 
 DESCRIPTION
 eBook-speaker reads an eBook and uses a speech synthisizer for output.
@@ -19,10 +19,13 @@ Be sure the following extra packages exist on your system:
    libsox1b
    libmagic1
    libxml2
-   unzip
+   unar
+   man2html-base
    gettext
-   language-pack-nl
    language-pack-de
+   language-pack-es
+   language-pack-fr
+   language-pack-nl
    espeak
    libreoffice-writer
    calibre

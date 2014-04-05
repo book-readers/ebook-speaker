@@ -1,5 +1,5 @@
-/* header file for daisy-player and eBook-speaker
- *  Copyright (C) 2013 J. Lemmens
+/* header file for eBook-speaker
+ *  Copyright (C) 2014 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -89,3 +89,26 @@ typedef struct my_attribute
         toc[MAX_STR],
         value[MAX_STR];
 } my_attribute_t;
+
+typedef struct misc
+{
+   int discinfo, playing, just_this_item, audiocd, current_page_number; 
+   int current, max_y, max_x, total_items, level, displaying;
+   int phrase_nr, tts_no, depth, total_phrases, total_pages;
+   int pipefd[2], tmp_wav_fd, tts_flag, scan_flag;
+   float speed, total_time;
+   float clip_begin, clip_end, start_time;
+   xmlTextReaderPtr reader;
+   pid_t daisy_player_pid, player_pid, eBook_speaker_pid;
+   char NCC_HTML[MAX_STR], ncc_totalTime[MAX_STR];
+   char daisy_version[MAX_STR], daisy_title[MAX_STR], daisy_language[MAX_STR];
+   char daisy_mp[MAX_STR], *tmp_dir;
+   char tag[MAX_TAG], label[max_phrase_len], ocr_language[5];
+   char bookmark_title[MAX_STR], search_str[MAX_STR];
+   char *wd, cd_dev[MAX_STR], sound_dev[MAX_STR], tts[10][MAX_STR];
+   char cddb_flag, opf_name[MAX_STR], ncx_name[MAX_STR], copyright[MAX_STR];
+   char current_audio_file[MAX_STR], tmp_wav[MAX_STR + 1], mcn[MAX_STR];
+   time_t seconds;
+   WINDOW *screenwin, *titlewin;
+   lsn_t lsn_cursor;
+} misc_t;
