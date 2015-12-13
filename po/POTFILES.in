@@ -2,5 +2,5 @@
 
 src/daisy3.c
 src/eBook-speaker.c
+src/daisy.h   
 src/list_dir.c
-src/daisy.h

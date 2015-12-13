@@ -76,6 +76,73 @@
 2.8	Added option "-o" for the OCR language to use.
 	Give a 3-character ISO 639-2 language code as argument.
 	See 'man tesseract' for codes.
-	Added 'r'-command. When a document is place upsside-down on
+	Added 'r'-command. When a document is placed upsside-down on
 	the scanner, tesseract cannot OCR it. this command rotates
 	the scanned document.
+2.8.2	Better testing for corrupt files.
+2.8.3	Memory corruption bug solved in read_daisy_3() function.
+	All global variables deleted.
+	eBook-speaker now only uses loacal variables
+2.9	Command "A" added. This command stores the current item in a file
+	in the user's HOME-directory in ASCII-format.
+2.10	Introduced new option "-i". when this option is detected,
+	the bookmark file will be ignored.
+	The daisy_t struct array now only gets the number of needed
+	elements. Older versions got staticly 2000 elements.
+	Breakpoints in phrases has changed.
+	Characters like '.', ',', ';', ':', etc. are not seen as
+	breakpoints anymore.
+	Only '. ', ', ', '; ', ': ', etc.
+2.11	Earlier versions used a static misc->label[] character array.
+	Now misc->label is dynamicly allocated with the malloc() function.
+	When 'h', 'D', 'U' or HOME is pressed, eBook-speaker will
+	play the current phrase.
+	When a TTS goes wrong, eBook-speaker will print the TTS before
+	exiting.
+3.0	Added a Portugese translation.
+	Updated the man-page and the online help-screen.
+	New command 'b' added. 'b' Set a phrase-break at the end of a line?.
+	When  set  to  'y'es, eBook-speaker  will start a new phrase
+	after each New-Line character. When set to 'n'o, each New-Line
+	character will be seen as a  space,  so  that  two  or  more
+	lines are concatenated to one phrase.
+	When the ALSA hw:0 card cannot be opened for writing, ALSA "default"
+	will be used instead.
+	Updated the Spanish translation.
+	Updated the French translation.
+	The first TTS in the tts-menu will be espeak with option -v
+	set according to the current locale.
+	There will be no default OCR-language for the tesseract-utility
+	anymore. The language now will be determined according to the
+	current locale.
+	Remove double entries from the TTS-menu.
+	Better support for ASCII-files.
+	Better support for character-sets like ISO-8859-1. The "iconv"
+	utility will be used for conversions to UTF-8.
+	The 'r' command now rotates a scanned document 90 degrees.
+	Earlier versions stopped when given file didn't contain a
+	.ncx file. Now eBook-speaker will continue.
+	Added page-numbers.
+	View the page-number currently read.
+	PDF files now will be read using pdftotext.
+	pdftohtml sometimes quits with the message:
+
+	  Permission Error: Copying of text from this document is not allowed.
+
+	While pdftotext has no problems with the same input-file.
+	html entities are converted correctly again.
+	eBook-speaker now uses the htmlParseFile() function of libxml2.
+	Added a Bulgarian translation.
+	All files will be treated now as UTF-8.
+	Playback volume can be altered with '7' and '1'.
+	New option '-b' introduced. With this option one can choose what
+	the default value for the phrase-break command should be. This value
+	will be written to the .eBook-speaker.xml file. But it can be
+	overruled with the 'b' command.
+	The following formats are now converted using "lowriter txt":
+	   "(Corel/WP)"
+	   "Composite Document File"
+	   "Microsoft Word 2007+"
+	   "Microsoft Office Document"
+	   "OpenDocument"
+	   "Rich Text Format"

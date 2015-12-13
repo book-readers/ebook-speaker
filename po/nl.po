@@ -1,13 +1,27 @@
 # message catalog file for eBook-speaker - dutch version
-# Copyright (C)2013 J. Lemmens
-# This file is distributed under the same license as the eBook-speaker package.
-# J. Lemmens <jos@jlemmens.nl>, 2013
 #
+# Copyright (C) 2003-2015 J. Lemmens
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# translated by Jos Lemmens <jos@jlemmens.nl>
 msgid ""
 msgstr ""
 "Project-Id-Version: gettext 0.11.2\n"
 "Report-Msgid-Bugs-To: <jos@jlemmens.nl>\n"
-"POT-Creation-Date: 2014-04-06 09:43+0200\n"
+"POT-Creation-Date: 2015-12-13 20:57+0100\n"
 "PO-Revision-Date: 2013-01-29 15:06+0200\n"
 "Last-Translator: Jos Lemmens <jos@jlemmens.nl>\n"
 "Language-Team: Jos Lemmens <jos@jlemmens.nl>\n"
@@ -16,372 +30,444 @@ msgstr ""
 "Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/daisy3.c:273
+#: src/daisy3.c:49 src/daisy3.c:122 src/daisy3.c:235 src/daisy3.c:572
+#: src/daisy3.c:657 src/daisy3.c:717 src/daisy3.c:793 src/daisy3.c:852
+#: src/daisy3.c:1105 src/eBook-speaker.c:1521
+#, c-format
+msgid "Cannot read %s"
+msgstr "Kan %s niet lezen"
+
+#: src/daisy3.c:494
+#, c-format
+msgid "Cannot read type: %d"
+msgstr "Kan type: %d niet lezen"
+
+#: src/eBook-speaker.c:158
+msgid "Select a Text-To-Speech application"
+msgstr "Selecteer een Text-To-Speech (Tekst-Naar-Spraak) applicatie"
+
+#: src/eBook-speaker.c:170
+msgid "Provide a new TTS."
+msgstr "Geef een nieuwe TTS op."
+
+#: src/eBook-speaker.c:172
+msgid "Be sure that the new TTS reads its information from the file"
+msgstr "Zorg ervoor dat de TTS leest uit het bestand"
+
+#: src/eBook-speaker.c:174
+msgid "eBook-speaker.txt and that it writes to the file eBook-speaker.wav."
+msgstr ""
+"eBook-speaker.txt en dat hett schrijft naar het bestand eBook-speaker.wav"
+
+#: src/eBook-speaker.c:176
+msgid "Press DEL to delete a TTS"
+msgstr "Druk op DEL om een TTS te verwijderen"
+
+#: src/eBook-speaker.c:535
 #, c-format
 msgid ""
+"Be sure that the used TTS is installed:\n"
 "\n"
-"Cannot read type: %d\n"
+"   \"%s\"\n"
 msgstr ""
+"Controleer of de benodigde TTS geinstalleerd is:\n"
 "\n"
-"Kan type: %d niet lezen\n"
+"   \"%s\"\n"
 
-#: src/daisy3.c:337 src/daisy3.c:388 src/daisy3.c:431 src/daisy3.c:498
-#: src/daisy3.c:538 src/daisy3.c:557 src/daisy3.c:632 src/daisy3.c:701
-#: src/daisy3.c:834
-#, c-format
-msgid ""
-"\n"
-"Cannot read %s\n"
-msgstr ""
-"\n"
-"Kan %s niet lezen\n"
-
-#: src/eBook-speaker.c:180
-msgid ""
-"\n"
-"Select a Text-To-Speech application\n"
-"\n"
-msgstr ""
-"\n"
-"Selecteer een Text-To-Speech (Tekst-Naar-Spraak) applicatie\n"
-"\n"
-
-#: src/eBook-speaker.c:192
-msgid ""
-"\n"
-"Provide a new TTS.\n"
-"Be sure that the new TTS reads its information from the file\n"
-"eBook-speaker.txt and that it writes to the file eBook-speaker.wav.\n"
-"\n"
-"Press DEL to delete a TTS\n"
-"\n"
-msgstr ""
-"\n"
-"Geef een nieuwe TTS OP.\n"
-"Zorg ervoor dat de TTS uit het bestand eBook-speaker.txt leest\n"
-"en dat hett schrijft naar het bestand eBook-speaker.wav.\n"
-"\n"
-"Druk op DEL om een TTS te verwijderen\n"
-"\n"
-
-#: src/eBook-speaker.c:658 src/list_dir.c:198
+#: src/eBook-speaker.c:684 src/list_dir.c:69 src/list_dir.c:249
 msgid "'h' for help "
 msgstr "'h' voor hulp "
 
-#: src/eBook-speaker.c:662
+#: src/eBook-speaker.c:689
 #, c-format
 msgid " %d pages "
 msgstr " %d pagina's "
 
-#: src/eBook-speaker.c:664
+#: src/eBook-speaker.c:691
 #, c-format
 msgid " level: %d of %d "
 msgstr " niveau: %d van %d "
 
-#: src/eBook-speaker.c:665
+#: src/eBook-speaker.c:693
 #, c-format
 msgid " total phrases: %d "
 msgstr " aantal zinnen: %d "
 
-#: src/eBook-speaker.c:904 src/list_dir.c:143
-msgid ""
-"\n"
-"These commands are available in this version:\n"
-msgstr ""
-"\n"
-"Deze commando's zijn beschikbaar in deze versie:\n"
+#: src/eBook-speaker.c:916 src/list_dir.c:180
+msgid "These commands are available in this version:"
+msgstr "Deze commando's zijn beschikbaar in deze versie:"
 
-#: src/eBook-speaker.c:908 src/list_dir.c:146
-msgid "cursor down     - move cursor to the next item\n"
-msgstr "cursor omlaag   - verplaats de cursor naar het volgende item\n"
+#: src/eBook-speaker.c:920 src/list_dir.c:184
+msgid "cursor down,2   - move cursor to the next item"
+msgstr "cursor omlaag,2 - verplaats de cursor naar het volgende item"
 
-#: src/eBook-speaker.c:910 src/list_dir.c:147
-msgid "cursor up       - move cursor to the previous item\n"
-msgstr "cursor omhoog   - verplaats de cursor naar het vorige item\n"
-
-#: src/eBook-speaker.c:912
-msgid "cursor right    - skip to next phrase\n"
-msgstr "cursor rechts   - spring naar de volgende frase\n"
-
-#: src/eBook-speaker.c:914
-msgid "cursor left     - skip to previous phrase\n"
-msgstr "cursor links    - spring naar de vorige frase\n"
-
-#: src/eBook-speaker.c:915 src/list_dir.c:150
-msgid "page-down       - view next page\n"
-msgstr "page-down       - toon de volgende pagina\n"
-
-#: src/eBook-speaker.c:917 src/list_dir.c:151
-msgid "page-up         - view previous page\n"
-msgstr "page-up         - toon de vorige pagina\n"
-
-#: src/eBook-speaker.c:918
-msgid "enter           - start playing\n"
-msgstr "enter           - start afspelen\n"
-
-#: src/eBook-speaker.c:920
-msgid "space           - pause/resume playing\n"
-msgstr "spatie          - pauze/vervolg het afspelen\n"
-
-#: src/eBook-speaker.c:922
-msgid "home            - play on normal speed\n"
-msgstr "home            - speel af op normale snelheid\n"
+#: src/eBook-speaker.c:922 src/list_dir.c:186
+msgid "cursor up,8     - move cursor to the previous item"
+msgstr "cursor omhoog,8 - verplaats de cursor naar het vorige item"
 
 #: src/eBook-speaker.c:924
+msgid "cursor right,6  - skip to next phrase"
+msgstr "cursor rechts,6 - spring naar de volgende frase"
+
+#: src/eBook-speaker.c:926
+msgid "cursor left,4   - skip to previous phrase"
+msgstr "cursor links,4  - spring naar de vorige frase"
+
+#: src/eBook-speaker.c:928 src/list_dir.c:192
+msgid "page-down,3     - view next page"
+msgstr "page-down,3     - toon de volgende pagina"
+
+#: src/eBook-speaker.c:930 src/list_dir.c:194
+msgid "page-up,9       - view previous page"
+msgstr "page-up,9       - toon de vorige pagina"
+
+#: src/eBook-speaker.c:932
+msgid "enter           - start playing"
+msgstr "enter           - start afspelen"
+
+#: src/eBook-speaker.c:934
+msgid "space,0         - pause/resume playing"
+msgstr "spatie,0        - pauze/vervolg het afspelen"
+
+#: src/eBook-speaker.c:936
+msgid "home,*          - play on normal speed"
+msgstr "home,*          - speel af op normale snelheid"
+
+#: src/eBook-speaker.c:938 src/eBook-speaker.c:980
 msgid "Press any key for next page..."
 msgstr "Druk op een toets voor de volgende pagina..."
 
-#: src/eBook-speaker.c:930
-msgid ""
-"\n"
-"/               - search for a label\n"
-msgstr ""
-"\n"
-"/         - zoek naar een label\n"
-"/               - zoek label\n"
-
-#: src/eBook-speaker.c:932 src/list_dir.c:155
-msgid "B               - move cursor to the last item\n"
-msgstr "B               - verplaats de cursor naar het laatste item\n"
-
-#: src/eBook-speaker.c:934
-msgid "d               - store current item to disk in WAV-format\n"
-msgstr "d               - sla huidige item op schijf op in WAV-formaat\n"
-
-#: src/eBook-speaker.c:936
-msgid "D               - decrease playing speed\n"
-msgstr "D               - verlaag afspeel snelheid\n"
-
-#: src/eBook-speaker.c:938
-msgid ""
-"f               - find the currently playing item and place the cursor "
-"there\n"
-msgstr ""
-"f               - vindt het huidige spelende item en plaats de cursor daar\n"
-
-#: src/eBook-speaker.c:940
-msgid "g               - go to phrase in current item\n"
-msgstr "g               - ga naar zinsdeel in dit item\n"
-
-#: src/eBook-speaker.c:941 src/list_dir.c:156
-msgid "h or ?          - give this help\n"
-msgstr "h of ?          - toon deze help-pagina\n"
-
-#: src/eBook-speaker.c:943
-msgid "j               - just play current item\n"
-msgstr "j               - speel alleen dit item af\n"
-
-#: src/eBook-speaker.c:945
-msgid "l               - switch to next level\n"
-msgstr "l               - schakel naar het volgende niveau\n"
+#: src/eBook-speaker.c:945 src/list_dir.c:198
+msgid "/               - search for a label"
+msgstr "/               - zoek naar een label"
 
 #: src/eBook-speaker.c:947
-msgid "L               - switch to previous level\n"
-msgstr "L               - schakel naar het vorige niveau\n"
+msgid "A               - store current item to disk in ASCII-format"
+msgstr "A               - sla huidige item op schijf op in ASCII-formaat"
 
-#: src/eBook-speaker.c:948 src/list_dir.c:158
-msgid "n               - search forwards\n"
-msgstr "n               - zoek voorwaarts\n"
-
-#: src/eBook-speaker.c:949 src/list_dir.c:159
-msgid "N               - search backwards\n"
-msgstr "N               - zoek achteruit\n"
+#: src/eBook-speaker.c:949
+msgid "b               - consider the end of an input line as a phrase-break"
+msgstr ""
+"b               - beschouw het einde van een invoer-regel als een zins-einde"
 
 #: src/eBook-speaker.c:951
-msgid "o               - select next output sound device\n"
-msgstr "o               - selecteer de volgende geluidskaart\n"
+msgid "B               - move cursor to the last item"
+msgstr "B               - verplaats de cursor naar het laatste item"
 
-#: src/eBook-speaker.c:952
-msgid "p               - place a bookmark\n"
-msgstr "p               - plaats een boekenlegger\n"
+#: src/eBook-speaker.c:953
+msgid "d               - store current item to disk in WAV-format"
+msgstr "d               - sla huidige item op schijf op in WAV-formaat"
 
-#: src/eBook-speaker.c:954
-msgid "q               - quit eBook-speaker and place a bookmark\n"
-msgstr "q               - stop eBook-speaker en plaats een boekenlegger\n"
+#: src/eBook-speaker.c:955
+msgid "D,-             - decrease playing speed"
+msgstr "D,-             - verlaag afspeel snelheid"
 
 #: src/eBook-speaker.c:957
-msgid "r               - rotate scanned document\n"
-msgstr "r               - draai het gescande dokument om\n"
-
-#: src/eBook-speaker.c:958
-msgid "s               - stop playing\n"
-msgstr "s               - stop het afspelen\n"
+msgid ""
+"f               - find the currently playing item and place the cursor there"
+msgstr ""
+"f               - vindt het huidige spelende item en plaats de cursor daar"
 
 #: src/eBook-speaker.c:959
-msgid "t               - select next TTS\n"
-msgstr "t               - selecteer een andere TTS\n"
+msgid "g               - go to phrase in current item"
+msgstr "g               - ga naar zinsdeel in dit item"
 
-#: src/eBook-speaker.c:961 src/list_dir.c:161
-msgid "T               - move cursor to the first item\n"
-msgstr "T               - verplaats de cursor naar het eerste item\n"
+#: src/eBook-speaker.c:962
+msgid "G               - go to page number"
+msgstr "G               - ga naar pagina nummer"
 
-#: src/eBook-speaker.c:963
-msgid "U               - increase playing speed\n"
-msgstr "U               - verhoog afspeel snelheid\n"
+#: src/eBook-speaker.c:964 src/list_dir.c:202
+msgid "h,?             - give this help"
+msgstr "h,?             - toon deze help-pagina"
 
-#: src/eBook-speaker.c:964 src/list_dir.c:162
-msgid ""
-"\n"
-"Press any key to leave help..."
-msgstr ""
-"\n"
-"Druk op een toets om dit help-scherm te verlaten..."
+#: src/eBook-speaker.c:966
+msgid "j,5             - just play current item"
+msgstr "j,5             - speel alleen dit item af"
 
-#: src/eBook-speaker.c:1219
-msgid "What do you search?                           "
-msgstr "Wat zoekt u?                                  "
+#: src/eBook-speaker.c:968
+msgid "l               - switch to next level"
+msgstr "l               - schakel naar het volgende niveau"
 
-#: src/eBook-speaker.c:1307
-msgid ""
-"\n"
-"Select a soundcard:\n"
-"\n"
-msgstr ""
-"\n"
-"Selecteer een geluidskaat\n"
-"\n"
+#: src/eBook-speaker.c:970
+msgid "L               - switch to previous level"
+msgstr "L               - schakel naar het vorige niveau"
 
-#: src/eBook-speaker.c:1312
+#: src/eBook-speaker.c:972 src/list_dir.c:206
+msgid "n               - search forwards"
+msgstr "n               - zoek voorwaarts"
+
+#: src/eBook-speaker.c:974 src/list_dir.c:208
+msgid "N               - search backwards"
+msgstr "N               - zoek achteruit"
+
+#: src/eBook-speaker.c:976
+msgid "o               - select next output sound device"
+msgstr "o               - selecteer de volgende geluidskaart"
+
+#: src/eBook-speaker.c:978
+msgid "p               - place a bookmark"
+msgstr "p               - plaats een boekenlegger"
+
+#: src/eBook-speaker.c:987
+msgid "q               - quit eBook-speaker and place a bookmark"
+msgstr "q               - stop eBook-speaker en plaats een boekenlegger"
+
+#: src/eBook-speaker.c:990
+msgid "r               - rotate scanned document"
+msgstr "r               - draai het gescande dokument om"
+
+#: src/eBook-speaker.c:992
+msgid "s               - stop playing"
+msgstr "s               - stop het afspelen"
+
+#: src/eBook-speaker.c:994
+msgid "t               - select next TTS"
+msgstr "t               - selecteer een andere TTS"
+
+#: src/eBook-speaker.c:996
+msgid "T               - move cursor to the first item"
+msgstr "T               - verplaats de cursor naar het eerste item"
+
+#: src/eBook-speaker.c:998
+msgid "U,+             - increase playing speed"
+msgstr "U,+             - verhoog afspeel snelheid"
+
+#: src/eBook-speaker.c:1000
+msgid "x               - go to the file-manager"
+msgstr "x               - ga naar bestands-beheer"
+
+#: src/eBook-speaker.c:1002
+msgid "7               - increase playback volume (beware of Clipping)"
+msgstr "7               - verhoog het volume (pas op voor oversturing)"
+
+#: src/eBook-speaker.c:1004
+msgid "1               - decrease playback volume"
+msgstr "1               - verlaag het volume"
+
+#: src/eBook-speaker.c:1006 src/list_dir.c:214
+msgid "Press any key to leave help..."
+msgstr "Druk op een toets om dit help-scherm te verlaten..."
+
+#: src/eBook-speaker.c:1253 src/list_dir.c:116
+msgid "What do you search? "
+msgstr "Wat zoekt u? "
+
+#: src/eBook-speaker.c:1338
+msgid "Consider the end of an input line as a phrase-break (y/n) "
+msgstr "Beschouw het einde van een invoer-regel als een zins-einde (y/n) "
+
+#: src/eBook-speaker.c:1375
+msgid "Select a soundcard:"
+msgstr "Selecteer een geluidskaat"
+
+#: src/eBook-speaker.c:1377
 msgid "Cannot read /proc/asound/cards"
 msgstr "Kan /proc/asound/cards niet lezen"
 
-#: src/eBook-speaker.c:1365
-msgid "Go to phrase in current item: "
-msgstr "Ga naar zinsdeel in huidige item: "
+#: src/eBook-speaker.c:1477
+msgid "Go to page number: "
+msgstr "Ga naar pagina nummer: "
 
-#: src/eBook-speaker.c:1425
+#: src/eBook-speaker.c:1614
 #, c-format
 msgid "Language code \"%s\" is not a valid tesseract code.\n"
 msgstr "Taal code \"%s\" is geen geldige code.\n"
 
-#: src/eBook-speaker.c:1426
+#: src/eBook-speaker.c:1616
 msgid "See the tesseract manual for valid codes."
 msgstr "Zie de tesseract manual voor geldige codes."
 
-#: src/eBook-speaker.c:1582 src/eBook-speaker.c:1981
+#: src/eBook-speaker.c:1618
+#, c-format
+msgid ""
+"Be sure the package \"tesseract-ocr-%s\" is installed onto your system.\n"
+msgstr ""
+"Controleer of het pakket \"tesseract-ocr-%s\" op uw systeem geinstalleerd "
+"is\n"
+
+#: src/eBook-speaker.c:1706
+msgid "Go to phrase in current item: "
+msgstr "Ga naar zinsdeel in huidige item: "
+
+#: src/eBook-speaker.c:1829 src/eBook-speaker.c:2550 src/eBook-speaker.c:2762
 msgid "Please wait..."
 msgstr "Geduld a.u.b...."
 
-#: src/eBook-speaker.c:1611 src/eBook-speaker.c:2303
+#: src/eBook-speaker.c:1842 src/eBook-speaker.c:2092 src/eBook-speaker.c:2111
+#: src/eBook-speaker.c:2132 src/eBook-speaker.c:2164 src/eBook-speaker.c:2376
+#: src/eBook-speaker.c:2588 src/eBook-speaker.c:2629 src/eBook-speaker.c:2818
+msgid "eBook-speaker cannot handle this file."
+msgstr "eBook-speaker weet niet hoe met dit bestand om te gaan."
+
+#: src/eBook-speaker.c:1880 src/eBook-speaker.c:2515
 msgid "Press 'h' for help "
 msgstr "Druk op 'h' voor hulp "
 
-#: src/eBook-speaker.c:1800
-msgid "eBook-speaker needs the libreoffice-writer package."
-msgstr "eBook-speaker heeft het libreoffice-writer pakket nodig."
+#: src/eBook-speaker.c:2140
+msgid "Unknown format"
+msgstr "Onbekend formaat"
 
-#: src/eBook-speaker.c:1823 src/eBook-speaker.c:1851 src/eBook-speaker.c:2286
-#, c-format
-msgid "Unknown format\n"
-msgstr "Onbekend formaat\n"
+#: src/eBook-speaker.c:2347 src/eBook-speaker.c:2759
+msgid "eBook-speaker - Version"
+msgstr "eBook-speaker - Versie"
 
-#: src/eBook-speaker.c:1843
-msgid "eBook-speaker needs the pandoc package."
-msgstr "eBook-speaker heeft het pandoc pakket nodig."
-
-#: src/eBook-speaker.c:1870
-msgid "eBook-speaker needs the poppler-utils package."
-msgstr "eBook-speaker heeft het poppler-utils pakket nodig."
-
-#: src/eBook-speaker.c:1947
-#, c-format
-msgid "eBook-speaker - Version %s\n"
-msgstr "eBook-speaker - Versie %s\n"
-
-#: src/eBook-speaker.c:1949
+#: src/eBook-speaker.c:2351
 #, c-format
 msgid ""
-"\n"
-"Usage: eBook-speaker [eBook_file | -s] [-d ALSA_misc.sound_device] [-t "
-"TTS_command]\n"
+"Usage: %s [eBook_file | -s] [-o language-code] [-d ALSA_sound_device] [-h] [-"
+"i] [-t TTS_command] [-b n | y]"
 msgstr ""
-"\n"
-"Gebruik: eBook-speaker [eBook_bestand | -s] [-d ALSA_geluids_apparaat] [-t "
-"TTS_commando]\n"
+"Gebruik: %s [eBook_bestand | -s] [-o taal-code]] [-d ALSA_geluids_apparaat] "
+"[-h] [-i] [-t TTS_commando] [-b n | y]"
 
-#: src/eBook-speaker.c:1979
-#, c-format
-msgid "eBook-speaker - Version %s - (C)2014 J. Lemmens"
-msgstr "eBook-speaker - Versie %s - (C)2013 J. Lemmens"
-
-#: src/eBook-speaker.c:1987
-msgid "eBook-speaker needs the espeak package."
-msgstr "eBook-speaker heeft het espeak pakket nodig."
-
-#: src/eBook-speaker.c:1988 src/eBook-speaker.c:1997 src/eBook-speaker.c:2042
-#: src/eBook-speaker.c:2275
-#, c-format
-msgid "Please install it and try again.\n"
-msgstr "Installeer het en probeer opniew.\n"
-
-#: src/eBook-speaker.c:1996
-msgid "eBook-speaker needs the unar package."
-msgstr "eBook-speaker heeft het unar pakket nodig."
-
-#: src/eBook-speaker.c:2041 src/eBook-speaker.c:2274
-msgid "eBook-speaker needs the tesseract-ocr package."
-msgstr "eBook-speaker heeft het tesseract-ocr pakket nodig."
-
-#: src/eBook-speaker.c:2058
-msgid "eBook-speaker needs the sane-utils package."
-msgstr "eBook-speaker heeft het sane-utils pakket nodig."
-
-#: src/eBook-speaker.c:2165
-msgid "eBook-speaker needs the man2html program."
-msgstr "eBook-speaker heeft het man2html pakket nodig."
-
-#: src/eBook-speaker.c:2202
-msgid "eBook-speaker needs the xml2 package."
-msgstr "eBook-speaker heeft het xml2 pakket nodig."
-
-#: src/eBook-speaker.c:2257
-msgid "eBook-speaker needs the calibre package."
-msgstr "eBook-speaker heeft het calibre pakket nodig."
-
-#: src/list_dir.c:80
-msgid "What do you search? "
-msgstr "Wat zoekt u? "
-
-#: src/list_dir.c:148
-msgid "cursor right    - open this directory or file\n"
-msgstr "cursor rechts   - open dit bestand of map\n"
-
-#: src/list_dir.c:149
-msgid "cursor left     - open previous directory\n"
-msgstr "cursor links    - open vorige map\n"
-
-#: src/list_dir.c:153
-msgid "enter           - open this directory or file\n"
-msgstr "enter           - open dit bestand of map\n"
-
-#: src/list_dir.c:154
-msgid "/               - search for a label\n"
-msgstr ""
-"/               - zoek naar een label\n"
-"\n"
-"/               - zoek label\n"
-
-#: src/list_dir.c:157
-msgid "H               - display \"hidden\" files on/off\n"
-msgstr "H               - toon \"verborgen\" bestanden aan/uit\n"
-
-#: src/list_dir.c:160
-msgid "q               - quit eBook-speaker\n"
-msgstr "q               - stop eBook-speaker\n"
-
-#: src/list_dir.c:183 src/list_dir.c:300
+#: src/list_dir.c:65 src/list_dir.c:246
 #, c-format
 msgid "%s - Choose an input-file"
 msgstr "%s - Kies een invoer-bestand"
+
+#: src/list_dir.c:188
+msgid "cursor right,6  - open this directory or file"
+msgstr "cursor rechts,6 - open dit bestand of  deze map"
+
+#: src/list_dir.c:190
+msgid "cursor left,4   - open previous directory"
+msgstr "cursor links,4  - open vorige map"
+
+#: src/list_dir.c:196
+msgid "enter,6         - open this directory or file"
+msgstr "enter,6         - open dit bestand of deze map"
+
+#: src/list_dir.c:200
+msgid "end,B           - move cursor to the last item"
+msgstr "end,B           - verplaats de cursor naar het laatste item"
+
+#: src/list_dir.c:204
+msgid "H,0             - display \"hidden\" files on/off"
+msgstr "H,0             - toon \"verborgen\" bestanden aan/uit"
+
+#: src/list_dir.c:210
+msgid "q               - quit eBook-speaker"
+msgstr "q               - stop eBook-speaker"
+
+#: src/list_dir.c:212
+msgid "home,T          - move cursor to the first item"
+msgstr "home,T          - verplaats de cursor naar het eerste item"
+
+#~ msgid "No items found. Try option \"-N\"."
+#~ msgstr "Geen items gevonden. Probeer optie \"-N\"."
+
+#~ msgid "No items found. Try option \"-O\"."
+#~ msgstr "Geen items gevonden. Probeer optie \"-O\"."
+
+#~ msgid "Set a phrase-break at the end of a line? (y/n) "
+#~ msgstr "Stel een zins-einde in aan het eind van een regel (y/n) "
+
+#~ msgid "What do you search?                           "
+#~ msgstr "Wat zoekt u?                                  "
+
+#~ msgid ""
+#~ "Provide a new TTS.\n"
+#~ "Be sure that the new TTS reads its information from the file\n"
+#~ "eBook-speaker.txt and that it writes to the file eBook-speaker.wav.\n"
+#~ "\n"
+#~ "Press DEL to delete a TTS"
+#~ msgstr ""
+#~ "\n"
+#~ "Geef een nieuwe TTS OP.\n"
+#~ "Zorg ervoor dat de TTS uit het bestand eBook-speaker.txt leest\n"
+#~ "en dat hett schrijft naar het bestand eBook-speaker.wav.\n"
+#~ "\n"
+#~ "Druk op DEL om een TTS te verwijderen\n"
+#~ "\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "These commands are available in this version:\n"
+#~ msgstr ""
+#~ "\n"
+#~ "Deze commando's zijn beschikbaar in deze versie:\n"
+
+#~ msgid "cursor down,2   - move cursor to the next item\n"
+#~ msgstr "cursor omlaag   - verplaats de cursor naar het volgende item\n"
+
+#~ msgid "cursor up,8     - move cursor to the previous item\n"
+#~ msgstr "cursor omhoog   - verplaats de cursor naar het vorige item\n"
+
+#~ msgid "page-down,3     - view next page\n"
+#~ msgstr "page-down       - toon de volgende pagina\n"
+
+#~ msgid "page-up,9       - view previous page\n"
+#~ msgstr "page-up         - toon de vorige pagina\n"
+
+#~ msgid "/               - search for a label\n"
+#~ msgstr "/               - zoek naar een label\n"
+
+#~ msgid "B               - move cursor to the last item\n"
+#~ msgstr "B               - verplaats de cursor naar het laatste item\n"
+
+#~ msgid "h,?             - give this help\n"
+#~ msgstr "h of ?          - toon deze help-pagina\n"
+
+#~ msgid "n               - search forwards\n"
+#~ msgstr "n               - zoek voorwaarts\n"
+
+#~ msgid "N               - search backwards\n"
+#~ msgstr "N               - zoek achteruit\n"
+
+#~ msgid "T               - move cursor to the first item\n"
+#~ msgstr "T               - verplaats de cursor naar het eerste item\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "Press any key to leave help..."
+#~ msgstr ""
+#~ "\n"
+#~ "Druk op een toets om dit help-scherm te verlaten..."
+
+#~ msgid ""
+#~ "\n"
+#~ "/               - search for a label\n"
+#~ msgstr ""
+#~ "\n"
+#~ "/               - zoek naar een label\n"
+
+#~ msgid "eBook-speaker - Version %s - (C)2015 J. Lemmens"
+#~ msgstr "eBook-speaker - Versie %s - (C)2015 J. Lemmens"
+
+#~ msgid "Unknown format: %s"
+#~ msgstr "Onbekend formaat: %s"
+
+#~ msgid "Please install it and try again.\n"
+#~ msgstr "Installeer het en probeer opniew.\n"
+
+#~ msgid "eBook-speaker needs the poppler-utils package."
+#~ msgstr "eBook-speaker heeft het poppler-utils pakket nodig."
+
+#~ msgid "eBook-speaker needs the libreoffice-writer package."
+#~ msgstr "eBook-speaker heeft het libreoffice-writer pakket nodig."
+
+#~ msgid "eBook-speaker needs the pandoc package."
+#~ msgstr "eBook-speaker heeft het pandoc pakket nodig."
+
+#~ msgid "eBook-speaker needs the espeak package."
+#~ msgstr "eBook-speaker heeft het espeak pakket nodig."
+
+#~ msgid "eBook-speaker needs the unar package."
+#~ msgstr "eBook-speaker heeft het unar pakket nodig."
+
+#~ msgid "eBook-speaker needs the tesseract-ocr package."
+#~ msgstr "eBook-speaker heeft het tesseract-ocr pakket nodig."
+
+#~ msgid "eBook-speaker needs the man2html program."
+#~ msgstr "eBook-speaker heeft het man2html pakket nodig."
+
+#~ msgid "eBook-speaker needs the xml2 package."
+#~ msgstr "eBook-speaker heeft het xml2 pakket nodig."
+
+#~ msgid "eBook-speaker needs the calibre package."
+#~ msgstr "eBook-speaker heeft het calibre pakket nodig."
 
 #~ msgid ""
 #~ "\n"
 #~ "Usage: eBook-speaker [eBook_file | -s] "
 #~ msgstr "Gebruik: eBook-speaker [eBook_bestand | -s] "
-
-#~ msgid ""
-#~ "\n"
-#~ "Provide a new TTS.\n"
-#~ msgstr ""
-#~ "\n"
-#~ "Zorg voor een nieuwe TTS.\n"

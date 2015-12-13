@@ -2,7 +2,7 @@
 <HTML><HEAD><TITLE>Man page of eBook-speaker</TITLE>
 </HEAD><BODY>
 <H1>eBook-speaker</H1>
-Section: Linux Reference Manual (1)<BR>Updated: 05 April 2014<BR><A HREF="#index">Index</A>
+Section: Linux Reference Manual (1)<BR>Updated: 13 december 2015<BR><A HREF="#index">Index</A>
 <A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
 
 <A NAME="lbAB">&nbsp;</A>
@@ -14,7 +14,7 @@ Section: Linux Reference Manual (1)<BR>Updated: 05 April 2014<BR><A HREF="#index
 <H2>SYNOPSIS</H2>
 
 <PRE>
-<B>eBook-speaker</B> [<I>eBook_file</I> | <B>-s</B> [<B>-o</B> <I>language-code</I>]] [<B>-d</B> <I>ALSA_sound_device</I>] [<B>-t</B> <I>TTS_command</I>]
+<B>eBook-speaker</B> [<I>eBook_file</I> | <B>-s</B>] [<B>-o</B> <I>language-code</I>] [<B>-h</B>] [<B>-i</B>] [<B>-d</B> <I>ALSA_sound_device</I>] [<B>-t</B> <I>TTS_command</I>] [<B>-b</B> <I>n</I> | <I>y</I>]
 
 </PRE>
 
@@ -45,11 +45,15 @@ Give an <I>eBook_file</I> as argument to <B>eBook-speaker</B>.  Many eBook forma
                 AportisDoc
                 ASCII mail text
                 ASCII text
+                awk script text
+                Bourne-Again shell script text
                 Broadband eBooks (BBeB)
+                C source text
                 Composite Document File (Microsoft Office Word)
                 DAISY3 DTBook
                 EPUB ebook data
                 GIF image data
+                GNU gettext message catalogue
                 GutenPalm zTXT
                 HTML document
                 ISO-8859 text
@@ -61,11 +65,16 @@ Give an <I>eBook_file</I> as argument to <B>eBook-speaker</B>.  Many eBook forma
                 MS Windows HtmlHelp Data
                 Netpbm PPM data
                 OpenDocument Text
+                Pascal source
                 PDF document
                 PeanutPress PalmOS
+                Perl script text
                 PNG image data
+                POSIX shell script text
                 PostScript document
+                Python script
                 Rich Text Format
+                Tenex C shell script text
                 troff or preprocessor text (e.g. Linux man-pages)
                 UTF-8 Unicode mail text
                 UTF-8 Unicode text
@@ -74,35 +83,27 @@ Give an <I>eBook_file</I> as argument to <B>eBook-speaker</B>.  Many eBook forma
 
 </PRE>
 
-When no input-file is supplied, <B>eBook-speaker</B> will bring up a file-manager.
-<P>
-
-Keyboard-commands in the file-manager:
-<P>
-
-<PRE>
-        enter or cursor right Start eBook-speaker with current file as input.
-        cursor left           Select previous directory and open it.
-        cursor down           Move cursor to the next file.
-        cursor up             Move cursor to the previous file.
-        page-down             View next page.
-        page-up               View previous page.
-        /                     Search for a file.
-        B                     Move cursor to the last file.
-        h or ?                Give this help.
-        H                     Toggle hidden files displaying on or off.
-        n                     Search next.
-        N                     Search previous.
-        q                     Quit eBook-speaker.
-        T                     Move cursor to the first file.
-
-</PRE>
+<DL COMPACT><DT><DD>
+When no input-file is supplied, <B>eBook-speaker</B> will bring up a file-manager. See KEYBOARD COMMANDS IN THE FILEMANAGER.
+</DL>
 
 <DL COMPACT>
+<DT><B>-b</B> <I>n</I> | <I>y</I>
+
+<DD>
+Set the initial break_on_EOL. After quiting <B>eBook-speaker</B>. this setting will be saved and used as default for future books. It can be overruled with the 'b'<B>-command</B> for each individual book. See the 'b' command.
 <DT><B>-d</B> <I>ALSA_sound_device</I>
 
 <DD>
 <B>eBook-speaker</B> will play on this sound device. Default is &quot;hw:0&quot;. This option overrules the value in the ~/.eBook-speaker.xml config file.
+<DT><B>-h</B>
+
+<DD>
+Print this usage message.
+<DT><B>-i</B>
+
+<DD>
+Ignore reading of the bookmark.
 <DT><B>-l</B>
 
 <DD>
@@ -110,7 +111,7 @@ Deprecated. <B>eBook-speaker</B> now determines the file-type using the libmagic
 <DT><B>-o</B> <I>language-code</I>
 
 <DD>
-The language code for the tesseract OCR package to use. This option overrules the value in the ~/.eBook-speaker.xml config file. If none is specified, English is assumed. See the tesseract manual for the available language codes.
+The language code for the tesseract OCR package to use. If this option not is specified. the language for tesseract is determined according to the current locale. See the tesseract manual for the available language codes.
 <DT><B>-s</B>
 
 <DD>
@@ -149,27 +150,27 @@ The next rows displays the title of the item, the first page of the item within 
 
 <B>eBook-speaker</B> recognizes the following keyboard-commands:
 <DL COMPACT>
-<DT><B>cursor down</B>
+<DT><B>cursor down,2</B>
 
 <DD>
 Move cursor to the next item.
-<DT><B>cursor up</B>
+<DT><B>cursor up,8</B>
 
 <DD>
 Move cursor to the previous item.
-<DT><B>cursor right</B>
+<DT><B>cursor right,6</B>
 
 <DD>
 Skip to next phrase.
-<DT><B>cursor left</B>
+<DT><B>cursor left,4</B>
 
 <DD>
 Skip to previous phrase.
-<DT><B>page-down</B>
+<DT><B>page-down,3</B>
 
 <DD>
 View next screen.
-<DT><B>page-up</B>
+<DT><B>page-up,9</B>
 
 <DD>
 View previous screen.
@@ -177,11 +178,11 @@ View previous screen.
 
 <DD>
 Start reading.
-<DT><B>space</B>
+<DT><B>space,0</B>
 
 <DD>
 Pause/resume reading.
-<DT><B>home</B>
+<DT><B>home,*</B>
 
 <DD>
 Read on normal speed.
@@ -189,6 +190,14 @@ Read on normal speed.
 
 <DD>
 Search for a label.
+<DT><B>A</B>
+
+<DD>
+Store current item to disk in ASCII-format.
+<DT><B>b</B>
+
+<DD>
+Set a phrase-break at the end of a line?. When set to '<I>y</I>'es, <B>eBook-speaker</B> will start a new phrase after each New-Line character. When set to '<I>n</I>'o, each New-Line character will be seen as a space, so that two or more lines are concatenated to one phrase.
 <DT><B>B</B>
 
 <DD>
@@ -197,7 +206,7 @@ Move cursor to the last item.
 
 <DD>
 Store current item to disk in WAV-format.
-<DT><B>D</B>
+<DT><B>D,-</B>
 
 <DD>
 Decrease reading speed.
@@ -209,11 +218,15 @@ Find the currently reading item and place the cursor there.
 
 <DD>
 Go to phrase in current item.
-<DT><B>h or ?</B>
+<DT><B>G</B>
 
 <DD>
-Give this help.
-<DT><B>j</B>
+Go to page number. (if there are pages)
+<DT><B>h,?</B>
+
+<DD>
+Give this help.                        
+<DT><B>j,5</B>
 
 <DD>
 Just read current item and place a &quot;J&quot; at the first column.
@@ -225,7 +238,7 @@ Switch to next level.
 
 <DD>
 Switch to previous level.
-<DT><B>n</B>
+<DT><B></B><I>n</I>
 
 <DD>
 Search forewards.
@@ -248,7 +261,7 @@ Quit <B>eBook-speaker</B>. The reading-point is saved as bookmark.
 <DT><B>r</B>
 
 <DD>
-Rotate the scanned document. If the document is accidently placed upside-down on the scanner, tesseract can not OCR it correctly. This command will rotate the scanned document 180 degrees.
+Rotate the scanned document. If the document is accidently placed upside-down on the scanner, tesseract can not OCR it correctly. This command will rotate the scanned document 90 degrees.
 <DT><B>s</B>
 
 <DD>
@@ -261,15 +274,88 @@ Select a TTS.
 
 <DD>
 Move cursor to the first item.
-<DT><B>U</B>
+<DT><B>U,+</B>
 
 <DD>
 Increase reading speed.
+<DT><B>x</B>
+
+<DD>
+Go to the file-manager.
+<DT><B>7</B>
+
+<DD>
+Increase playback volume. (beware of Clipping)
+<DT><B>1</B>
+
+<DD>
+Decrease playback volume.
 </DL>
 <A NAME="lbAH">&nbsp;</A>
+<H2>KEYBOARD COMMANDS IN THE FILEMANAGER</H2>
+
+<DL COMPACT>
+<DT><B>enter,cursor right,6</B>
+
+<DD>
+Start <B>eBook-speaker</B> with current file as input.
+<DT><B>cursor left,4</B>
+
+<DD>
+Select previous directory and open it.
+<DT><B>cursor down,2</B>
+
+<DD>
+Move cursor to the next file.
+<DT><B>cursor up,8</B>
+
+<DD>
+Move cursor to the previous file.
+<DT><B>page-down,3</B>
+
+<DD>
+View next page.
+<DT><B>page-up,9</B>
+
+<DD>
+View previous page.
+<DT><B>/</B>
+
+<DD>
+Search for a file.
+<DT><B>end,B</B>
+
+<DD>
+Move cursor to the last file.  
+<DT><B>h,?</B>
+
+<DD>
+Give this help.
+<DT><B>H,0</B>
+
+<DD>
+Toggle hidden files displaying on or off.
+<DT><B></B><I>n</I>
+
+<DD>
+Search next.
+<DT><B>N</B>
+
+<DD>
+Search previous.
+<DT><B>q</B>
+
+<DD>
+Quit <B>eBook-speaker</B>.
+<DT><B>home,T</B>
+
+<DD>
+Move cursor to the first file.
+</DL>
+<A NAME="lbAI">&nbsp;</A>
 <H2>TTS</H2>
 
-When pressing the 't'<B>-command</B>, the TTS-selector appears. A few TTS-applications are defined by default.
+When pressing the 't'<B>-command</B>, the TTS-selector appears. A few TTS-applications are defined by default. The first TTS in the TTS-selector will be espeak with option <B>-v</B> set according the current locale.
 <DL COMPACT>
 <DT>&bull;<DD>
 Choose one by moving the cursor with the cursor-keys and select it by pressing the ENTER-key.
@@ -283,7 +369,7 @@ To edit an existing TTS-command one has to edit the ~/.eBook-speaker.xml file by
 <P>
 
 Be sure that the new TTS reads its information from the file eBook-speaker.txt and that it writes to the file eBook-speaker.wav.
-<A NAME="lbAI">&nbsp;</A>
+<A NAME="lbAJ">&nbsp;</A>
 <H2>TTS EXAMPLES</H2>
 
 Here are some examples to insert into the TTS-selector:
@@ -293,6 +379,7 @@ Here are some examples to insert into the TTS-selector:
    espeak -f eBook-speaker.txt -w eBook-speaker.wav
    espeak -f eBook-speaker.txt -w eBook-speaker.wav -v mb-en1
    espeak -f eBook-speaker.txt -w eBook-speaker.wav -v de
+   espeak -f eBook-speaker.txt -w eBook-speaker.wav -v pt
    espeak -f eBook-speaker.txt -w eBook-speaker.wav -v nl
    espeak -f eBook-speaker.txt -w eBook-speaker.wav -v mb-nl2
    flite eBook-speaker.txt eBook-speaker.wav
@@ -303,7 +390,7 @@ Here are some examples to insert into the TTS-selector:
 
 </PRE>
 
-<A NAME="lbAJ">&nbsp;</A>
+<A NAME="lbAK">&nbsp;</A>
 <H2>FILES</H2>
 
 <DL COMPACT>
@@ -320,18 +407,18 @@ This file, in XML-format,  contains the name of the desired audio device, the de
 <DD>
 <B>eBook-speaker</B> makes use of a temporary directory. It is removed after quiting.
 </DL>
-<A NAME="lbAK">&nbsp;</A>
+<A NAME="lbAL">&nbsp;</A>
 <H2>SEE ALSO</H2>
 
-<B><A HREF="/cgi-bin/man/man2html?1+ebook-convert">ebook-convert</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+calibre">calibre</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+lowriter">lowriter</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+tesseract">tesseract</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+espeak">espeak</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+flite">flite</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+text2wave">text2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+mbrola">mbrola</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pico2wave">pico2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+scanimage">scanimage</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?5+magic">magic</A></B>(5), <B><A HREF="/cgi-bin/man/man2html?1+man2html">man2html</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unar">unar</A></B>(1)
-<A NAME="lbAL">&nbsp;</A>
+<B><A HREF="/cgi-bin/man/man2html?1+ebook-convert">ebook-convert</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pandoc">pandoc</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+calibre">calibre</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+iconv">iconv</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+lowriter">lowriter</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+tesseract">tesseract</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+espeak">espeak</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+flite">flite</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+text2wave">text2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+mbrola">mbrola</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pico2wave">pico2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+scanimage">scanimage</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pnmflip">pnmflip</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?5+magic">magic</A></B>(5), <B><A HREF="/cgi-bin/man/man2html?1+man2html">man2html</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unar">unar</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+swift">swift</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unrtf">unrtf</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?7+locale">locale</A></B>(7)
+<A NAME="lbAM">&nbsp;</A>
 <H2>AUTHOR</H2>
 
 Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
-<A NAME="lbAM">&nbsp;</A>
+<A NAME="lbAN">&nbsp;</A>
 <H2>COPYRIGHT</H2>
 
-Copyright (C)2014 Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
+Copyright (C)2015 Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
 <P>
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program (see the file COPYING); if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
@@ -346,17 +433,18 @@ This program is free software; you can redistribute it and/or modify it under th
 <DT><A HREF="#lbAE">OPTIONS</A><DD>
 <DT><A HREF="#lbAF">SCREEN</A><DD>
 <DT><A HREF="#lbAG">CONTROL KEYS</A><DD>
-<DT><A HREF="#lbAH">TTS</A><DD>
-<DT><A HREF="#lbAI">TTS EXAMPLES</A><DD>
-<DT><A HREF="#lbAJ">FILES</A><DD>
-<DT><A HREF="#lbAK">SEE ALSO</A><DD>
-<DT><A HREF="#lbAL">AUTHOR</A><DD>
-<DT><A HREF="#lbAM">COPYRIGHT</A><DD>
+<DT><A HREF="#lbAH">KEYBOARD COMMANDS IN THE FILEMANAGER</A><DD>
+<DT><A HREF="#lbAI">TTS</A><DD>
+<DT><A HREF="#lbAJ">TTS EXAMPLES</A><DD>
+<DT><A HREF="#lbAK">FILES</A><DD>
+<DT><A HREF="#lbAL">SEE ALSO</A><DD>
+<DT><A HREF="#lbAM">AUTHOR</A><DD>
+<DT><A HREF="#lbAN">COPYRIGHT</A><DD>
 </DL>
 <HR>
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 20:03:30 GMT, April 05, 2014
+Time: 19:51:21 GMT, December 13, 2015
 </BODY>
 </HTML>
