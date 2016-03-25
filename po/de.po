@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gettext 0.11.2\n"
 "Report-Msgid-Bugs-To: <jos@jlemmens.nl>\n"
-"POT-Creation-Date: 2015-12-13 20:57+0100\n"
+"POT-Creation-Date: 2016-03-25 14:50+0100\n"
 "PO-Revision-Date: 2014-01-29 15:06+0200\n"
 "Last-Translator: Klaus Knopper <knopper@knopper.net>\n"
 "Language-Team: Klaus Knopper <knopper@knopper.net>\n"
@@ -30,14 +30,14 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/daisy3.c:49 src/daisy3.c:122 src/daisy3.c:235 src/daisy3.c:572
-#: src/daisy3.c:657 src/daisy3.c:717 src/daisy3.c:793 src/daisy3.c:852
-#: src/daisy3.c:1105 src/eBook-speaker.c:1521
+#: src/daisy3.c:50 src/daisy3.c:127 src/daisy3.c:240 src/daisy3.c:575
+#: src/daisy3.c:662 src/daisy3.c:765 src/daisy3.c:842 src/daisy3.c:910
+#: src/daisy3.c:1174 src/eBook-speaker.c:1554
 #, c-format
 msgid "Cannot read %s"
 msgstr "Kann %s nicht lesen"
 
-#: src/daisy3.c:494
+#: src/daisy3.c:497
 #, c-format
 msgid "Cannot read type: %d"
 msgstr "Kann type %d nicht lesen"
@@ -62,7 +62,7 @@ msgstr ""
 msgid "Press DEL to delete a TTS"
 msgstr ""
 
-#: src/eBook-speaker.c:535
+#: src/eBook-speaker.c:563
 #, c-format
 msgid ""
 "Be sure that the used TTS is installed:\n"
@@ -70,251 +70,251 @@ msgid ""
 "   \"%s\"\n"
 msgstr ""
 
-#: src/eBook-speaker.c:684 src/list_dir.c:69 src/list_dir.c:249
+#: src/eBook-speaker.c:712 src/list_dir.c:69 src/list_dir.c:263
 msgid "'h' for help "
 msgstr "'h' für Hilfe "
 
-#: src/eBook-speaker.c:689
+#: src/eBook-speaker.c:717
 #, c-format
 msgid " %d pages "
 msgstr " %d Seiten "
 
-#: src/eBook-speaker.c:691
+#: src/eBook-speaker.c:719
 #, c-format
 msgid " level: %d of %d "
 msgstr " Level: %d von %d "
 
-#: src/eBook-speaker.c:693
+#: src/eBook-speaker.c:721
 #, c-format
 msgid " total phrases: %d "
 msgstr " Insgesamt Phrasen: %d "
 
-#: src/eBook-speaker.c:916 src/list_dir.c:180
+#: src/eBook-speaker.c:949 src/list_dir.c:180
 msgid "These commands are available in this version:"
 msgstr "Folgende Befehle sind in dieser Version vorhanden:"
 
-#: src/eBook-speaker.c:920 src/list_dir.c:184
+#: src/eBook-speaker.c:953 src/list_dir.c:184
 msgid "cursor down,2   - move cursor to the next item"
 msgstr "Pfeil runter,2 - verschiebt den Cursor auf das nächste Element"
 
-#: src/eBook-speaker.c:922 src/list_dir.c:186
+#: src/eBook-speaker.c:955 src/list_dir.c:186
 msgid "cursor up,8     - move cursor to the previous item"
 msgstr "Pfeil hoch,8   - verschiebt den Cursor auf das vorhergehende Element"
 
-#: src/eBook-speaker.c:924
+#: src/eBook-speaker.c:957
 msgid "cursor right,6  - skip to next phrase"
 msgstr "Pfeil rechts,6 - springe zur nächsten Phrase"
 
-#: src/eBook-speaker.c:926
+#: src/eBook-speaker.c:959
 msgid "cursor left,4   - skip to previous phrase"
 msgstr "Pfeil links,4  - springe zur vorhergehenden Phrase"
 
-#: src/eBook-speaker.c:928 src/list_dir.c:192
+#: src/eBook-speaker.c:961 src/list_dir.c:192
 msgid "page-down,3     - view next page"
 msgstr "Seite runter,3 - zur nächsten Seite"
 
-#: src/eBook-speaker.c:930 src/list_dir.c:194
+#: src/eBook-speaker.c:963 src/list_dir.c:194
 msgid "page-up,9       - view previous page"
 msgstr "Seite hoch,9   - zur vorigen Seite"
 
-#: src/eBook-speaker.c:932
+#: src/eBook-speaker.c:965
 msgid "enter           - start playing"
 msgstr "Eingabetaste   - abspielen"
 
-#: src/eBook-speaker.c:934
+#: src/eBook-speaker.c:967
 msgid "space,0         - pause/resume playing"
 msgstr "Leertaste,0    - Pause-/Weiter"
 
-#: src/eBook-speaker.c:936
+#: src/eBook-speaker.c:969
 msgid "home,*          - play on normal speed"
 msgstr "home,*         - spiele mit normaler Geschwindigkeit"
 
-#: src/eBook-speaker.c:938 src/eBook-speaker.c:980
+#: src/eBook-speaker.c:971 src/eBook-speaker.c:1013
 msgid "Press any key for next page..."
 msgstr "Taste drücken für nächste Seite..."
 
-#: src/eBook-speaker.c:945 src/list_dir.c:198
+#: src/eBook-speaker.c:978 src/list_dir.c:198
 msgid "/               - search for a label"
 msgstr "/            - suche nach einem Begriff"
 
-#: src/eBook-speaker.c:947
+#: src/eBook-speaker.c:980
 msgid "A               - store current item to disk in ASCII-format"
 msgstr ""
 "A            - aktuelle Element speichern auf der Festplatte im ASCII-Format"
 
-#: src/eBook-speaker.c:949
+#: src/eBook-speaker.c:982
 msgid "b               - consider the end of an input line as a phrase-break"
 msgstr ""
 
-#: src/eBook-speaker.c:951
+#: src/eBook-speaker.c:984
 msgid "B               - move cursor to the last item"
 msgstr "B            - Cursor auf das letzte Element"
 
-#: src/eBook-speaker.c:953
+#: src/eBook-speaker.c:986
 msgid "d               - store current item to disk in WAV-format"
 msgstr ""
 "d            - aktuelle Element speichern auf der Festplatte im WAV-Format"
 
-#: src/eBook-speaker.c:955
+#: src/eBook-speaker.c:988
 msgid "D,-             - decrease playing speed"
 msgstr "D,-          - verringere Abspielgeschwindigkeit"
 
-#: src/eBook-speaker.c:957
+#: src/eBook-speaker.c:990
 msgid ""
 "f               - find the currently playing item and place the cursor there"
 msgstr ""
 "f            - aktuell spielendes Element finden und den Cursor dort "
 "platzieren"
 
-#: src/eBook-speaker.c:959
+#: src/eBook-speaker.c:992
 msgid "g               - go to phrase in current item"
 msgstr "g            - gehen Phrase in aktuellen Artikel"
 
-#: src/eBook-speaker.c:962
+#: src/eBook-speaker.c:995
 msgid "G               - go to page number"
 msgstr "G            - zur Seitenzahl gehen (falls vorhanden)"
 
-#: src/eBook-speaker.c:964 src/list_dir.c:202
+#: src/eBook-speaker.c:997 src/list_dir.c:202
 msgid "h,?             - give this help"
 msgstr "h,?          - diese Hilfe anzeigen"
 
-#: src/eBook-speaker.c:966
+#: src/eBook-speaker.c:999
 msgid "j,5             - just play current item"
 msgstr "j,5          - nur das aktuelle Element abspielen"
 
-#: src/eBook-speaker.c:968
+#: src/eBook-speaker.c:1001
 msgid "l               - switch to next level"
 msgstr "l            - zum nächsten Level wechseln"
 
-#: src/eBook-speaker.c:970
+#: src/eBook-speaker.c:1003
 msgid "L               - switch to previous level"
 msgstr "L            - zum vorigen Level wechseln"
 
-#: src/eBook-speaker.c:972 src/list_dir.c:206
+#: src/eBook-speaker.c:1005 src/list_dir.c:206
 msgid "n               - search forwards"
 msgstr "n            - Suche vorwärts"
 
-#: src/eBook-speaker.c:974 src/list_dir.c:208
+#: src/eBook-speaker.c:1007 src/list_dir.c:208
 msgid "N               - search backwards"
 msgstr "N            - Suche rückwärts"
 
-#: src/eBook-speaker.c:976
+#: src/eBook-speaker.c:1009
 msgid "o               - select next output sound device"
 msgstr "o            - nächstes sound device für Ausgabe wählen"
 
-#: src/eBook-speaker.c:978
+#: src/eBook-speaker.c:1011
 msgid "p               - place a bookmark"
 msgstr "p            - Lesezeichen setzen"
 
-#: src/eBook-speaker.c:987
+#: src/eBook-speaker.c:1020
 msgid "q               - quit eBook-speaker and place a bookmark"
 msgstr "q            - eBook-speaker verlassen und Lesezeichen setzen"
 
-#: src/eBook-speaker.c:990
+#: src/eBook-speaker.c:1023
 msgid "r               - rotate scanned document"
 msgstr ""
 
-#: src/eBook-speaker.c:992
+#: src/eBook-speaker.c:1025
 msgid "s               - stop playing"
 msgstr "s            - Abspielen stoppen"
 
-#: src/eBook-speaker.c:994
+#: src/eBook-speaker.c:1027
 msgid "t               - select next TTS"
 msgstr "t            - Wählen nächsten TTS"
 
-#: src/eBook-speaker.c:996
+#: src/eBook-speaker.c:1029
 msgid "T               - move cursor to the first item"
 msgstr "T            - Cursor auf das erste Element"
 
-#: src/eBook-speaker.c:998
+#: src/eBook-speaker.c:1031
 msgid "U,+             - increase playing speed"
 msgstr "U,+          - erhöhe Abspielgeschwindigkeit"
 
-#: src/eBook-speaker.c:1000
+#: src/eBook-speaker.c:1033
+msgid "v,1             - decrease playback volume"
+msgstr ""
+
+#: src/eBook-speaker.c:1035
+msgid "V,7             - increase playback volume (beware of Clipping)"
+msgstr ""
+
+#: src/eBook-speaker.c:1037
 msgid "x               - go to the file-manager"
 msgstr ""
 
-#: src/eBook-speaker.c:1002
-msgid "7               - increase playback volume (beware of Clipping)"
-msgstr ""
-
-#: src/eBook-speaker.c:1004
-msgid "1               - decrease playback volume"
-msgstr ""
-
-#: src/eBook-speaker.c:1006 src/list_dir.c:214
+#: src/eBook-speaker.c:1039 src/list_dir.c:214
 msgid "Press any key to leave help..."
 msgstr "Taste drücken, um die Hilfe zu verlassen..."
 
-#: src/eBook-speaker.c:1253 src/list_dir.c:116
+#: src/eBook-speaker.c:1286 src/list_dir.c:116
 msgid "What do you search? "
 msgstr "Suchen nach...? "
 
-#: src/eBook-speaker.c:1338
+#: src/eBook-speaker.c:1371
 msgid "Consider the end of an input line as a phrase-break (y/n) "
 msgstr ""
 
-#: src/eBook-speaker.c:1375
+#: src/eBook-speaker.c:1408
 msgid "Select a soundcard:"
 msgstr "Wählen Sie eine Soundkarte:"
 
-#: src/eBook-speaker.c:1377
+#: src/eBook-speaker.c:1410
 msgid "Cannot read /proc/asound/cards"
 msgstr "Kann /proc/asound/cards nicht lesen"
 
-#: src/eBook-speaker.c:1477
+#: src/eBook-speaker.c:1510
 msgid "Go to page number: "
 msgstr "Gehe zur Seitenzahl: "
 
-#: src/eBook-speaker.c:1614
+#: src/eBook-speaker.c:1647
 #, c-format
 msgid "Language code \"%s\" is not a valid tesseract code.\n"
 msgstr ""
 
-#: src/eBook-speaker.c:1616
+#: src/eBook-speaker.c:1649
 msgid "See the tesseract manual for valid codes."
 msgstr ""
 
-#: src/eBook-speaker.c:1618
+#: src/eBook-speaker.c:1651
 #, c-format
 msgid ""
 "Be sure the package \"tesseract-ocr-%s\" is installed onto your system.\n"
 msgstr ""
 
-#: src/eBook-speaker.c:1706
+#: src/eBook-speaker.c:1733
 msgid "Go to phrase in current item: "
 msgstr "Gehe Phrase in aktuellen Artikel: "
 
-#: src/eBook-speaker.c:1829 src/eBook-speaker.c:2550 src/eBook-speaker.c:2762
+#: src/eBook-speaker.c:1859 src/eBook-speaker.c:2578 src/eBook-speaker.c:2812
 msgid "Please wait..."
 msgstr "Warten bitte..."
 
-#: src/eBook-speaker.c:1842 src/eBook-speaker.c:2092 src/eBook-speaker.c:2111
-#: src/eBook-speaker.c:2132 src/eBook-speaker.c:2164 src/eBook-speaker.c:2376
-#: src/eBook-speaker.c:2588 src/eBook-speaker.c:2629 src/eBook-speaker.c:2818
+#: src/eBook-speaker.c:1872 src/eBook-speaker.c:2119 src/eBook-speaker.c:2138
+#: src/eBook-speaker.c:2159 src/eBook-speaker.c:2191 src/eBook-speaker.c:2403
+#: src/eBook-speaker.c:2616 src/eBook-speaker.c:2665 src/eBook-speaker.c:2868
 msgid "eBook-speaker cannot handle this file."
 msgstr ""
 
-#: src/eBook-speaker.c:1880 src/eBook-speaker.c:2515
+#: src/eBook-speaker.c:1908 src/eBook-speaker.c:2543
 msgid "Press 'h' for help "
 msgstr "'h' für Hilfe drücken "
 
-#: src/eBook-speaker.c:2140
+#: src/eBook-speaker.c:2167
 msgid "Unknown format"
 msgstr "Unknown Format"
 
-#: src/eBook-speaker.c:2347 src/eBook-speaker.c:2759
+#: src/eBook-speaker.c:2374 src/eBook-speaker.c:2809
 msgid "eBook-speaker - Version"
 msgstr "eBook-speaker - Version"
 
-#: src/eBook-speaker.c:2351
+#: src/eBook-speaker.c:2378
 #, c-format
 msgid ""
 "Usage: %s [eBook_file | -s] [-o language-code] [-d ALSA_sound_device] [-h] [-"
 "i] [-t TTS_command] [-b n | y]"
 msgstr ""
 
-#: src/list_dir.c:65 src/list_dir.c:246
+#: src/list_dir.c:65 src/list_dir.c:260
 #, c-format
 msgid "%s - Choose an input-file"
 msgstr "%s - Wählen Sie eine Input-Datei"

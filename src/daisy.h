@@ -1,5 +1,5 @@
 /* header file for eBook-speaker
- *  Copyright (C) 2015 J. Lemmens
+ *  Copyright (C) 2016 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -120,7 +120,7 @@ typedef struct Misc
 typedef struct Daisy
 {
    int playorder, x, y, screen, n_phrases;
-   char smil_file[MAX_STR], anchor[MAX_STR], my_class[MAX_STR];
+   char smil_file[MAX_STR + 1], anchor[MAX_STR], my_class[MAX_STR];
    char orig_smil[MAX_STR], label[100];
    int level, page_number;
 } daisy_t;
@@ -143,7 +143,7 @@ extern int get_tag_or_label (misc_t *, my_attribute_t *, xmlTextReaderPtr);
 extern void save_bookmark_and_xml (misc_t *);
 extern void open_text_file (misc_t *, my_attribute_t *,
                             char *, char *);
-extern char *get_input_file (misc_t *, char *, char *);
+extern char *get_input_file (misc_t *, char *);
 extern void put_bookmark (misc_t *);
 extern void skip_left (misc_t *, my_attribute_t *, daisy_t *);
 extern void skip_right (misc_t *);
