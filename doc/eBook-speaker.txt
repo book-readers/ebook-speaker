@@ -2,7 +2,7 @@ NAME
 eBook-speaker - read aloud eBooks and other text formats using a software speech-synthesizer
 
 SYNOPSIS
-eBook-speaker [eBook_file | -s] [-o language-code] [-h] [-i] [-d ALSA_sound_device] [-t TTS_command] [-b n | y]
+eBook-speaker [eBook_file | -s [-r resolution]] [-o language-code] [-h] [-i] [-d ALSA_sound_device] [-t TTS_command] [-b n | y] [-c]
 
 DESCRIPTION
 eBook-speaker reads aloud eBooks and other text formats and even scanned documents using a software speech-synthesizer. By default the tool espeak is used for speech output.
@@ -16,6 +16,7 @@ eBook_file  Give an eBook_file as argument to eBook-speaker.  Many eBook formats
 		Supported formats
 		-----------------
 		AportisDoc
+		AppleSingle encoded Macintosh
 		ASCII mail text
 		ASCII text
 		awk script text
@@ -55,8 +56,10 @@ eBook_file  Give an eBook_file as argument to eBook-speaker.  Many eBook formats
 		XML document text
 
   When no input-file is supplied, eBook-speaker will bring up a file-manager. See KEYBOARD COMMANDS IN THE FILEMANAGER.
-  
+
 -b n | y  Set the initial break_on_EOL. After quiting eBook-speaker. this setting will be saved and used as default for future books. It can be overruled with the 'b'-command for each individual book. See the 'b' command.
+
+-c  eBook-speaker use tesseract for OCR by default. This option forces eBook-speaker to use cuneiform instead.
 
 -d ALSA_sound_device  eBook-speaker will play on this sound device. Default is "hw:0". This option overrules the value in the ~/.eBook-speaker.xml config file.
 
@@ -66,9 +69,11 @@ eBook_file  Give an eBook_file as argument to eBook-speaker.  Many eBook formats
 
 -l  Deprecated. eBook-speaker now determines the file-type using the libmagic library.
 
--o language-code  The language code for the tesseract OCR package to use. If this option not is specified. the language for tesseract is determined according to the current locale. See the tesseract manual for the available language codes.
+-o language-code  The language code for OCR to use. (typically an ISO 639-1 two-letter code. See <https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes>). If this option not is specified. the language is determined according to the current locale.
 
--s  Scan a document using a hardware scanner and OCR it with the tool tesseract.
+-r resolution  By default the option "-s" will scan at a resolution of 400  DPI. With this option one can force another resolution.
+
+-s  Scan a document using a hardware scanner and OCR it with either tesseract or cuneiform.
 
 -t TTS-command  Be sure that the TTS reads from the file eBook-speaker.txt and that it writes to the file eBook-speaker.wav.
 
@@ -118,14 +123,14 @@ N               Search backwards.
 o               Select an output sound device.
 p               Place a bookmark.
 q               Quit eBook-speaker. The reading-point is saved as bookmark.
-r               Rotate the scanned document. If the document is accidentally placed upside-down on the scanner, tesseract can not OCR it correctly. This command will rotate the scanned document 90 degrees.
+r               Rotate the scanned document. If the document is accidentally placed upside-down on the scanner, it can not be OCR'ed correctly. This command will rotate the scanned document 90 degrees.
 s               Stop reading.
 t               Select a TTS.
 T               Move cursor to the first item.
 U,+             Increase reading speed.
+V,7             Increase playback volume. (beware of Clipping)
+v,1             Decrease playback volume.
 x               Go to the file-manager.
-7               Increase playback volume. (beware of Clipping)
-1               Decrease playback volume.
 
 KEYBOARD COMMANDS IN THE FILEMANAGER
 enter,cursor right,6      Start eBook-speaker with current file as input.
@@ -144,7 +149,7 @@ q                         Quit eBook-speaker.
 home,T                    Move cursor to the first file.
 
 TTS
-When pressing the 't'-command, the TTS-selector appears. A few TTS-applications are defined by default. The first TTS in the TTS-selector will be espeak with option -v set according the current locale.
+When pressing the 't'-command, the TTS-selector appears. A few TTS-applications are defined by default. The first TTS in the TTS-selector will be espeak with option -v set according to the current locale.
 
 - Choose one by moving the cursor with the cursor-keys and select it by pressing the ENTER-key.
 
@@ -176,7 +181,7 @@ FILES
 /tmp/eBook-speaker.XXXXXX  eBook-speaker makes use of a temporary directory. It is removed after quiting.
 
 SEE ALSO
-ebook-convert(1), pandoc(1), calibre(1), iconv(1), lowriter(1), tesseract(1), espeak(1), flite(1), text2wave(1), mbrola(1), pico2wave(1), scanimage(1), pnmflip(1), magic(5), man2html(1), unar(1), swift(1), unrtf(1), locale(7)
+ebook-convert(1), pandoc(1), calibre(1), iconv(1), lowriter(1), tesseract(1), cuneiform(1), espeak(1), flite(1), text2wave(1), mbrola(1), pico2wave(1), scanimage(1), pnmflip(1), gif2png(1), magic(5), man2html(1), unar(1), swift(1), unrtf(1), locale(7)
 
 AUTHOR
 Jos Lemmens <jos@jlemmens.nl>

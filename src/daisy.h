@@ -64,8 +64,6 @@ typedef struct My_attribute
 {
    char class[MAX_STR],
         my_class[MAX_STR],
-        clip_begin[MAX_STR],
-        clip_end[MAX_STR],
         content[MAX_STR],
         dc_format[MAX_STR],
         dc_title[MAX_STR],
@@ -73,8 +71,8 @@ typedef struct My_attribute
         dtb_totalPageCount[MAX_STR],
         href[MAX_STR],
         http_equiv[MAX_STR],
-        id[MAX_STR],
-        idref[MAX_STR],
+        *id,
+        *idref,
         media_type[MAX_STR],
         name[MAX_STR],
         ncc_depth[MAX_STR],
@@ -83,7 +81,7 @@ typedef struct My_attribute
         number[MAX_STR],
         playorder[MAX_STR],
         smilref[MAX_STR],
-        src[MAX_STR],
+        *src,
         toc[MAX_STR],
         value[MAX_STR];
 } my_attribute_t;
@@ -95,7 +93,7 @@ typedef struct Misc
    int phrase_nr, tts_no, option_t, depth, total_phrases, total_pages;
    int option_b, pipefd[2], tmp_wav_fd, scan_flag, label_len;
    int items_in_opf, items_in_ncx, show_hidden_files, list_total;
-   int phrases_in_opf, phrases_in_ncx;
+   int phrases_in_opf, phrases_in_ncx, use_cuneiform;
    float speed, volume;
    xmlTextReaderPtr reader;
    pid_t daisy_player_pid, player_pid, eBook_speaker_pid;
@@ -108,24 +106,22 @@ typedef struct Misc
    char eBook_speaker_txt[MAX_STR + 1], eBook_speaker_wav[MAX_STR + 1];
    char first_eBook_speaker_wav[MAX_STR + 1];
    char cmd[MAX_CMD], src_dir[MAX_STR + 1], *tmp_dir, daisy_mp[MAX_STR + 1];
-   char orig_file[MAX_STR + 1];
-   char orig_epub[MAX_STR + 1];
-   char locale[MAX_STR + 1];
-   char xmlversion[MAX_STR + 1], encoding[MAX_STR + 1];
-   char standalone[MAX_STR + 1];
-   char break_on_EOL;
+   char orig_file[MAX_STR + 1], orig_epub[MAX_STR + 1];
+   char locale[MAX_STR + 1], xmlversion[MAX_STR + 1], encoding[MAX_STR + 1];
+   char standalone[MAX_STR + 1], break_on_EOL, scan_resolution[10];
    WINDOW *screenwin, *titlewin;
 } misc_t;
 
 typedef struct Daisy
 {
    int playorder, x, y, screen, n_phrases;
-   char smil_file[MAX_STR + 1], anchor[MAX_STR], my_class[MAX_STR];
-   char orig_smil[MAX_STR], label[100];
+   char *smil_file, *anchor, my_class[MAX_STR];
+   char *orig_smil, label[100];
    int level, page_number;
 } daisy_t;
 
 extern void quit_eBook_speaker (misc_t *);
+extern void pause_resume (misc_t *, my_attribute_t *, daisy_t *);
 extern void parse_ncx (misc_t *, my_attribute_t *, daisy_t *);
 extern void parse_text (misc_t *, my_attribute_t *, daisy_t *);
 extern void get_label (misc_t *, my_attribute_t *, daisy_t *, int,
@@ -133,7 +129,7 @@ extern void get_label (misc_t *, my_attribute_t *, daisy_t *, int,
 extern void view_screen (misc_t *, daisy_t *);                   
 extern void check_phrases (misc_t *, my_attribute_t *, daisy_t *);
 extern void go_to_phrase (misc_t *, my_attribute_t *, daisy_t *, int);
-extern void kill_player (misc_t *);
+extern void kill_player (misc_t *);                                   
 extern void pandoc_to_epub (misc_t *, char *, char *);
 extern void save_xml (misc_t *);
 extern void select_tts (misc_t *, daisy_t *);

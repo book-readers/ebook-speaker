@@ -30,10 +30,12 @@ int get_next_phrase (misc_t *misc, my_attribute_t *my_attribute,
                      daisy_t *daisy)
 {
    FILE *w;
+   struct stat buf;
 
    if (access (misc->eBook_speaker_wav, R_OK) == 0)
 // when still playing
       return 0;
+
    while (1)
    {
       if (! get_tag_or_label (misc, my_attribute, misc->reader))
@@ -68,12 +70,10 @@ int get_next_phrase (misc_t *misc, my_attribute_t *my_attribute,
             } // if
          } // while
       } // if
-      if (misc->playing != misc->total_items &&
+      if (misc->playing < misc->total_items - 1 &&
           *daisy[misc->playing + 1].anchor &&
-          strcasecmp (my_attribute->id, daisy[misc->playing + 1].anchor) == 0)
-      {
+          strcmp (my_attribute->id, daisy[misc->playing + 1].anchor) == 0)
          return -1;
-      } // if
       if (*misc->label)
          break;
    } // while
@@ -98,6 +98,12 @@ int get_next_phrase (misc_t *misc, my_attribute_t *my_attribute,
              daisy[misc->displaying].x - 1);
       wrefresh (misc->screenwin);
    } // if
+   if (*misc->tts[misc->tts_no] == 0 && misc->option_t == 0)
+   {
+      misc->tts_no = 0;
+      select_tts (misc, daisy);
+   } // if
+
    if ((w = fopen (misc->eBook_speaker_txt, "w")) == NULL)
    {
       char str[MAX_STR + 1];
@@ -116,12 +122,9 @@ int get_next_phrase (misc_t *misc, my_attribute_t *my_attribute,
       failure (str, e);
    } // if
    fclose (w);
-
-   if (*misc->tts[misc->tts_no] == 0 && misc->option_t == 0)
-   {
-      misc->tts_no = 0;
-      select_tts (misc, daisy);
-   } // if
+   stat (misc->eBook_speaker_txt, &buf);
+   if (buf.st_size == 0)
+      return 0;
 
    switch (system (misc->tts[misc->tts_no]))
    {
@@ -141,17 +144,18 @@ int get_next_phrase (misc_t *misc, my_attribute_t *my_attribute,
       failure ("fork ()", e);
    }
    case 0:
-      setsid ();
       playfile (misc);
       _exit (0);
    default:
       return 0;
    } // switch
-} // get_next_phrase                                                 
+} // get_next_phrase
 
 void select_tts (misc_t *misc, daisy_t *daisy)
 {
    int n, y, x = 2;
+   
+   kill_player (misc);
 
    wclear (misc->screenwin);
    wprintw (misc->screenwin, "\n%s\n\n", gettext
@@ -167,7 +171,7 @@ void select_tts (misc_t *misc, daisy_t *daisy)
       wprintw (misc->screenwin, "    %d %s\n", n, str);
    } // for
    wprintw (misc->screenwin, "\n%s\n\n", gettext
-            ("Provide a new TTS."));
+            ("Provide a new TTS."));                                    
    wprintw (misc->screenwin, "%s\n", gettext
             ("Be sure that the new TTS reads its information from the file"));
    wprintw (misc->screenwin, "%s\n\n", gettext
@@ -301,7 +305,7 @@ void count_phrases (misc_t *misc, my_attribute_t *my_attribute,
          if (item == misc->total_items - 1)
             continue;
          if (strcasecmp (daisy[item].smil_file,
-             daisy[item + 1].smil_file) != 0)
+                         daisy[item + 1].smil_file) != 0)
 // no need to search t_anchor
             continue;
          if (*daisy[item + 1].anchor)
@@ -317,7 +321,7 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
                     daisy_t *daisy, int i)
 {
    xmlTextReaderPtr reader;
-   char new[MAX_STR + 1], *p;
+   char *new, *p;
    int start_of_new_phrase;
    htmlDocPtr doc;
    xmlTextWriterPtr writer;
@@ -326,15 +330,17 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
       failure (daisy[i].smil_file, errno);
    if ((reader = xmlReaderWalker (doc))  == NULL)
       failure (daisy[i].smil_file, errno);
-   snprintf (new, MAX_STR, "%s.splitted.xhtml", daisy[i].smil_file);
+   new = malloc (strlen (daisy[i].smil_file) + 20);
+   sprintf (new, "%s.splitted.xhtml", daisy[i].smil_file);
    if ((writer = xmlNewTextWriterFilename (new, 0)) == NULL)
    {
       int e;
-      char str[MAX_STR], str2[MAX_STR];
+      char *str;
 
       e = errno;
-      snprintf (str, MAX_STR, "fopen (%s): %s\n", str2, strerror (e));
-      failure (str2, e);
+      str = malloc (strlen (new) + strlen (strerror (e)) + 20);
+      sprintf (str, "fopen (%s): %s\n", new, strerror (e));
+      failure (str, e);
    } // if
    if (! *misc->xmlversion)
       strncpy (misc->xmlversion, "1.0", 5);
@@ -374,7 +380,7 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
                {
                   if (! get_tag_or_label (misc, my_attribute, reader))
                      break;
-                  if (*misc->label)
+                  if (misc->label)
                      xmlTextWriterWriteString (writer, BAD_CAST misc->label);
                   if (strcasecmp (misc->tag, "/title") == 0)
                   {
@@ -537,7 +543,8 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
    xmlFreeDoc (doc);
    xmlTextWriterEndDocument (writer);
    xmlFreeTextWriter (writer);
-   strncpy (daisy[i].smil_file, new, MAX_STR - 1);
+   daisy[i].smil_file = strdup (new);
+   free (new);
 } // split_phrases
 
 void playfile (misc_t *misc)
@@ -546,6 +553,34 @@ void playfile (misc_t *misc)
    sox_effects_chain_t *chain;
    sox_effect_t *e;
    char *args[MAX_STR], str[MAX_STR];
+   float secs;
+
+   secs = 0;
+   while (1)
+   {
+      if (access (misc->eBook_speaker_wav, R_OK) == 0)
+         break;
+      sleep (0.01);
+      secs += 0.01;
+      if (secs >= 1)
+      {
+         int e;
+         char str[MAX_STR + 1];
+
+         e = errno;
+         endwin ();
+         snprintf (str, MAX_STR, "sox_open_read: %s: %s",
+                   misc->eBook_speaker_wav, strerror (e));
+         printf ("%s\n", str);
+         printf (gettext
+              ("Be sure that the used TTS is installed:\n\n   \"%s\"\n"),
+              misc->tts[misc->tts_no]);
+         fflush (stdout);
+         beep ();
+         kill (getppid (), SIGTERM);
+         _exit (0);
+      } // if
+   } // while
 
    sox_globals.verbosity = 0;
    sox_init ();
@@ -565,9 +600,10 @@ void playfile (misc_t *misc)
       fflush (stdout);
       beep ();
       kill (getppid (), SIGTERM);
+      _exit (0);
    } // if
    if ((out = sox_open_write (misc->sound_dev, &in->signal,
-           NULL, "alsa", NULL, NULL)) == NULL)
+       NULL, "alsa", NULL, NULL)) == NULL)
    {
       if ((out = sox_open_write ("default", &in->signal,
                                  NULL, "alsa", NULL, NULL)) == NULL)
@@ -578,7 +614,8 @@ void playfile (misc_t *misc)
          save_xml (misc);
          beep ();
          fflush (stdout);
-         kill (getppid (), SIGQUIT);
+         kill (getppid (), SIGTERM);
+         _exit (0);
       } // if
    } // if
 
@@ -618,7 +655,7 @@ void playfile (misc_t *misc)
    sox_flow_effects (chain, NULL, NULL);
    sox_delete_effects_chain (chain);
    sox_close (out);
-   sox_close (in);
+   sox_close (in); 
    sox_quit ();
    unlink (misc->eBook_speaker_wav);
 } // playfile
@@ -860,7 +897,6 @@ void pause_resume (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
             failure ("fork ()", e);
          }
          case 0:
-            setsid ();
             playfile (misc);
             _exit (0);
          default:
@@ -942,7 +978,7 @@ void write_wav (misc_t *misc, my_attribute_t *my_attribute,
 void help (misc_t *misc, daisy_t *daisy)
 {
    int y, x;
-
+                        
    getyx (misc->screenwin, y, x);
    wclear (misc->screenwin);
    wprintw (misc->screenwin, "\n%s\n", gettext
@@ -1497,7 +1533,158 @@ void go_to_phrase (misc_t *misc, my_attribute_t *my_attribute,
    remove ("old.wav");
 } // go_to_phrase
 
-void go_to_page_number (misc_t *misc, my_attribute_t *my_attribute,
+void start_OCR (misc_t *misc, char *file)
+{
+   char str[MAX_STR + 1];
+
+   if (misc->use_cuneiform == 0)
+   {
+// tesseract languages
+      char codes[][2][3] = {{"bg", "bul"},
+                              {"da", "dan"},
+                              {"de", "deu"},
+                              {"en", "eng"},
+                              {"es", "spa"},
+                              {"fi", "fin"},
+                              {"fr", "fra"},
+                              {"hu", "hun"},
+                              {"nb", "nor"},
+                              {"nl", "nld"},
+                              {"po", "pol"},
+                              {"pt", "por"},
+                              {"sv", "swe"}};
+      int i;
+
+      if (! *misc->ocr_language)
+      {
+         i = 0;
+         while (*codes[i])
+         {
+            if (strcmp (misc->locale, codes[i][0]) == 0)
+            {
+               strncpy (misc->ocr_language, codes[i][1], 3);
+               break;
+            } // if
+            i++;
+         } // while
+      }
+      else
+      {
+         i = 0;
+         while (*codes[i])
+         {
+            if (strcmp (misc->ocr_language, codes[i][0]) == 0)
+            {
+               strncpy (misc->ocr_language, codes[i][1], 3);
+               break;
+            } // if
+            i++;
+         } // while
+      } // if
+   }
+   else
+   {
+// cuneiform languages
+      char codes[][2][3] = {{"bg", "bul"},
+                              {"cs", "cze"},
+                              {"da", "dan"},
+                              {"de", "ger"},
+                              {"en", "eng"},
+                              {"es", "spa"},
+                              {"et", "est"},
+                              {"fi", "fin"},
+                              {"fr", "fra"},
+                              {"hr", "hrv"},
+                              {"hu", "hun"},
+                              {"it", "ita"},
+                              {"lt", "lit"},
+                              {"lv", "lav"},
+                              {"nl", "dut"},
+                              {"po", "pol"},
+                              {"pt", "por"},
+                              {"ro", "rum"},
+                              {"ru", "rus"},
+                              {"sl", "slv"},
+                              {"sr", "srp"},
+                              {"sv", "swe"},
+                              {"tk", "tuk"},
+                              {"uk", "ukr"}};
+      int i;
+
+      if (! *misc->ocr_language)
+      {
+         i = 0;
+         while (*codes[i])
+         {
+            if (strcmp (misc->locale, codes[i][0]) == 0)
+            {
+               strncpy (misc->ocr_language, codes[i][1], 3);
+               break;
+            } // if
+            i++;
+         } // while
+      }
+      else
+      {
+         i = 0;
+         while (*codes[i])
+         {
+            if (strcmp (misc->ocr_language, codes[i][0]) == 0)
+            {
+               strncpy (misc->ocr_language, codes[i][1], 3);
+               break;
+            } // if
+            i++;
+         } // while
+      } // if
+   } // if
+
+   if (misc->use_cuneiform == 0)
+      snprintf (misc->cmd, MAX_CMD - 1,
+             "tesseract \"%s\" \"%s/out\" -l %s 2> /dev/null", file,
+              misc->tmp_dir, misc->ocr_language);
+   else
+      snprintf (misc->cmd, MAX_CMD - 1,
+             "cuneiform \"%s\" -o \"%s/out.txt\" -l %s > /dev/null", file,
+              misc->tmp_dir, misc->ocr_language);
+   switch (system (misc->cmd))
+   {
+   case 0:
+      break;
+   default:
+      endwin ();
+      beep ();
+      puts (misc->copyright);
+      if (misc->use_cuneiform == 0)
+      {
+         printf
+   ("Be sure the package \"tesseract-ocr\" is installed onto your system.\n");
+         printf (gettext
+              ("Language code \"%s\" is not a valid tesseract code.\n"),
+               misc->ocr_language);
+         printf ("%s\n", gettext ("See the tesseract manual for valid codes."));
+         printf (gettext
+("Be sure the package \"tesseract-ocr-%s\" is installed onto your system.\n"),
+        misc->ocr_language);
+      }
+      else
+      {
+         printf
+   ("Be sure the package \"cuneiform\" is installed onto your system.\n");
+         printf (gettext
+              ("Language code \"%s\" is not a valid cuneiform code.\n"),
+               misc->ocr_language);
+         printf ("%s\n", gettext ("See the cuneiform manual for valid codes."));
+      } // if
+      fflush (stdout);
+      _exit (0);
+   } // switch
+   strncpy (str, misc->tmp_dir, MAX_STR);
+   strncat (str, "/out.txt", MAX_STR);
+   pandoc_to_epub (misc, "markdown", str);
+} // start_OCR
+
+void go_to_page_number_3 (misc_t *misc, my_attribute_t *my_attribute,
                         daisy_t *daisy)
 {
    char pn[15];
@@ -1548,11 +1735,13 @@ void go_to_page_number (misc_t *misc, my_attribute_t *my_attribute,
    if (! (misc->reader = xmlReaderWalker (doc)))
    {
       int e;
-      char str[MAX_STR + 1];
+      char *str;
 
       e = errno;
-      snprintf (str, MAX_STR, gettext ("Cannot read %s"),
-                daisy[misc->current].smil_file);
+      str = malloc (strlen ((gettext
+              ("Cannot read %s"), daisy[misc->current].smil_file)));
+      strcpy (str, (gettext
+                 ("Cannot read %s"), daisy[misc->current].smil_file));
       failure (str, e);
    } // if
    
@@ -1597,66 +1786,7 @@ void go_to_page_number (misc_t *misc, my_attribute_t *my_attribute,
       if (*misc->label)
          misc->phrase_nr++;
    } // while
-} // go_to_page_number
-
-void start_tesseract (misc_t *misc, char *file)
-{
-   char str[MAX_STR + 1];
-
-   if (! *misc->ocr_language)
-   {
-      if (strcmp (misc->locale, "da") == 0)
-         strncpy (misc->ocr_language, "dan", 5);
-      if (strcmp (misc->locale, "de") == 0)
-         strncpy (misc->ocr_language, "deu", 5);
-      if (strcmp (misc->locale, "en") == 0)
-         strncpy (misc->ocr_language, "eng", 5);
-      if (strcmp (misc->locale, "fi") == 0)
-         strncpy (misc->ocr_language, "fin", 5);
-      if (strcmp (misc->locale, "fr") == 0)
-         strncpy (misc->ocr_language, "fra", 5);
-      if (strcmp (misc->locale, "hu") == 0)
-         strncpy (misc->ocr_language, "hun", 5);
-      if (strcmp (misc->locale, "nl") == 0)
-         strncpy (misc->ocr_language, "nld", 5);
-      if (strcmp (misc->locale, "nb") == 0)
-         strncpy (misc->ocr_language, "nor", 5);
-      if (strcmp (misc->locale, "po") == 0)
-         strncpy (misc->ocr_language, "pol", 5);
-      if (strcmp (misc->locale, "pt") == 0)
-         strncpy (misc->ocr_language, "por", 5);
-      if (strcmp (misc->locale, "es") == 0)
-         strncpy (misc->ocr_language, "spa", 5);
-      if (strcmp (misc->locale, "sv") == 0)
-         strncpy (misc->ocr_language, "swe", 5);
-   } // if
-   snprintf (misc->cmd, MAX_CMD - 1,
-             "tesseract \"%s\" \"%s/out\" -l %s 2> /dev/null", file,
-              misc->tmp_dir, misc->ocr_language);
-   switch (system (misc->cmd))
-   {
-   case 0:
-      break;
-   default:
-      endwin ();
-      beep ();
-      puts (misc->copyright);
-      printf
-   ("Be sure the package \"tesseract-ocr\" is installed onto your system.\n");
-      printf (gettext
-              ("Language code \"%s\" is not a valid tesseract code.\n"),
-               misc->ocr_language);
-      printf ("%s\n", gettext ("See the tesseract manual for valid codes."));
-      printf (gettext
-("Be sure the package \"tesseract-ocr-%s\" is installed onto your system.\n"),
-  misc->ocr_language);
-      fflush (stdout);
-      _exit (0);
-   } // switch
-   strncpy (str, misc->tmp_dir, MAX_STR);
-   strncat (str, "/out.txt", MAX_STR);
-   pandoc_to_epub (misc, "markdown", str);
-} // start_tesseract
+} // go_to_page_number_3                                                
 
 void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
              char *file)
@@ -1735,7 +1865,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          wgetnstr (misc->titlewin, pn, 8);
          noecho ();
          view_screen (misc, daisy);
-         if (! *pn || atoi (pn) >= daisy[misc->playing].n_phrases)
+         if (! *pn || atoi (pn) >= daisy[misc->current].n_phrases)
          {
             beep ();
             pause_resume (misc, my_attribute, daisy);
@@ -1747,7 +1877,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
       }
       case 'G':
          if (misc->total_pages)
-            go_to_page_number (misc, my_attribute, daisy);
+            go_to_page_number_3 (misc, my_attribute, daisy);
          else
             beep ();
          break;
@@ -1830,7 +1960,6 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
       case 'r':
       {
          char str[MAX_STR];
-         int i;
 
          if (misc->scan_flag != 1)
          {
@@ -1839,8 +1968,9 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          } // if
          kill_player (misc);
          xmlTextReaderClose (misc->reader);
+         misc->total_items = 1;
          misc->phrase_nr = 0;
-         misc->total_phrases = misc->total_pages = *misc->daisy_title = 0;
+         misc->total_phrases = misc->total_pages = 0;
          misc->playing = misc->just_this_item = -1;
          misc->displaying = misc->current = 0;
          snprintf (misc->cmd, MAX_CMD - 1,
@@ -1877,15 +2007,15 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          } // switch
          file = malloc (MAX_STR + 1);
          strncpy (file, str, MAX_STR);
-         start_tesseract (misc, file);
+         start_OCR (misc, file);
          daisy = create_daisy_struct (misc, my_attribute);
-         for (i = 0; i < misc->total_items; i++)
-         {
-            *daisy[i].smil_file = *daisy[i].anchor = *daisy[i].my_class = 0;
-            *daisy[i].label = daisy[i].page_number = 0;
-         } // for
+         *daisy[0].my_class = daisy[0].page_number = 0;
+         daisy[0].smil_file = daisy[0].anchor = strdup ("");
          read_daisy_3 (misc, my_attribute, daisy);
          check_phrases (misc, my_attribute, daisy);
+         strcpy (daisy[0].label, "1");
+         strcpy (misc->daisy_title, "scanned image");
+         misc->total_items = 1;
          misc->level = misc->depth = 1;
          *misc->search_str = 0;
          misc->reader = NULL;
@@ -1907,7 +2037,11 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          wprintw (misc->titlewin, "----------------------------------------");
          mvwprintw (misc->titlewin, 1, 0, gettext ("Press 'h' for help "));
          wrefresh (misc->titlewin);
-         previous_item (misc, daisy);
+         view_screen (misc, daisy);
+         misc->displaying = misc->current = 0;
+         misc->playing = misc->just_this_item = -1;
+         view_screen (misc, daisy);
+         kill_player (misc);
          break;
       } // 'r'
       case 's':
@@ -2062,6 +2196,8 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          default:
             break;
          } // switch
+         wclear (misc->screenwin);
+         wrefresh (misc->screenwin);
          create_epub (misc, my_attribute, daisy, file, 1);
          play_epub (misc, my_attribute, daisy, file);
          break;
@@ -2120,14 +2256,12 @@ void extract_epub (misc_t *misc, char *file)
    } // switch
 } // extract_epub
 
-void lowriter_to_txt (char *file)
+void lowriter_to_txt (misc_t *misc, char *file)
 {
-   char cmd[MAX_CMD];
-
-   snprintf (cmd, MAX_CMD - 1,
+   snprintf (misc->cmd, MAX_CMD - 1,
             "cp \"%s\" out.doc && \
              lowriter --headless --convert-to txt out.doc > /dev/null", file);
-   switch (system (cmd))
+   switch (system (misc->cmd))
    {
    case 0:
       return;
@@ -2170,12 +2304,10 @@ void pandoc_to_epub (misc_t *misc, char *from, char *file)
    extract_epub (misc, str);
 } // pandoc_to_epub            
 
-void pdf_to_txt (const char *file)
+void pdf_to_txt (misc_t *misc, const char *file)
 {
-   char cmd[MAX_CMD];
-
-   snprintf (cmd, MAX_CMD - 1, "pdftotext -q \"%s\" out.txt", file);
-   switch (system (cmd))
+   snprintf (misc->cmd, MAX_CMD - 1, "pdftotext -q \"%s\" out.txt", file);
+   switch (system (misc->cmd))                                
    {
    case 0:
       break;
@@ -2200,10 +2332,8 @@ void check_phrases (misc_t *misc, my_attribute_t *my_attribute,
 
    for (i = 0; i < misc->total_items; i++)
    {
-      strncpy (daisy[i].smil_file, daisy[i].orig_smil, MAX_STR - 1);
+      daisy[i].smil_file = strdup (daisy[i].orig_smil);
       split_phrases (misc, my_attribute, daisy, i);
-      if (! *daisy[i].label)
-         snprintf (daisy[i].label, 10, "%d", i + 1);
    } // for
 
    count_phrases (misc, my_attribute, daisy);
@@ -2211,7 +2341,7 @@ void check_phrases (misc_t *misc, my_attribute_t *my_attribute,
 // remove item with 0 phrases
    int j = 0;
 
-   for (i = 0; i < misc->total_items - 1; i++)
+   for (i = 0; i < misc->total_items; i++)
    {
       if (daisy[i].n_phrases > 0)
          continue;
@@ -2225,9 +2355,9 @@ void check_phrases (misc_t *misc, my_attribute_t *my_attribute,
          daisy[j].x = daisy[j + 1].x;
          daisy[j].level = daisy[j + 1].level;
          daisy[j].page_number = daisy[j + 1].page_number;
-         strncpy (daisy[j].orig_smil, daisy[j + 1].orig_smil, MAX_STR - 1);
-         strncpy (daisy[j].smil_file, daisy[j + 1].smil_file, MAX_STR - 1);
-         strncpy (daisy[j].anchor, daisy[j + 1].anchor, MAX_STR - 1);
+         daisy[j].orig_smil = daisy[j + 1].orig_smil;
+         daisy[j].smil_file = daisy[j + 1].smil_file;
+         daisy[j].anchor = daisy[j + 1].anchor;
          strncpy (daisy[j].my_class, daisy[j + 1].my_class, MAX_STR - 1);
          strncpy (daisy[j].label, daisy[j + 1].label, 80);
          if (*daisy[j].label == 0)
@@ -2250,6 +2380,9 @@ void check_phrases (misc_t *misc, my_attribute_t *my_attribute,
       if (y >= misc->max_y)
          y = 0;
       daisy[i].screen = i / misc->max_y;
+
+      if (! *daisy[i].label)
+         snprintf (daisy[i].label, 10, "%d", i + 1);
    } // for
 } // check_phrases
 
@@ -2291,7 +2424,7 @@ void store_as_WAV_file (misc_t *misc, my_attribute_t *my_attribute,
 
 void write_ascii (misc_t *misc, my_attribute_t *my_attribute,
                   daisy_t *daisy, char *outfile)
-{
+{              
    FILE *w;
    xmlTextReaderPtr local_reader;
    htmlDocPtr local_doc;
@@ -2375,8 +2508,8 @@ void usage ()
    puts ("(C)2003-2016 J. Lemmens");
    printf ("\n");
    printf (gettext
-           ("Usage: %s [eBook_file | -s] [-o language-code] "
-            "[-d ALSA_sound_device] [-h] [-i] [-t TTS_command] [-b n | y]"),
+           ("Usage: %s [eBook_file | -s [-r resolution]] [-o language-code] "
+         "[-d ALSA_sound_device] [-h] [-i] [-t TTS_command] [-b n | y] [-c]"),
             PACKAGE);                                                       
    printf ("\n");
    fflush (stdout);
@@ -2448,7 +2581,7 @@ void remove_double_tts_entries (misc_t *misc)
 
    for (x = 0; x < 10; x++)
       strncpy (temp[x], misc->tts[x], MAX_STR - 1);
-   bzero (misc->tts, sizeof (misc->tts));
+   bzero ((void *) misc->tts, sizeof (misc->tts));
    for (x = 0; x < 10; x++)
    {
       if (! *temp[x])
@@ -2507,18 +2640,22 @@ void play_epub (misc_t *misc, my_attribute_t *my_attribute,
    int i;
 
    daisy = create_daisy_struct (misc, my_attribute);
-
+        
 // first be sure all strings in daisy_t are cleared
    for (i = 0; i < misc->total_items; i++)
    {
-      *daisy[i].smil_file = *daisy[i].anchor = *daisy[i].my_class = 0;
-      *daisy[i].label = daisy[i].page_number = 0;
+      *daisy[i].my_class = *daisy[i].label = daisy[i].page_number = 0;
+      daisy[i].smil_file = daisy[i].anchor = strdup ("");
    } // for
 
    read_daisy_3 (misc, my_attribute, daisy);
    check_phrases (misc, my_attribute, daisy);
    misc->reader = NULL;
    misc->just_this_item = misc->playing = -1;
+   if (misc->total_items == 0)
+      misc->total_items = 1;
+   if (misc->scan_flag)
+      strcpy (misc->daisy_title, "scanned image");
    if (! *misc->daisy_title)
       strncpy (misc->daisy_title, basename (file), MAX_STR - 1);
    if (! *misc->bookmark_title)
@@ -2578,14 +2715,15 @@ void create_epub (misc_t *misc, my_attribute_t *my_attribute,
                   gettext ("Please wait..."));
    wattroff (misc->titlewin, A_BOLD);
    wrefresh (misc->titlewin);
-   if (strcasestr (magic_file (myt, file), "gzip compressed data"))
+   if (strncasecmp (magic_file (myt, file), "gzip compressed", 15) == 0)
    {
-      char cmd[512], str[MAX_STR];
+      char str[MAX_STR], *orig;
       FILE *p;
 
-      snprintf (cmd, MAX_CMD - 1,
+      orig = strdup (file);
+      snprintf (misc->cmd, MAX_CMD - 1,
         "unar \"%s\" -f -o \"%s\" > /dev/null && ls -1", file, misc->tmp_dir);
-      p = popen (cmd, "r");
+      p = popen (misc->cmd, "r");
       switch (*fgets (str, MAX_STR, p))
       {
       default:
@@ -2596,6 +2734,7 @@ void create_epub (misc_t *misc, my_attribute_t *my_attribute,
       file[strlen (file) - 1] = 0;
       magic_close (myt);
       create_epub (misc, my_attribute, daisy, file, 0);
+      strcpy (file, orig);
       return;
    } // "gzip compressed data"
    else
@@ -2628,25 +2767,18 @@ void create_epub (misc_t *misc, my_attribute_t *my_attribute,
    } // if epub
    else
    if (strcasestr (magic_file (myt, file), "HTML document") ||
-       strcasestr (magic_file (myt, file), "XML document text"))
+       strncasecmp (magic_file (myt, file), "XML", 3) == 0)
    {
       pandoc_to_epub (misc, "html", file);
    } // if
    else
-   if (strcasestr (magic_file (myt, file), "PDF document"))
+   if (strcasestr (magic_file (myt, file), "PDF document") ||               
+       strcasestr (magic_file (myt, file), "AppleSingle encoded Macintosh"))
    {
-      pdf_to_txt (file);
+      pdf_to_txt (misc, file);
       create_epub (misc, my_attribute, daisy, "out.txt", 0);
       return;
-   }
-   else
-   if (strcasecmp (magic_file (myt, file), "data") == 0)
-   {
-      char *str;                                       
-
-      str = ascii2html (misc, file);
-      pandoc_to_epub (misc, "html", str);
-   }
+   } // PDF document
    else
    if (strcasestr (magic_file (myt, file), "PostScript document"))
    {
@@ -2667,17 +2799,18 @@ void create_epub (misc_t *misc, my_attribute_t *my_attribute,
    } // if
    else
    if (strcasestr (magic_file (myt, file), "C source text") ||
-       strcasestr (magic_file (myt, file), "ASCII text") ||
+       strncasecmp (magic_file (myt, file), "ASCII text", 10) == 0 ||
+       strncasecmp (magic_file (myt, file), "data", 4) == 0 ||
        strcasestr (magic_file (myt, file), "GNU gettext message catalogue") ||
        strcasestr (magic_file (myt, file), "shell script text") ||
        strcasestr (magic_file (myt, file), "Python script") ||
        strcasestr (magic_file (myt, file), "Sendmail") ||
-       strcasestr (magic_file (myt, file), "UTF-8 Unicode"))
+       strncasecmp (magic_file (myt, file), "UTF-8 Unicode", 13) == 0)
    {
       char *str;
 
       str = ascii2html (misc, file);
-      pandoc_to_epub (misc, "html", str);     
+      pandoc_to_epub (misc, "html", str);
    }
    else
    if (strcasestr (magic_file (myt, file), "ISO-8859 text"))
@@ -2697,11 +2830,12 @@ void create_epub (misc_t *misc, my_attribute_t *my_attribute,
    if (strcasestr (magic_file (myt, file), "(Corel/WP)") ||
        strcasestr (magic_file (myt, file), "Composite Document File") ||
        strcasestr (magic_file (myt, file), "Microsoft Word 2007+") ||
-       strcasestr (magic_file (myt, file), "Microsoft Office Document") ||
+       strncasecmp (magic_file (myt, file), "Microsoft Office Document",
+                    25) == 0 ||
        strcasestr (magic_file (myt, file), "OpenDocument") ||
        strcasestr (magic_file (myt, file), "Rich Text Format"))
    {
-      lowriter_to_txt (file);
+      lowriter_to_txt (misc, file);
       create_epub (misc, my_attribute, daisy, "out.txt", 0);
       return;
    } // if
@@ -2729,12 +2863,41 @@ void create_epub (misc_t *misc, my_attribute_t *my_attribute,
    else
 // use tesseract
    if (strcasestr (magic_file (myt, file), "JPEG image")  ||
-       strcasestr (magic_file (myt, file), "GIF image")  ||
        strcasestr (magic_file (myt, file), "PNG image")  ||
        strcasestr (magic_file (myt, file), "Netpbm"))
    {
       misc->ignore_bookmark = 1;
-      start_tesseract (misc, file);
+      start_OCR (misc, file);
+   } // if
+   else
+   if (strcasestr (magic_file (myt, file), "GIF image"))
+   {
+      char str[MAX_STR + 1];
+
+      misc->ignore_bookmark = 1;
+      if (misc->use_cuneiform == 0)
+      {
+         snprintf (str, MAX_STR, "%s/eBook-speaker", misc->tmp_dir);
+         snprintf (misc->cmd, MAX_CMD - 1,
+              "cp %s %s.gif && gif2png %s.gif 2> /dev/null", file, str, str);
+         switch (system (misc->cmd))
+         {
+         case 0:
+            break;
+         default:
+            endwin ();
+            beep ();
+            puts (misc->copyright);
+            printf
+        ("Be sure the package \"gif2png\" is installed onto your system.\n");
+            fflush (stdout);
+            _exit (0);
+         } // switch
+         snprintf (str, MAX_STR, "%s/eBook-speaker.png", misc->tmp_dir);
+         start_OCR (misc, str);
+      }
+      else
+         start_OCR (misc, file);
    } // if
    else
    if (strcasestr (magic_file (myt, file), "directory"))
@@ -2755,6 +2918,8 @@ void create_epub (misc_t *misc, my_attribute_t *my_attribute,
       default:
          break;
       } // switch
+      wclear (misc->screenwin);
+      wrefresh (misc->screenwin);
       create_epub (misc, my_attribute, daisy, file, 1);
       switch (chdir (misc->tmp_dir))
       {
@@ -2805,6 +2970,7 @@ int main (int argc, char *argv[])
    noecho ();
    misc.eBook_speaker_pid = getpid ();
    misc.player_pid = -2;
+   sprintf (misc.scan_resolution, "400");
    snprintf (misc.copyright, MAX_STR - 1, "%s %s - (C)2016 J. Lemmens",
              gettext ("eBook-speaker - Version"), PACKAGE_VERSION);
    wattron (misc.titlewin, A_BOLD);
@@ -2825,15 +2991,18 @@ int main (int argc, char *argv[])
              "%s/eBook-speaker.txt", misc.tmp_dir);
    snprintf (misc.eBook_speaker_wav, MAX_STR,
              "%s/eBook-speaker.wav", misc.tmp_dir);
-   misc.option_b = misc.option_t = 0;
+   misc.option_b = misc.option_t = misc.use_cuneiform = 0;
    opterr = 0;
-   while ((opt = getopt (argc, argv, "b:d:hilo:st:")) != -1)
+   while ((opt = getopt (argc, argv, "b:cd:hilo:r:st:")) != -1)
    {
       switch (opt)
       {
       case 'b':
          misc.break_on_EOL = optarg[0];
          misc.option_b = 1;
+         break;
+      case 'c':
+         misc.use_cuneiform = 1;
          break;
       case 'd':
          strncpy (misc.sound_dev, optarg, 15);
@@ -2848,27 +3017,11 @@ int main (int argc, char *argv[])
       case 'o':
          strncpy (misc.ocr_language, optarg, 3);
          break;
+      case 'r':
+         strncpy (misc.scan_resolution, optarg, 5);
+         break;
       case 's':
-         misc.ignore_bookmark = 1;
-         wrefresh (misc.titlewin);
          misc.scan_flag = 1;
-         snprintf (misc.orig_file, MAX_STR, "%s/out.pgm", misc.tmp_dir);
-         snprintf (misc.cmd, MAX_CMD,
-             "scanimage --resolution 300 --mode Gray > %s", misc.orig_file);
-         switch (system (misc.cmd))
-         {
-         case 0:
-            break;
-         default:
-            endwin ();
-            beep ();
-            puts (misc.copyright);
-            printf
-      ("Be sure the package \"sane-utils\" is installed onto your system.\n");
-            puts (gettext ("eBook-speaker cannot handle this file."));
-            fflush (stdout);
-            _exit (-1);
-         } // switch
          break;
       case 't':
          misc.option_t = 1;
@@ -2882,10 +3035,30 @@ int main (int argc, char *argv[])
    *misc.search_str = 0;
    if (misc.scan_flag == 1)
    {
+      misc.ignore_bookmark = 1;
+      wrefresh (misc.titlewin);
+      snprintf (misc.orig_file, MAX_STR, "%s/out.pgm", misc.tmp_dir);
+      snprintf (misc.cmd, MAX_CMD,
+          "scanimage --resolution %s --mode Binary > %s",
+           misc.scan_resolution, misc.orig_file);
+      switch (system (misc.cmd))
+      {
+      case 0:
+         break;
+      default:
+         endwin ();
+         beep ();
+         puts (misc.copyright);
+         printf
+      ("Be sure the package \"sane-utils\" is installed onto your system.\n");
+         puts (gettext ("eBook-speaker cannot handle this file."));
+         fflush (stdout);
+         _exit (-1);
+      } // switch
       create_epub (&misc, &my_attribute, daisy, misc.orig_file, 1);
-      strncpy (misc.daisy_title, "scanned image", MAX_STR - 1);
+      strcpy (misc.daisy_title, "scanned image");
       play_epub (&misc, &my_attribute, daisy, misc.orig_file);
-      return 0;
+      return 0;    
    } // if
 
    if (! argv[optind])

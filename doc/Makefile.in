@@ -100,7 +100,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(dist_html_DATA) \
 	$(am__DIST_COMMON)
-mkinstalldirs = $(install_sh) -d
+mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
@@ -153,7 +153,8 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(htmldir)" "$(DESTDIR)$(docdir)"
 DATA = $(dist_html_DATA) $(doc_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
-am__DIST_COMMON = $(srcdir)/Makefile.in COPYING TODO
+am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/mkinstalldirs \
+	COPYING TODO
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -262,6 +263,7 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
+runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
