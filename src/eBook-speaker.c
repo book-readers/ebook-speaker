@@ -55,20 +55,10 @@ int get_next_phrase (misc_t *misc, my_attribute_t *my_attribute,
          } // if
          return -1;
       } // if
-      if (strcasecmp (misc->tag, "pagenum") == 0)
+      if (strcasecmp (misc->tag, "pagenum") == 0 ||
+          strcasecmp (my_attribute->class, "pagenum") == 0)
       {
-         while (1)
-         {
-            if (! get_tag_or_label (misc, my_attribute, misc->reader))
-               break;
-            if (strcasecmp (misc->tag, "/pagenum") == 0)
-               break;
-            if (*misc->label)
-            {
-               misc->current_page_number = atoi (misc->label);
-               break;
-            } // if
-         } // while
+         parse_page_number (misc, my_attribute, misc->reader);
       } // if
       if (misc->playing < misc->total_items - 1 &&
           *daisy[misc->playing + 1].anchor &&
@@ -148,7 +138,7 @@ int get_next_phrase (misc_t *misc, my_attribute_t *my_attribute,
       _exit (0);
    default:
       return 0;
-   } // switch
+   } // switch                                             
 } // get_next_phrase
 
 void select_tts (misc_t *misc, daisy_t *daisy)
@@ -277,9 +267,9 @@ void count_phrases (misc_t *misc, my_attribute_t *my_attribute,
    for (item = 0; item < misc->total_items; item++)
    {
       daisy[item].n_phrases = 0;
-      if (! *daisy[item].smil_file)
+      if (! *daisy[item].xml_file)
          continue;
-      if (! (d = htmlParseFile (daisy[item].smil_file, "UTF-8")))
+      if (! (d = htmlParseFile (daisy[item].xml_file, "UTF-8")))
          failure ("htmlParseFile ()", errno);
       if (! (r = xmlReaderWalker (d)))
          failure ("xmlReaderWalker ()", errno);
@@ -304,8 +294,8 @@ void count_phrases (misc_t *misc, my_attribute_t *my_attribute,
             daisy[item].n_phrases++;
          if (item == misc->total_items - 1)
             continue;
-         if (strcasecmp (daisy[item].smil_file,
-                         daisy[item + 1].smil_file) != 0)
+         if (strcasecmp (daisy[item].xml_file,
+                         daisy[item + 1].xml_file) != 0)
 // no need to search t_anchor
             continue;
          if (*daisy[item + 1].anchor)
@@ -315,7 +305,7 @@ void count_phrases (misc_t *misc, my_attribute_t *my_attribute,
       } // while
       misc->total_phrases += daisy[item].n_phrases;
    } // for
-} // count_phrases
+} // count_phrases              
 
 void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
                     daisy_t *daisy, int i)
@@ -326,12 +316,12 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
    htmlDocPtr doc;
    xmlTextWriterPtr writer;
 
-   if ((doc = htmlParseFile (daisy[i].smil_file, "UTF-8")) == NULL)
-      failure (daisy[i].smil_file, errno);
+   if ((doc = htmlParseFile (daisy[i].xml_file, "UTF-8")) == NULL)
+      failure (daisy[i].xml_file, errno);
    if ((reader = xmlReaderWalker (doc))  == NULL)
-      failure (daisy[i].smil_file, errno);
-   new = malloc (strlen (daisy[i].smil_file) + 20);
-   sprintf (new, "%s.splitted.xhtml", daisy[i].smil_file);
+      failure (daisy[i].xml_file, errno);
+   new = malloc (strlen (daisy[i].xml_file) + 20);
+   sprintf (new, "%s.splitted.xhtml", daisy[i].xml_file);
    if ((writer = xmlNewTextWriterFilename (new, 0)) == NULL)
    {
       int e;
@@ -463,29 +453,6 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
          xmlTextWriterEndElement (writer);
          continue;
       } // if /h1
-      if (strcasecmp (misc->tag, "pagenum") == 0)
-      {
-         xmlTextWriterStartElement (writer, (const xmlChar *) misc->tag);
-         xmlTextWriterWriteFormatAttribute
-                (writer, BAD_CAST "id", "%s", my_attribute->id);
-         xmlTextWriterWriteFormatAttribute
-                (writer, BAD_CAST "smilref", "%s", my_attribute->smilref);
-         xmlTextWriterWriteString (writer, BAD_CAST "\n");
-         while (1)
-         {
-            if (! get_tag_or_label (misc, my_attribute, reader))
-               break;
-            if (*misc->label)
-            {
-               xmlTextWriterWriteString (writer, BAD_CAST misc->label);
-               xmlTextWriterWriteString (writer, BAD_CAST "\n    ");
-            } // if
-            if (strcasecmp (misc->tag, "/pagenum") == 0)
-               break;
-         } // while
-         xmlTextWriterEndElement (writer);
-         continue;
-      }  // if pagenum
       if (! *misc->label)
          continue;
       p = misc->label;
@@ -543,7 +510,7 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
    xmlFreeDoc (doc);
    xmlTextWriterEndDocument (writer);
    xmlFreeTextWriter (writer);
-   daisy[i].smil_file = strdup (new);
+   daisy[i].xml_file = strdup (new);
    free (new);
 } // split_phrases
 
@@ -566,15 +533,14 @@ void playfile (misc_t *misc)
       {
          int e;
          char str[MAX_STR + 1];
-
+                        
          e = errno;
          endwin ();
          snprintf (str, MAX_STR, "sox_open_read: %s: %s",
                    misc->eBook_speaker_wav, strerror (e));
-         printf ("%s\n", str);
-         printf (gettext
-              ("Be sure that the used TTS is installed:\n\n   \"%s\"\n"),
-              misc->tts[misc->tts_no]);
+         printf ("%s\n\n", str);
+         printf (gettext ("Be sure that the used TTS is installed:"));
+         printf ("\n\n   \"%s\"", misc->tts[misc->tts_no]);
          fflush (stdout);
          beep ();
          kill (getppid (), SIGTERM);
@@ -594,9 +560,8 @@ void playfile (misc_t *misc)
       snprintf (str, MAX_STR, "sox_open_read: %s: %s",
                 misc->eBook_speaker_wav, strerror (e));
       printf ("%s\n", str);
-      printf (gettext
-              ("Be sure that the used TTS is installed:\n\n   \"%s\"\n"),
-              misc->tts[misc->tts_no]);
+      printf (gettext ("Be sure that the used TTS is installed:"));
+      printf ("\n\n   \"%s\"\n", misc->tts[misc->tts_no]);
       fflush (stdout);
       beep ();
       kill (getppid (), SIGTERM);
@@ -746,16 +711,24 @@ void view_screen (misc_t *misc, daisy_t *daisy)
    mvwaddstr (misc->titlewin, 1, 0,
               "----------------------------------------");
    waddstr (misc->titlewin, "----------------------------------------");
-   mvwprintw (misc->titlewin, 1, 0, gettext ("'h' for help "));
+   mvwprintw (misc->titlewin, 1, 0, "%s ", gettext ("'h' for help"));
    if (! misc->discinfo)
    {
       if (misc->total_pages)
-         mvwprintw (misc->titlewin, 1, 15, gettext
-                    (" %d pages "), misc->total_pages);
-      mvwprintw (misc->titlewin, 1, 28, gettext
-                 (" level: %d of %d "), misc->level, misc->depth);
-      mvwprintw (misc->titlewin, 1, 47, gettext
-                 (" total phrases: %d "), misc->total_phrases);
+      {
+         mvwprintw (misc->titlewin, 1, 15, " ");
+         wprintw (misc->titlewin, gettext
+                    ("%d pages"), misc->total_pages);
+         wprintw (misc->titlewin, " ");
+      } // if
+      mvwprintw (misc->titlewin, 1, 28, " ");
+      wprintw (misc->titlewin, gettext
+                 ("level: %d of %d"), misc->level, misc->depth);
+      wprintw (misc->titlewin, " ");
+      mvwprintw (misc->titlewin, 1, 47, " ");
+      wprintw (misc->titlewin, gettext
+                 ("total phrases: %d"), misc->total_phrases);
+      wprintw (misc->titlewin, " ");
       mvwprintw (misc->titlewin, 1, 74, " %d/%d ",
               misc->current / misc->max_y + 1, (misc->total_items - 1) / misc->max_y + 1);
    } // if
@@ -945,7 +918,7 @@ void write_wav (misc_t *misc, my_attribute_t *my_attribute,
    output = sox_open_write (outfile, &first->signal, &first->encoding,
                             NULL, NULL, NULL);
    open_text_file (misc, my_attribute,
-                daisy[misc->current].smil_file, daisy[misc->current].anchor);
+                daisy[misc->current].xml_file, daisy[misc->current].anchor);
    while (1)
    {
       sox_format_t *input;
@@ -1114,8 +1087,9 @@ void next_item (misc_t *misc, daisy_t *daisy)
 void skip_left (misc_t *misc, my_attribute_t *my_attribute,
                 daisy_t *daisy)
 {
-   int just = misc->just_this_item;
+   int just;
 
+   just = misc->just_this_item;
    if (misc->playing == -1)
    {
       beep ();
@@ -1134,13 +1108,18 @@ void skip_left (misc_t *misc, my_attribute_t *my_attribute,
       kill_player (misc);
       misc->player_pid = -2;
       open_text_file (misc, my_attribute,
-               daisy[misc->playing].smil_file, daisy[misc->playing].anchor);
+               daisy[misc->playing].xml_file, daisy[misc->playing].anchor);
       misc->just_this_item = just;
       misc->phrase_nr = 0;
       while (1)
       {
          if (! get_tag_or_label (misc, my_attribute, misc->reader))
             return;
+         if (strcasecmp (misc->tag, "pagenum") == 0 ||
+             strcasecmp (my_attribute->class, "pagenum") == 0)
+         {
+            parse_page_number (misc, my_attribute, misc->reader);
+         } // if
          if (! *misc->label)
             continue;
          if (misc->phrase_nr++ == daisy[misc->playing].n_phrases - 2)
@@ -1153,16 +1132,6 @@ void skip_left (misc_t *misc, my_attribute_t *my_attribute,
    go_to_phrase (misc, my_attribute, daisy, misc->phrase_nr - 1);
    misc->just_this_item = just;
 } // skip_left
-
-void skip_right (misc_t *misc)
-{
-   if (misc->playing == -1)
-   {
-      beep ();
-      return;
-   } // if
-   kill_player (misc);
-} // skip_right
 
 void change_level (misc_t *misc, daisy_t *daisy, char key)
 {
@@ -1318,8 +1287,8 @@ void search (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
       mvwprintw (misc->titlewin, 1, 0,
                  "                                        ");
       wprintw (misc->titlewin, "                                        ");
-      mvwprintw (misc->titlewin, 1, 0,
-                 gettext ("What do you search? "));
+      mvwprintw (misc->titlewin, 1, 0, "%s ",
+                 gettext ("What do you search?"));
       echo ();
       wgetnstr (misc->titlewin, misc->search_str, 25);
       noecho ();
@@ -1379,7 +1348,7 @@ void search (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
       remove (misc->eBook_speaker_wav);
       remove ("old.wav");
       open_text_file (misc, my_attribute,
-                      daisy[misc->current].smil_file, daisy[misc->current].anchor);
+              daisy[misc->current].xml_file, daisy[misc->current].anchor);
    }
    else
    {
@@ -1403,8 +1372,8 @@ void break_on_EOL (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
    mvwprintw (misc->titlewin, 1, 0,
                             "                                        ");
    wprintw (misc->titlewin, "                                        ");
-   mvwprintw (misc->titlewin, 1, 0,
-      gettext ("Consider the end of an input line as a phrase-break (y/n) "));
+   mvwprintw (misc->titlewin, 1, 0, "%s ", 
+      gettext ("Consider the end of an input line as a phrase-break (y/n)"));
    while (1)
    {
       wint_t wch;
@@ -1489,7 +1458,7 @@ void go_to_phrase (misc_t *misc, my_attribute_t *my_attribute,
                       daisy_t *daisy, int pn)
 {
    open_text_file (misc, my_attribute,
-               daisy[misc->current].smil_file, daisy[misc->current].anchor);
+               daisy[misc->current].xml_file, daisy[misc->current].anchor);
    misc->phrase_nr = 0;
    misc->current_page_number = daisy[misc->current].page_number;
    if (pn > 1)
@@ -1498,21 +1467,10 @@ void go_to_phrase (misc_t *misc, my_attribute_t *my_attribute,
       {
          if (! get_tag_or_label (misc, my_attribute, misc->reader))
             break;
-         if (strcasecmp (misc->tag, "pagenum") == 0)
+         if (strcasecmp (misc->tag, "pagenum") == 0 ||
+             strcasecmp (my_attribute->class, "pagenum") == 0)
          {
-            while (1)
-            {
-               if (! get_tag_or_label (misc, my_attribute, misc->reader))
-                  break;
-               if (strcasecmp (misc->tag, "/pagenum") == 0)
-                  break;
-               if (*misc->label)
-               {
-                  misc->current_page_number = atoi (misc->label);
-                  break;
-               } // if
-            } // while
-            continue;
+            parse_page_number (misc, my_attribute, misc->reader);
          } // if
          if (! *misc->label)
             continue;
@@ -1524,7 +1482,8 @@ void go_to_phrase (misc_t *misc, my_attribute_t *my_attribute,
    misc->playing = misc->displaying = misc->current;
    view_screen (misc, daisy);
    mvwprintw (misc->screenwin, daisy[misc->current].y, 69, "%5d %5d",
-              misc->phrase_nr + 1, daisy[misc->current].n_phrases - misc->phrase_nr - 1);
+              misc->phrase_nr + 1,
+              daisy[misc->current].n_phrases - misc->phrase_nr - 1);
    wrefresh (misc->screenwin);
    wmove (misc->screenwin, daisy[misc->current].y,
           daisy[misc->current].x - 1);
@@ -1658,23 +1617,24 @@ void start_OCR (misc_t *misc, char *file)
       if (misc->use_cuneiform == 0)
       {
          printf
-   ("Be sure the package \"tesseract-ocr\" is installed onto your system.\n");
+ ("Be sure the package \"tesseract-ocr\" is installed onto your system.\n\n");
          printf (gettext
-              ("Language code \"%s\" is not a valid tesseract code.\n"),
+               ("Language code \"%s\" is not a valid tesseract code."),
                misc->ocr_language);
          printf ("%s\n", gettext ("See the tesseract manual for valid codes."));
          printf (gettext
-("Be sure the package \"tesseract-ocr-%s\" is installed onto your system.\n"),
+  ("Be sure the package \"tesseract-ocr-%s\" is installed onto your system."),
         misc->ocr_language);
+         printf ("\n");
       }
       else
       {
          printf
    ("Be sure the package \"cuneiform\" is installed onto your system.\n");
          printf (gettext
-              ("Language code \"%s\" is not a valid cuneiform code.\n"),
+              ("Language code \"%s\" is not a valid cuneiform code."),
                misc->ocr_language);
-         printf ("%s\n", gettext ("See the cuneiform manual for valid codes."));
+         printf ("\n%s\n", gettext ("See the cuneiform manual for valid codes."));
       } // if
       fflush (stdout);
       _exit (0);
@@ -1683,110 +1643,6 @@ void start_OCR (misc_t *misc, char *file)
    strncat (str, "/out.txt", MAX_STR);
    pandoc_to_epub (misc, "markdown", str);
 } // start_OCR
-
-void go_to_page_number_3 (misc_t *misc, my_attribute_t *my_attribute,
-                        daisy_t *daisy)
-{
-   char pn[15];
-   htmlDocPtr doc;
-
-   kill (misc->player_pid, SIGKILL);
-   misc->playing = misc->just_this_item = -1;
-   mvwprintw (misc->titlewin, 1, 0, "----------------------------------------");
-   wprintw (misc->titlewin, "----------------------------------------");
-   mvwprintw (misc->titlewin, 1, 0, gettext ("Go to page number: "));
-   echo ();
-   wgetnstr (misc->titlewin, pn, 5);
-   noecho ();
-   view_screen (misc, daisy);
-   if (! *pn || atoi (pn) > misc->total_pages || ! atoi (pn))
-   {
-      beep ();
-      pause_resume (misc, my_attribute, daisy);
-      pause_resume (misc, my_attribute, daisy);
-      return;
-   } // if
-
-// start searching
-   for (misc->current = misc->total_items - 1; misc->current >= 0;
-        misc->current--)
-   {
-      if (! daisy[misc->current].page_number)
-         continue;
-      if (daisy[misc->current].page_number == atoi (pn))
-      {
-         misc->playing = misc->displaying = misc->current;
-         misc->phrase_nr = 0;
-         misc->just_this_item = -1;
-         misc->current_page_number = atoi (pn);;
-         view_screen (misc, daisy);
-         open_text_file (misc, my_attribute,
-                daisy[misc->current].smil_file, daisy[misc->current].anchor);
-         pause_resume (misc, my_attribute, daisy);
-         pause_resume (misc, my_attribute, daisy);
-         return;
-      } // if
-      if (daisy[misc->current].page_number <= atoi (pn))
-         break;
-   } // for
-   if (misc->current < 0)
-      misc->current = 0;
-   doc = htmlParseFile (daisy[misc->current].smil_file, "UTF-8");
-   if (! (misc->reader = xmlReaderWalker (doc)))
-   {
-      int e;
-      char *str;
-
-      e = errno;
-      str = malloc (strlen ((gettext
-              ("Cannot read %s"), daisy[misc->current].smil_file)));
-      strcpy (str, (gettext
-                 ("Cannot read %s"), daisy[misc->current].smil_file));
-      failure (str, e);
-   } // if
-   
-// first skip to anchor
-   while (1)
-   {
-      if (! get_tag_or_label (misc, my_attribute, misc->reader))
-         break;
-      if (strcasecmp (my_attribute->id, daisy[misc->current].anchor) == 0)
-         break;
-   } // while
-
-   misc->phrase_nr = 0;
-   while (1)
-   {
-      if (! get_tag_or_label (misc, my_attribute, misc->reader))
-         return;
-      if (strcasecmp (misc->tag, "pagenum") == 0)
-      {
-         while (1)
-         {
-            if (! get_tag_or_label (misc, my_attribute, misc->reader))
-               break;
-            if (strcasecmp (misc->tag, "/pagenum") == 0)
-               break;
-            if (*misc->label)
-            {
-               misc->current_page_number = atoi (misc->label);
-               if (misc->current_page_number == atoi (pn))
-               {
-                  misc->playing = misc->displaying = misc->current;
-                  misc->just_this_item = -1;
-                  misc->phrase_nr++;
-                  view_screen (misc, daisy);
-                  pause_resume (misc, my_attribute, daisy);
-                  pause_resume (misc, my_attribute, daisy);
-                  return;
-               } // if
-            } // if
-         } // while
-      } // if
-      if (*misc->label)
-         misc->phrase_nr++;
-   } // while
-} // go_to_page_number_3                                                
 
 void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
              char *file)
@@ -1820,7 +1676,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          view_screen (misc, daisy);
          kill_player (misc);
          open_text_file (misc, my_attribute,
-                 daisy[misc->current].smil_file, daisy[misc->current].anchor);
+                 daisy[misc->current].xml_file, daisy[misc->current].anchor);
          break;
       case '/':
          search (misc, my_attribute, daisy, misc->current + 1, '/');
@@ -1859,8 +1715,8 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          mvwprintw (misc->titlewin, 1, 0,
                     "----------------------------------------");
          wprintw (misc->titlewin, "----------------------------------------");
-         mvwprintw (misc->titlewin, 1, 0,
-                    gettext ("Go to phrase in current item: "));
+         mvwprintw (misc->titlewin, 1, 0, "%s ",
+                    gettext ("Go to phrase in current item:"));
          echo ();
          wgetnstr (misc->titlewin, pn, 8);
          noecho ();
@@ -1900,7 +1756,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
             {
                misc->phrase_nr = 0;
                open_text_file (misc, my_attribute,
-                 daisy[misc->current].smil_file, daisy[misc->current].anchor);
+                 daisy[misc->current].xml_file, daisy[misc->current].anchor);
             } // if
             misc->playing = misc->just_this_item = misc->current;
          } // if
@@ -1911,7 +1767,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
             misc->phrase_nr = 0;
             kill_player (misc);
             open_text_file (misc, my_attribute,
-              daisy[misc->current].smil_file, daisy[misc->current].anchor);
+              daisy[misc->current].xml_file, daisy[misc->current].anchor);
          } // if
          if (misc->just_this_item != -1 &&
              daisy[misc->displaying].screen == daisy[misc->playing].screen)
@@ -1968,7 +1824,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          } // if
          kill_player (misc);
          xmlTextReaderClose (misc->reader);
-         misc->total_items = 1;
+         misc->total_items = misc->depth = 1;
          misc->phrase_nr = 0;
          misc->total_phrases = misc->total_pages = 0;
          misc->playing = misc->just_this_item = -1;
@@ -2010,10 +1866,11 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          start_OCR (misc, file);
          daisy = create_daisy_struct (misc, my_attribute);
          *daisy[0].my_class = daisy[0].page_number = 0;
-         daisy[0].smil_file = daisy[0].anchor = strdup ("");
+         daisy[0].xml_file = daisy[0].anchor = strdup ("");
          read_daisy_3 (misc, my_attribute, daisy);
+         fill_page_numbers (misc, daisy, my_attribute);
          check_phrases (misc, my_attribute, daisy);
-         strcpy (daisy[0].label, "1");
+         daisy[0].label = strdup ("1");
          strcpy (misc->daisy_title, "scanned image");
          misc->total_items = 1;
          misc->level = misc->depth = 1;
@@ -2035,7 +1892,8 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          mvwprintw (misc->titlewin, 1, 0,
                     "----------------------------------------");
          wprintw (misc->titlewin, "----------------------------------------");
-         mvwprintw (misc->titlewin, 1, 0, gettext ("Press 'h' for help "));
+         mvwprintw (misc->titlewin, 1, 0, "%s ",
+                    gettext ("Press 'h' for help"));
          wrefresh (misc->titlewin);
          view_screen (misc, daisy);
          misc->displaying = misc->current = 0;
@@ -2181,6 +2039,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          kill_player (misc);
          put_bookmark (misc);
          misc->playing = misc->just_this_item = -1;
+         misc->total_pages = 0;
          strncpy (file, get_input_file (misc, file), MAX_STR - 1);
          switch (chdir (misc->tmp_dir))
          {
@@ -2222,7 +2081,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
                remove (misc->eBook_speaker_wav);
                remove ("old.wav");
                open_text_file (misc, my_attribute,
-                 daisy[misc->playing].smil_file, daisy[misc->playing].anchor);
+                 daisy[misc->playing].xml_file, daisy[misc->playing].anchor);
             } // if
             view_screen (misc, daisy);
          } // if
@@ -2332,8 +2191,10 @@ void check_phrases (misc_t *misc, my_attribute_t *my_attribute,
 
    for (i = 0; i < misc->total_items; i++)
    {
-      daisy[i].smil_file = strdup (daisy[i].orig_smil);
+      daisy[i].xml_file = strdup (daisy[i].orig_smil);
       split_phrases (misc, my_attribute, daisy, i);
+      if (strlen (daisy[i].label) + daisy[i].x >= 53)
+         daisy[i].label[57 - daisy[i].x] = 0;
    } // for
 
    count_phrases (misc, my_attribute, daisy);
@@ -2355,13 +2216,16 @@ void check_phrases (misc_t *misc, my_attribute_t *my_attribute,
          daisy[j].x = daisy[j + 1].x;
          daisy[j].level = daisy[j + 1].level;
          daisy[j].page_number = daisy[j + 1].page_number;
-         daisy[j].orig_smil = daisy[j + 1].orig_smil;
-         daisy[j].smil_file = daisy[j + 1].smil_file;
-         daisy[j].anchor = daisy[j + 1].anchor;
+         daisy[j].orig_smil = strdup (daisy[j + 1].orig_smil);
+         daisy[j].xml_file = strdup (daisy[j + 1].xml_file);
+         daisy[j].anchor = strdup (daisy[j + 1].anchor);
          strncpy (daisy[j].my_class, daisy[j + 1].my_class, MAX_STR - 1);
-         strncpy (daisy[j].label, daisy[j + 1].label, 80);
+         daisy[j].label = strdup (daisy[j + 1].label);
          if (*daisy[j].label == 0)
+         {
+            daisy[j].label = malloc (5);
             sprintf (daisy[j].label, "%d", j + 1);
+         } // if
       } // for
    } // for
 
@@ -2382,20 +2246,23 @@ void check_phrases (misc_t *misc, my_attribute_t *my_attribute,
       daisy[i].screen = i / misc->max_y;
 
       if (! *daisy[i].label)
+      {
+         daisy[i].label = malloc (10);
          snprintf (daisy[i].label, 10, "%d", i + 1);
+      } // if
    } // for
 } // check_phrases
 
 void store_as_WAV_file (misc_t *misc, my_attribute_t *my_attribute,
                         daisy_t *daisy)
 {
-   char str[MAX_STR], s2[MAX_STR];
+   char *str, s2[MAX_STR];
    int i, pause_flag;
    struct passwd *pw;
 
    pause_flag = misc->playing;
    wclear (misc->screenwin);
-   snprintf (str, MAX_STR - 1, "%s", daisy[misc->current].label);
+   str = strdup (daisy[misc->current].label);
    for (i = 0; str[i] != 0; i++)
    {
       if (str[i] == '/')
@@ -2440,7 +2307,7 @@ void write_ascii (misc_t *misc, my_attribute_t *my_attribute,
    local_doc = NULL;
    local_reader = NULL;
    open_text_file (misc, my_attribute,
-                 daisy[misc->current].smil_file, daisy[misc->current].anchor);
+                 daisy[misc->current].xml_file, daisy[misc->current].anchor);
    while (1)
    {
       if (! get_tag_or_label (misc, my_attribute, misc->reader))
@@ -2460,13 +2327,13 @@ void write_ascii (misc_t *misc, my_attribute_t *my_attribute,
 void store_as_ASCII_file (misc_t *misc, my_attribute_t *my_attribute,
                        daisy_t *daisy)
 {
-   char str[MAX_STR], s2[MAX_STR];
+   char *str, s2[MAX_STR];
    int i, pause_flag;
    struct passwd *pw;;
 
    pause_flag = misc->playing;
    wclear (misc->screenwin);
-   snprintf (str, MAX_STR - 1, "%s", daisy[misc->current].label);
+   str = strdup (daisy[misc->current].label);
    for (i = 0; str[i] != 0; i++)
    {
       if (str[i] == '/')
@@ -2640,15 +2507,16 @@ void play_epub (misc_t *misc, my_attribute_t *my_attribute,
    int i;
 
    daisy = create_daisy_struct (misc, my_attribute);
-        
+
 // first be sure all strings in daisy_t are cleared
    for (i = 0; i < misc->total_items; i++)
    {
-      *daisy[i].my_class = *daisy[i].label = daisy[i].page_number = 0;
-      daisy[i].smil_file = daisy[i].anchor = strdup ("");
+      *daisy[i].my_class = daisy[i].page_number = 0;
+      daisy[i].label = daisy[i].xml_file = daisy[i].anchor = strdup ("");
    } // for
 
    read_daisy_3 (misc, my_attribute, daisy);
+   fill_page_numbers (misc, daisy, my_attribute);
    check_phrases (misc, my_attribute, daisy);
    misc->reader = NULL;
    misc->just_this_item = misc->playing = -1;
@@ -2663,6 +2531,12 @@ void play_epub (misc_t *misc, my_attribute_t *my_attribute,
    kill_player (misc);
    remove (misc->eBook_speaker_wav);
    remove ("old.wav");
+   for (misc->current = 0; misc->current < misc->total_items; misc->current++)
+   {
+      daisy[misc->current].screen = misc->current / misc->max_y;
+      daisy[misc->current].y =
+               misc->current - daisy[misc->current].screen * misc->max_y;
+   } // for
    if (misc->depth <= 0)
       misc->depth = 1;
    view_screen (misc, daisy);
@@ -2677,7 +2551,7 @@ void play_epub (misc_t *misc, my_attribute_t *my_attribute,
    mvwprintw (misc->titlewin, 1, 0,
               "----------------------------------------");
    wprintw (misc->titlewin, "----------------------------------------");
-   mvwprintw (misc->titlewin, 1, 0, gettext ("Press 'h' for help "));
+   mvwprintw (misc->titlewin, 1, 0, "%s ", gettext ("Press 'h' for help"));
    wrefresh (misc->titlewin);
    browse (misc, my_attribute, daisy, file);
    remove_tmp_dir (misc);
@@ -2958,7 +2832,7 @@ int main (int argc, char *argv[])
    initscr ();
    misc.titlewin = newwin (2, 80,  0, 0);
    misc.screenwin = newwin (23, 80, 2, 0);
-   misc.ignore_bookmark = 0;
+   misc.ignore_bookmark = misc.total_pages = 0;
    misc.break_on_EOL = 'n';
    misc.level = 1;
    misc.show_hidden_files = 0;
@@ -2992,8 +2866,9 @@ int main (int argc, char *argv[])
    snprintf (misc.eBook_speaker_wav, MAX_STR,
              "%s/eBook-speaker.wav", misc.tmp_dir);
    misc.option_b = misc.option_t = misc.use_cuneiform = 0;
+   misc.use_OPF = misc.use_NCX = 0;
    opterr = 0;
-   while ((opt = getopt (argc, argv, "b:cd:hilo:r:st:")) != -1)
+   while ((opt = getopt (argc, argv, "b:cd:hilo:r:st:NO")) != -1)
    {
       switch (opt)
       {
@@ -3029,6 +2904,15 @@ int main (int argc, char *argv[])
          strncpy (misc.tts[misc.tts_no], optarg, MAX_STR - 1);
          remove_double_tts_entries (&misc);
          break;
+      case 'N': // ment for debugging
+         misc.use_NCX = 1;
+         break;
+      case 'O': // ment for debugging
+         misc.use_OPF = 1;
+         break;
+      default:
+         beep ();
+         usage ();
       } // switch
    } // while
 
@@ -3114,3 +2998,100 @@ int main (int argc, char *argv[])
    play_epub (&misc, &my_attribute, daisy, misc.orig_file);
    return 0;
 } // main
+ 
+void go_to_page_number_3 (misc_t *misc, my_attribute_t *my_attribute,
+                        daisy_t *daisy)
+{
+   char pn[15];
+
+   kill (misc->player_pid, SIGKILL);
+   misc->playing = misc->just_this_item = -1;
+   remove (misc->eBook_speaker_wav);
+   remove ("old.wav");
+   mvwprintw (misc->titlewin, 1, 0,
+              "----------------------------------------");
+   wprintw (misc->titlewin, "----------------------------------------");
+   mvwprintw (misc->titlewin, 1, 0, "%s ", gettext ("Go to page number:"));
+   echo ();
+   wgetnstr (misc->titlewin, pn, 5);
+   noecho ();
+   view_screen (misc, daisy);
+   if (! *pn || atoi (pn) > misc->total_pages)
+   {
+      beep ();
+      pause_resume (misc, my_attribute, daisy);
+      pause_resume (misc, my_attribute, daisy);
+      return;
+   } // if
+
+// start searching
+   misc->current = misc->current_page_number = misc->phrase_nr = 0;
+   open_text_file (misc, my_attribute,
+               daisy[misc->current].xml_file, daisy[misc->current].anchor);
+   while (1)
+   {
+      if (! get_tag_or_label (misc, my_attribute, misc->reader))
+      {
+         misc->current++;
+         if (misc->current >= misc->total_items - 1)
+         {
+            beep ();
+            return;
+         } // if
+         misc->current_page_number = misc->phrase_nr = 0;
+         open_text_file (misc, my_attribute,
+               daisy[misc->current].xml_file, daisy[misc->current].anchor);
+         continue;
+      } // if
+      if (strcasecmp (misc->tag, "pagenum") == 0 ||
+          strcasecmp (my_attribute->class, "pagenum") == 0)
+      {
+         while (1)
+         {
+            if (! get_tag_or_label (misc, my_attribute, misc->reader))
+               break;
+            if (strcasecmp (misc->tag, "/pagenum") == 0)
+               break;
+            if (*misc->label)
+            {
+               misc->current_page_number = atoi (misc->label);
+               if (misc->current_page_number == atoi (pn))
+               {
+                  misc->playing = misc->displaying = misc->current;
+                  misc->player_pid = -2;
+                  view_screen (misc, daisy);
+                  return;
+               } // if
+               misc->label = strdup ("");
+               break;
+            } // if
+         } // while
+      } // if
+      if (misc->current < misc->total_items - 1 &&
+          *daisy[misc->current + 1].anchor &&
+          strcmp (my_attribute->id, daisy[misc->current + 1].anchor) == 0)
+      {
+         misc->current++;
+         if (misc->current >= misc->total_items)
+         {
+            beep ();
+            return;
+         } // if
+         misc->current_page_number = misc->phrase_nr = 0;
+         open_text_file (misc, my_attribute,
+               daisy[misc->current].xml_file, daisy[misc->current].anchor);
+      } // if
+      if (*misc->label)
+         misc->phrase_nr++;
+    } // while
+} // go_to_page_number_3
+
+void skip_right (misc_t *misc)
+{
+   if (misc->playing == -1)
+   {
+      beep ();
+      return;
+   } // if
+   kill_player (misc);
+} // skip_right

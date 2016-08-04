@@ -91,7 +91,7 @@ typedef struct Misc
    int discinfo, playing, just_this_item, current_page_number;
    int current, max_y, max_x, total_items, level, displaying, ignore_bookmark;
    int phrase_nr, tts_no, option_t, depth, total_phrases, total_pages;
-   int option_b, pipefd[2], tmp_wav_fd, scan_flag, label_len;
+   int option_b, pipefd[2], tmp_wav_fd, scan_flag;
    int items_in_opf, items_in_ncx, show_hidden_files, list_total;
    int phrases_in_opf, phrases_in_ncx, use_cuneiform;
    float speed, volume;
@@ -105,18 +105,20 @@ typedef struct Misc
    char cddb_flag, opf_name[MAX_STR], ncx_name[MAX_STR], copyright[MAX_STR];
    char eBook_speaker_txt[MAX_STR + 1], eBook_speaker_wav[MAX_STR + 1];
    char first_eBook_speaker_wav[MAX_STR + 1];
-   char cmd[MAX_CMD], src_dir[MAX_STR + 1], *tmp_dir, daisy_mp[MAX_STR + 1];
+   char cmd[MAX_CMD], str[MAX_STR + 1];
+   char src_dir[MAX_STR + 1], *tmp_dir, daisy_mp[MAX_STR + 1];
    char orig_file[MAX_STR + 1], orig_epub[MAX_STR + 1];
    char locale[MAX_STR + 1], xmlversion[MAX_STR + 1], encoding[MAX_STR + 1];
    char standalone[MAX_STR + 1], break_on_EOL, scan_resolution[10];
    WINDOW *screenwin, *titlewin;
+   int use_OPF, use_NCX; // for testing
 } misc_t;
 
 typedef struct Daisy
 {
    int playorder, x, y, screen, n_phrases;
-   char *smil_file, *anchor, my_class[MAX_STR];
-   char *orig_smil, label[100];
+   char *xml_file, *anchor, my_class[MAX_STR];
+   char *orig_smil, *label;
    int level, page_number;
 } daisy_t;
 
@@ -156,3 +158,6 @@ extern void save_original_XMLs (misc_t *);
 extern void play_epub (misc_t *, my_attribute_t *, daisy_t *daisy, char *);
 extern void create_epub (misc_t *, my_attribute_t *, daisy_t *, char *, int);
 extern void count_phrases (misc_t *, my_attribute_t *, daisy_t *);
+extern void go_to_page_number_3 (misc_t *, my_attribute_t *, daisy_t *);
+extern void parse_page_number (misc_t *, my_attribute_t *, xmlTextReaderPtr);
+extern void fill_page_numbers (misc_t *, daisy_t *, my_attribute_t *);

@@ -68,7 +68,7 @@ void ls (misc_t *misc, size_t n, struct dirent **namelist)
    mvwprintw (misc->titlewin, 1,  0,
               "----------------------------------------");
    wprintw (misc->titlewin, "----------------------------------------");
-   mvwprintw (misc->titlewin, 1, 0, gettext ("'h' for help "));
+   mvwprintw (misc->titlewin, 1, 0, "%s ", gettext ("'h' for help"));
    wprintw (misc->titlewin, "- %s ", misc->src_dir);
    snprintf (str, MAX_STR, "%d/%d",
              (int) page, (int) (misc->list_total - 1) / 23 + 1);
@@ -115,7 +115,8 @@ int search_in_dir (misc_t *misc, int start, int tot, char mode,
    {
       mvwaddstr (misc->titlewin, 1, 0, "----------------------------------------");
       waddstr (misc->titlewin, "----------------------------------------");
-      mvwprintw (misc->titlewin, 1, 0, gettext ("What do you search? "));
+      mvwprintw (misc->titlewin, 1, 0, "%s ", 
+                 gettext ("What do you search?"));
       echo ();
       wgetnstr (misc->titlewin, search_str, 25);
       noecho ();
@@ -262,7 +263,7 @@ char *get_input_file (misc_t *misc, char *src)
               gettext ("%s - Choose an input-file"), misc->copyright);
    mvwprintw (misc->titlewin, 1,  0, "----------------------------------------");
    wprintw (misc->titlewin, "----------------------------------------");
-   mvwprintw (misc->titlewin, 1, 0, gettext ("'h' for help "));
+   mvwprintw (misc->titlewin, 1, 0, "%s ", gettext ("'h' for help"));
    wprintw (misc->titlewin, "- %s ", misc->src_dir);
    snprintf (str, MAX_STR, "%d/%d",
              (int) page, (int) (misc->list_total - 1) / 23 + 1);

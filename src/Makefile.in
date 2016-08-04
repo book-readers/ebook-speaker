@@ -265,7 +265,7 @@ infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
-localedir = @localedir@
+localedir = $(datadir)/locale
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
@@ -291,7 +291,7 @@ AM_CFLAGS = -D LOCALEDIR=\"$(prefix)/share/locale\" -D EBOOK_SPEAKER \
              -D PROGRAMNAME_LOCALEDIR=\"${PROGRAMNAME_LOCALEDIR}\"
 
 AM_LDFLAGS = -l ncursesw -l sox -l xml2 -l magic
-eBook_speaker_SOURCES = daisy.h daisy3.c eBook-speaker.c list_dir.c
+eBook_speaker_SOURCES = daisy.h daisy3.c eBook-speaker.c list_dir.c 
 all: all-am
 
 .SUFFIXES:
