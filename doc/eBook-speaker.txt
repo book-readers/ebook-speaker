@@ -2,10 +2,11 @@ NAME
 eBook-speaker - read aloud eBooks and other text formats using a software speech-synthesizer
 
 SYNOPSIS
-eBook-speaker [eBook_file | -s [-r resolution]] [-o language-code] [-h] [-i] [-d ALSA_sound_device] [-t TTS_command] [-b n | y] [-c]
+eBook-speaker [eBook_file | URL | -s [-r resolution]] [-o language-code] [-h] [-i] [-d pulseaudio_sound_device] [-t TTS_command] [-b n | y] [-c]
 
 DESCRIPTION
 eBook-speaker reads aloud eBooks and other text formats and even scanned documents using a software speech-synthesizer. By default the tool espeak is used for speech output.
+eBook-speaker can read from http://, https:// and ftp:// URLs using the tool wget.
 eBook-speaker also can scan a documant by itself using the scanimage application.
 
 A list of items on the eBook will appear. Press <ENTER> to start reading. When reading of an item has finished, eBook-speaker will read the next item and the cursor will automatically skip to that item, so that an attached braille-terminal will display the name of that item.
@@ -61,7 +62,8 @@ eBook_file  Give an eBook_file as argument to eBook-speaker.  Many eBook formats
 
 -c  eBook-speaker use tesseract for OCR by default. This option forces eBook-speaker to use cuneiform instead.
 
--d ALSA_sound_device  eBook-speaker will play on this sound device. Default is "hw:0". This option overrules the value in the ~/.eBook-speaker.xml config file.
+-d pulseaudio_sound_device  eBook-speaker will play on this sound device. Default is "0". (The first soundcard) This option overrules the value in the ~/.eBook-speaker.xml config file. Be sure the user is a member of the group audio.
+
 
 -h  Print this usage message.
 
@@ -69,7 +71,7 @@ eBook_file  Give an eBook_file as argument to eBook-speaker.  Many eBook formats
 
 -l  Deprecated. eBook-speaker now determines the file-type using the libmagic library.
 
--o language-code  The language code for OCR to use. (typically an ISO 639-1 two-letter code. See <https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes>). If this option not is specified. the language is determined according to the current locale.
+-o language-code  The language code for OCR to use. (typically an ISO 639-1 two-letter code. See <https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes>). If this option not is specified, the language is determined according to the current locale.
 
 -r resolution  By default the option "-s" will scan at a resolution of 400  DPI. With this option one can force another resolution.
 
@@ -175,18 +177,28 @@ Here are some examples to insert into the TTS-selector:
    text2wave \-eval '(voice_en1_mbrola)' eBook-speaker.txt \-o eBook-speaker.wav
    pico2wave -w eBook-speaker.wav "`cat eBook-speaker.txt`"
 
+NOTES
+On some soundcards (especially onboard cards) the alsa driver only can play one file at a time. eBook-speaker crashes sometimes on these cards. From this version on the pulseaudio sound-driver will be used instead. The pulseaudio sound system has no problems with these cards.
+
+I don't know how to play with pulseaudio in the C function sox_open_write (). For now, the external command sox will be used instead.
+
+THANKS TO
+Daniel Veillard <daniel@veillard.com>  for the XML2 library.
+
+Chris Bagwell <cbagwell@users.sourceforge.net>  for sox.
+
 FILES
 ~/.eBook-speaker/  This directory contains the bookmarks in XML-format.  Each file has the name of the book and contains the name of the current item, the start-phrase of that item, the current level, the desired TTS and the desired reading speed.
 ~/.eBook-speaker.xml  This file, in XML-format,  contains the name of the desired audio device, the desired OCR language and the TTS's to use. (See TTS EXAMPLES)
 /tmp/eBook-speaker.XXXXXX  eBook-speaker makes use of a temporary directory. It is removed after quiting.
 
 SEE ALSO
-ebook-convert(1), pandoc(1), calibre(1), iconv(1), lowriter(1), tesseract(1), cuneiform(1), espeak(1), flite(1), text2wave(1), mbrola(1), pico2wave(1), scanimage(1), pnmflip(1), gif2png(1), magic(5), man2html(1), unar(1), swift(1), unrtf(1), locale(7)
+ebook-convert(1), pandoc(1), calibre(1), iconv(1), lowriter(1), tesseract(1), cuneiform(1), espeak(1), flite(1), text2wave(1), mbrola(1), pico2wave(1), scanimage(1), pnmflip(1), gif2png(1), man2html(1), unar(1), swift(1), unrtf(1), wget(1), sox(1), magic(5), locale(7)
 
 AUTHOR
 Jos Lemmens <jos@jlemmens.nl>
 
 COPYRIGHT
-Copyright (C)2016 Jos Lemmens <jos@jlemmens.nl>
+Copyright (C)2011-2018 Jos Lemmens <jos@jlemmens.nl>
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program (see the file COPYING); if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA

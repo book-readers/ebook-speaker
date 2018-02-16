@@ -159,3 +159,29 @@
 4.0	For OCR one now can choose between tesseract or cuneiform.
 4.1	Updated the French translation.
 	Updated the Spanish translation.
+4.1.1	Updated the Bulgarian translation.
+	Bug in command 'd' solved.
+	Bug in command 'r' solved.
+	Filenames now will be treated case insensitive.
+	The external executable "find" has been dropped in favour
+	of an internal function that scans for the "ncc.html",
+	"*.ncx" and "*.opf" files.
+	man/Makefile.am changes.
+        eBook-speaker can read from http://, https:// and ftp:// URLs.
+5.0	Alter  playback volume with ALSA instead off altering the volume
+	of the soundfile itself with sox.
+	On some soundcards (especially onboard cards) the alsa driver
+	only can play one file at a time.
+	eBook-speaker crashes sometimes on these cards.
+	From this version on the pulseaudio sound-driver will be used
+	instead. pulseaudio has no problems with these cards.
+	I don't know how to play with pulseaudio in the C function
+	sox_open_write ().,
+	For now, the external command sox will be used instead.
+	Altering the playback volume only worked on the first soundcard.
+	Now playback volume works on all found cards.
+	Store to WAV ('d') now displays the number of phrases to be
+	synthesized.
+	The first TTS in the TTS-selector will be forced to espeak
+	with option "-v" set to the current locale.
+	Convert ALSA devicename into pulseaudio devicename.

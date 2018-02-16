@@ -1,5 +1,5 @@
 /* eBook-speaker - read aloud an eBook using a speech synthesizer
- *  Copyright (C) 2015 J. Lemmens
+ *  Copyright (C) 2017 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-*/
+ */
 
 #define _GNU_SOURCE
 
@@ -40,29 +40,13 @@ struct dirent **get_dir (misc_t *misc, struct dirent **namelist)
    return namelist;
 } // get_dir
 
-char *get_file_type (char *name)
-{
-   magic_t myt;
-
-   myt = magic_open (MAGIC_FLAGS);
-   magic_load (myt, NULL);
-   if (magic_file (myt, name) == NULL)
-      return "Unknown format";
-   else
-      return (char *) magic_file (myt, name);
-} // get_file_type
-
-void ls (misc_t *misc, size_t n, struct dirent **namelist)
+void ls (misc_t *misc, size_t n, struct dirent **namelist, magic_t myt)
 {
    size_t y, page;
-   char str[MAX_STR + 1];
-   magic_t myt;
+   char *str;
 
-   myt = magic_open (MAGIC_FLAGS);
-   magic_load (myt, NULL);
    page = n / 23 + 1;
    wclear (misc->titlewin);
-   wrefresh (misc->titlewin);
    mvwprintw (misc->titlewin, 0, 0,
               gettext ("%s - Choose an input-file"), misc->copyright);
    mvwprintw (misc->titlewin, 1,  0,
@@ -70,8 +54,8 @@ void ls (misc_t *misc, size_t n, struct dirent **namelist)
    wprintw (misc->titlewin, "----------------------------------------");
    mvwprintw (misc->titlewin, 1, 0, "%s ", gettext ("'h' for help"));
    wprintw (misc->titlewin, "- %s ", misc->src_dir);
-   snprintf (str, MAX_STR, "%d/%d",
-             (int) page, (int) (misc->list_total - 1) / 23 + 1);
+   str = malloc (15);
+   sprintf (str, "%d/%d", (int) page, (int) (misc->list_total - 1) / 23 + 1);
    mvwprintw (misc->titlewin, 1, 77 - strlen (str), " %s -", str);
    wrefresh (misc->titlewin);
    wclear (misc->screenwin);
@@ -83,19 +67,24 @@ void ls (misc_t *misc, size_t n, struct dirent **namelist)
       if ((int) index >= misc->list_total)
          break;
       mvwprintw (misc->screenwin, y, 1, "%.39s", namelist[index]->d_name);
-      if ((int) n >= misc->list_total)
-         break;
-      if (magic_file (myt, namelist[index]->d_name) == NULL)
+      str = realloc
+        (str, strlen (misc->src_dir) + strlen (namelist[index]->d_name) + 10);
+      strcpy (str, misc->src_dir);
+      if (str[strlen (str) - 1] != '/')
+         strcat (str, "/");
+      strcat (str, namelist[index]->d_name);
+      if (magic_file (myt, str) == NULL)
          mvwprintw (misc->screenwin, y, 41, "%.39s", "Unknown format");
       else
-         mvwprintw (misc->screenwin, y, 41, "%.39s",
-                    magic_file (myt, namelist[index]->d_name));
+         mvwprintw (misc->screenwin, y, 41, "%.39s", magic_file (myt, str));
       wmove (misc->screenwin, n - (page - 1) * 23, 0);
       wrefresh (misc->screenwin);
+      if ((int) n >= misc->list_total)
+         break;
    } // for
-   magic_close (myt);
    wmove (misc->screenwin, n - (page - 1) * 23, 0);
    wrefresh (misc->screenwin);
+   free (str);
 } // ls
 
 int hidden_files (const struct dirent *entry)
@@ -218,46 +207,41 @@ void help_list (misc_t *misc)
    nodelay (misc->screenwin, FALSE);
    wgetch (misc->screenwin);
    nodelay (misc->screenwin, TRUE);
-} // help_list
+} // help_list                                 
 
 char *get_input_file (misc_t *misc, char *src)
 {
    struct dirent **namelist;
-   static char file[MAX_STR + 1];
-   char *file_type = 0, search_str[MAX_STR], str[MAX_STR + 1];
+   char *file, search_str[MAX_STR], str[MAX_STR + 1];
+   const char *file_type = 0;
    int n, page;
+   magic_t myt;
 
-   if (strcasecmp (get_file_type (src), "directory") == 0)
+   myt = magic_open (MAGIC_FLAGS);
+   magic_load (myt, NULL);
+   file = strdup (src);
+   if (strcasestr (magic_file (myt, file), "directory"))
    {
-      strncpy (misc->src_dir, src, MAX_STR);
-      if (*(misc->src_dir + strlen (misc->src_dir) - 1) != '/')
+      misc->src_dir = malloc (strlen (src) + 10);
+      strcpy (misc->src_dir, src);
+      if (misc->src_dir[strlen (misc->src_dir) - 1] != '/')
          strcat (misc->src_dir, "/");
-      switch (chdir (misc->src_dir))
-      {
-      default:
-         break;
-      } // switch
    }
    else
    {
-      strncpy (file, basename (src), MAX_STR);
-      strncpy (misc->src_dir, dirname (src), MAX_STR);
-      if (*(misc->src_dir + strlen (misc->src_dir) - 1) != '/')
-         strcat (misc->src_dir, "/");
-      switch (chdir (misc->src_dir))
-      {
-      default:
-         break;
-      } // switch
+      file = strdup (basename (file));
+      misc->src_dir = strdup (src);
+      misc->src_dir = strdup (dirname (misc->src_dir));
    } // if
    nodelay (misc->screenwin, FALSE);
    namelist = NULL;
    misc->list_total = 0;
    namelist = get_dir (misc, namelist);
-   n = 0;
    for (n = misc->list_total - 1; n > 0; n--)
+   {
       if (strcmp (namelist[n]->d_name, file) == 0)
          break;
+   } // for
    page = n / 23 + 1;
    mvwprintw (misc->titlewin, 0, 0,
               gettext ("%s - Choose an input-file"), misc->copyright);
@@ -270,13 +254,12 @@ char *get_input_file (misc_t *misc, char *src)
    mvwprintw (misc->titlewin, 1, 77 - strlen (str), " %s -", str);
    wrefresh (misc->titlewin);
    *search_str = 0;
-   *misc->daisy_title = 0;
    while (1)
    {
       int search_flag;
 
-      namelist = get_dir (misc, namelist);
-      ls (misc, n, namelist);
+      if (n >= 0)
+         ls (misc, n, namelist, myt);
       switch (wgetch (misc->screenwin))
       {
       case 13: // ENTER
@@ -296,34 +279,35 @@ char *get_input_file (misc_t *misc, char *src)
                beep ();
                break;
             } // if
-            strncpy (misc->src_dir, dirname (misc->src_dir), MAX_STR);
-            switch (chdir (misc->src_dir))
-            {
-            default:
-               break;
-            } // switch
-            if (*(misc->src_dir + strlen (misc->src_dir) - 1) != '/')
+            misc->src_dir = strdup (dirname (misc->src_dir));
+            if (misc->src_dir[strlen (misc->src_dir) - 1] != '/')
                strcat (misc->src_dir, "/");
             n = 0;
             page = n / 23 + 1;
             break;
          } // if ".."
-         file_type = get_file_type (namelist[n]->d_name);
-         if (strstr (file_type, "directory") != NULL)
+         src = malloc (strlen (misc->src_dir) +
+                       strlen (namelist [n]->d_name) + 5);
+         strcpy (src, misc->src_dir);
+         strcat (src, namelist [n]->d_name);
+         file_type = magic_file (myt, src);
+         if (strstr (file_type, "directory"))
          {
-            strncat (misc->src_dir, namelist[n]->d_name, MAX_STR);
-            switch (chdir (misc->src_dir))
-            {
-            default:
-               break;
-            } // switch
-            if (*(misc->src_dir + strlen (misc->src_dir) - 1) != '/')
+            misc->src_dir = malloc (strlen (src) + 5);
+            strcpy (misc->src_dir, src);
+            if (misc->src_dir[strlen (misc->src_dir) - 1] != '/')
                strcat (misc->src_dir, "/");
             n = 0;
             page = n / 23 + 1;
-            break;
+            return get_input_file (misc, src);
          } // if "directory"
-         snprintf (file, MAX_STR, "%s%s", misc->src_dir, namelist[n]->d_name);
+         file = malloc (strlen (misc->src_dir) +
+                        strlen (namelist[n]->d_name) +  10);
+         strcpy (file, misc->src_dir);
+         if (file[strlen (file) - 1] != '/')
+            strcat (file, "/");
+         strcat (file, namelist[n]->d_name);
+         magic_close (myt);
          return file;
       case KEY_LEFT:
       case '4':
@@ -331,20 +315,15 @@ char *get_input_file (misc_t *misc, char *src)
          char name[MAX_STR + 1];
 
          if (strcmp (misc->src_dir, "/") == 0)
-// topdir
          {
+// topdir
             beep ();
             break;
          } // if
          strncpy (name, basename (misc->src_dir), MAX_STR);
-         strncpy (misc->src_dir, dirname (misc->src_dir), MAX_STR);
+         strcpy (misc->src_dir, dirname (misc->src_dir));
          if (misc->src_dir[strlen (misc->src_dir) - 1] != '/')
             strncat (misc->src_dir, "/", MAX_STR);
-         switch (chdir (misc->src_dir))
-         {
-         default:
-            break;
-         } // switch
          namelist = get_dir (misc, namelist);
          for (n = misc->list_total - 1; n > 0; n--)
             if (strcmp (namelist[n]->d_name, name) == 0)
@@ -401,8 +380,7 @@ char *get_input_file (misc_t *misc, char *src)
          help_list (misc);
          nodelay (misc->screenwin, FALSE);
          namelist = get_dir (misc, namelist);
-         free (file_type);
-         file_type = get_file_type (namelist[n]->d_name);
+         file_type = magic_file (myt, namelist [n]->d_name);
          break;
       case 'H':
       case '0':
@@ -410,6 +388,8 @@ char *get_input_file (misc_t *misc, char *src)
          char name[55];
 
          misc->show_hidden_files = 1 - misc->show_hidden_files;
+         if (n <= 0)
+            break;
          strncpy (name, namelist[n]->d_name, 50);
          free (namelist);
          namelist = get_dir (misc, namelist);
@@ -430,6 +410,7 @@ char *get_input_file (misc_t *misc, char *src)
          break;
       case 'q':
          free (namelist);
+         magic_close (myt);
          quit_eBook_speaker (misc);
          _exit (0);
       case 'T':
@@ -441,4 +422,5 @@ char *get_input_file (misc_t *misc, char *src)
          break;
       } // switch
    } // while
-} // get_input_file                                                     
+   magic_close (myt);
+} // get_input_file

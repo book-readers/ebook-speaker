@@ -1,5 +1,5 @@
 eBook-speaker - read eBooks with Linux using a speech-synthesizer
-(C)2015 J. Lemmens
+(C)2017 J. Lemmens
 
 DESCRIPTION
 eBook-speaker reads an eBook and uses a speech synthisizer for output.
@@ -15,9 +15,11 @@ REQUIREMENTS
 Be sure the following extra packages exist on your system:
 
    libncursesw5
-   libsox1b
    libmagic1
    libxml2
+   libsox2
+   libsox-fmt-mp3
+   libsox-fmt-pulse
    unar
    txt2man
    man2html-base
@@ -39,6 +41,7 @@ Be sure the following extra packages exist on your system:
    sane-utils
    netpbm
    unrtf
+   wget
 
 The following packages are needed to make the manual and the html document:
 
