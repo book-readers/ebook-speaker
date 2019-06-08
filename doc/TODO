@@ -4,4 +4,4 @@
 - mathml. Convert with natbraille
 - Replace the external command iconv by the function iconv ()
 - translate current documant with trans
-- how to play pulseaudio with the C function sox_open_write ().
+- if started from a dir, return to that dir after finishing a book

@@ -1,5 +1,5 @@
 eBook-speaker - read eBooks with Linux using a speech-synthesizer
-(C)2017 J. Lemmens
+(C)2019 J. Lemmens
 
 DESCRIPTION
 eBook-speaker reads an eBook and uses a speech synthisizer for output.
@@ -16,6 +16,7 @@ Be sure the following extra packages exist on your system:
 
    libncursesw5
    libmagic1
+   libpulse0
    libxml2
    libsox2
    libsox-fmt-mp3
@@ -25,12 +26,6 @@ Be sure the following extra packages exist on your system:
    man2html-base
    html2text
    gettext
-   language-pack-bg
-   language-pack-de
-   language-pack-es
-   language-pack-fr
-   language-pack-nl
-   language-pack-pt
    espeak
    libreoffice-writer
    calibre
@@ -51,12 +46,12 @@ The following packages are needed to make the manual and the html document:
 USAGE
 As a mortal user, give on the command line,:
 
-   $ eBook-speaker
+   $ ebook-speaker
 
 A file-manager will appear from which an input-file can be selected.
 An input-file can also be given as argument to eBook-speaker:
 
-   $ eBook-speaker file.epub
+   $ ebook-speaker file.epub
 
 This starts reading the eBook and printing the content on
 the screen. After giving an [ENTER], the eBook will be read using the
@@ -72,7 +67,8 @@ For keyboard navigation, plese press 'h' or '?'.
 
 eBook-speaker is multilingual. The following languages are currently
 supported:
-bulgarian, dutch, english, french, german, portuguese, spanish.
+bulgarian, dutch, english, finnish, french, german, portuguese, 
+Serbian, spanish.
 
 Enjoy
 

@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = eBook-speaker$(EXEEXT)
+bin_PROGRAMS = ebook-speaker$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/gettext.m4 \
@@ -106,10 +106,16 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_eBook_speaker_OBJECTS = list_dir.$(OBJEXT) common.$(OBJEXT) \
-	daisy2.02.$(OBJEXT) daisy3.$(OBJEXT) eBook-speaker.$(OBJEXT)
-eBook_speaker_OBJECTS = $(am_eBook_speaker_OBJECTS)
-eBook_speaker_LDADD = $(LDADD)
+am__dirstamp = $(am__leading_dot)dirstamp
+am_ebook_speaker_OBJECTS = pactl/src/core-util.$(OBJEXT) \
+	pactl/src/strbuf.$(OBJEXT) pactl/src/pactl.$(OBJEXT) \
+	list_dir.$(OBJEXT) playfile.$(OBJEXT) common.$(OBJEXT) \
+	daisy2.02.$(OBJEXT) daisy3.$(OBJEXT) ebook-speaker.$(OBJEXT) \
+	ncx.$(OBJEXT) opf.$(OBJEXT)
+ebook_speaker_OBJECTS = $(am_ebook_speaker_OBJECTS)
+ebook_speaker_LDADD = $(LDADD)
+am__DEPENDENCIES_1 =
+ebook_speaker_DEPENDENCIES = $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -138,8 +144,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(eBook_speaker_SOURCES)
-DIST_SOURCES = $(eBook_speaker_SOURCES)
+SOURCES = $(ebook_speaker_SOURCES)
+DIST_SOURCES = $(ebook_speaker_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -278,6 +284,7 @@ runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
+subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
@@ -285,18 +292,26 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 AM_CFLAGS = -D LOCALEDIR=\"$(prefix)/share/locale\" -D EBOOK_SPEAKER \
+            -D PROGRAMNAME_LOCALEDIR=\"${PROGRAMNAME_LOCALEDIR}\" \
+            -I /usr/include/libxml2/ -Ofast --param=ssp-buffer-size=4 \
+            -faggressive-loop-optimizations \
             -Wall -Wextra -g \
-            -I /usr/include/libxml2/ -O3 --param=ssp-buffer-size=4 \
             -Wunused-function -Wuninitialized -Winit-self -fno-common \
-            -D PROGRAMNAME_LOCALEDIR=\"${PROGRAMNAME_LOCALEDIR}\"
+            -Wlogical-op -fsanitize=null -Wpedantic
 
-eBook_speaker_SOURCES = daisy.h list_dir.c \
-                        common.c daisy2.02.c daisy3.c eBook-speaker.c
+ebook_speaker_SOURCES = daisy.h pactl/src/core-util.c pactl/src/strbuf.c \
+                        pactl/src/pactl.c list_dir.c playfile.c \
+                        common.c daisy2.02.c daisy3.c ebook-speaker.c \
+                        ncx.c opf.c   
 
+ldadd = $(depend) @LTLIBINTL@
+DEPENDENCIES = $(depend)
+LDADD = $(ldadd)
+CLEANFILES = $(EXTRA_PROGRAMS)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .o .obj
+.SUFFIXES: .c .o .obj .s
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -368,13 +383,26 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+pactl/src/$(am__dirstamp):
+	@$(MKDIR_P) pactl/src
+	@: > pactl/src/$(am__dirstamp)
+pactl/src/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) pactl/src/$(DEPDIR)
+	@: > pactl/src/$(DEPDIR)/$(am__dirstamp)
+pactl/src/core-util.$(OBJEXT): pactl/src/$(am__dirstamp) \
+	pactl/src/$(DEPDIR)/$(am__dirstamp)
+pactl/src/strbuf.$(OBJEXT): pactl/src/$(am__dirstamp) \
+	pactl/src/$(DEPDIR)/$(am__dirstamp)
+pactl/src/pactl.$(OBJEXT): pactl/src/$(am__dirstamp) \
+	pactl/src/$(DEPDIR)/$(am__dirstamp)
 
-eBook-speaker$(EXEEXT): $(eBook_speaker_OBJECTS) $(eBook_speaker_DEPENDENCIES) $(EXTRA_eBook_speaker_DEPENDENCIES) 
-	@rm -f eBook-speaker$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(eBook_speaker_OBJECTS) $(eBook_speaker_LDADD) $(LIBS)
+ebook-speaker$(EXEEXT): $(ebook_speaker_OBJECTS) $(ebook_speaker_DEPENDENCIES) $(EXTRA_ebook_speaker_DEPENDENCIES) 
+	@rm -f ebook-speaker$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(ebook_speaker_OBJECTS) $(ebook_speaker_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f pactl/src/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
@@ -382,19 +410,27 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/common.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/daisy2.02.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/daisy3.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eBook-speaker.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ebook-speaker.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/list_dir.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncx.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/opf.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/playfile.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@pactl/src/$(DEPDIR)/core-util.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@pactl/src/$(DEPDIR)/pactl.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@pactl/src/$(DEPDIR)/strbuf.Po@am__quote@
 
 .c.o:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
 
 .c.obj:
-@am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
@@ -510,10 +546,13 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f pactl/src/$(DEPDIR)/$(am__dirstamp)
+	-rm -f pactl/src/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -523,7 +562,7 @@ clean: clean-am
 clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR) pactl/src/$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -569,7 +608,7 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-	-rm -rf ./$(DEPDIR)
+	-rm -rf ./$(DEPDIR) pactl/src/$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
@@ -605,6 +644,17 @@ uninstall-am: uninstall-binPROGRAMS
 
 .PRECIOUS: Makefile
 
+
+libtool: $(LIBTOOL_DEPS)
+	$(SHELL) ./config.status --recheck
+
+.c.s:
+	(cd pactl/src && make)
+	$(COMPILE) -S $<
+
+again:
+	$(MAKE) clean
+	$(MAKE)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

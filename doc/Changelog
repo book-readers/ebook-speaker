@@ -162,7 +162,7 @@
 4.1.1	Updated the Bulgarian translation.
 	Bug in command 'd' solved.
 	Bug in command 'r' solved.
-	Filenames now will be treated case insensitive.
+	Filenames now will be treated case-insensitive.
 	The external executable "find" has been dropped in favour
 	of an internal function that scans for the "ncc.html",
 	"*.ncx" and "*.opf" files.
@@ -185,3 +185,31 @@
 	The first TTS in the TTS-selector will be forced to espeak
 	with option "-v" set to the current locale.
 	Convert ALSA devicename into pulseaudio devicename.
+5.0.1	Added a Serbian translation.
+5.1	The external command sox is no longer needed.
+	eBook-speaker now uses the sox library.
+	Use the option "--mode binary" with scanimage for better
+	OCR results.
+5.2	Drop the use of ALSA.
+	Alter volume using the pulseaudio pactl utility.
+	pactl is now built-in.
+	Filenames now will be treated case-insensitive.
+	Now also in href, src and alike attributes.
+	Playback sound can be muted/unmuted with 'm'.
+	With 'o' a soundcard can be selected. The volume levels and
+	the "mute" states of all cards ar shown and can be altered
+	using 'm', 'v' and 'V'.
+	Reset the terminal after eBook-speaker exits.
+5.2-beta-2
+	Set a phrase-break at the Nth position.
+	Thanks to Vagner Rener <vagnerrener@gmail.com> for the "fold" idea.
+5.3	Thanks to Didier Spaier <didier@slint.fr> for his patch to common.c:
+	- if ((p = popen ("/usr/bin/pactl list sinks", "r")) == NULL)
+	+ if ((p = popen ("LANG=C /usr/bin/pactl list sinks", "r")) == NULL)
+	pulseaudio device is "0" again.
+	Change variables bin_PROGRAMS ebook_speaker_SOURCES
+	Solved compiler warnings.
+	Added a new -v option for verbosity while readding a book,
+	so one can see what's going on.
+	Thanks to Colomban Wendling <cwendling@hypra.fr> for his
+	patch to gracefully quit daisy-player upon receiving a signal.

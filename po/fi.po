@@ -1,0 +1,376 @@
+# name: Jani Kinnunen <janikinnunen340@gmail.com>
+# Language: Finnish
+# message catalog file for eBook-speaker - Finnish version
+#
+# Copyright (C) 2003-2019 J. Lemmens
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# translated by Jani Kinnunen <janikinnunen340@gmail.com>
+msgid ""
+msgstr ""
+"Project-Id-Version: gettext 0.11.2\n"
+"Report-Msgid-Bugs-To: <jos@jlemmens.nl>\n"
+"POT-Creation-Date: 2019-08-02 14:07+0200\n"
+"PO-Revision-Date: 2019-01-01 11:06+0200\n"
+"Last-Translator: Jani Kinnunen <janikinnunen340@gmail.com>\n"
+"Language-Team: Jani Kinnunen <janikinnunen340@gmail.com>\n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/common.c:31 src/common.c:285 src/common.c:484
+msgid "Please try to play this book with daisy-player"
+msgstr "Kokeile toistaa tm kirja daisy-playerilla"
+
+#: src/common.c:751
+#, c-format
+msgid "Cannot read type: %d"
+msgstr "Ei voi lukea tyyppi: %d"
+
+#: src/common.c:816
+msgid "Go to page number:"
+msgstr "Siirry sivulle:"
+
+#: src/common.c:834 src/ebook-speaker.c:2026 src/ebook-speaker.c:2771
+#: src/ebook-speaker.c:3064
+msgid "Please wait..."
+msgstr "Odota..."
+
+#: src/common.c:912
+msgid "Select a soundcard:"
+msgstr "Valitse nikortti:"
+
+#: src/daisy2.02.c:48 src/daisy2.02.c:132 src/daisy2.02.c:239
+#: src/ebook-speaker.c:2662
+#, c-format
+msgid "Cannot read %s"
+msgstr "Ei voi lukea %s"
+
+#: src/ebook-speaker.c:648
+msgid "Select a Text-To-Speech application"
+msgstr "Valitse teksti puheeksi -sovellus"
+
+#: src/ebook-speaker.c:665
+msgid "Maximum number of TTS's is reached."
+msgstr "Teksti puheeksi -sovellusten enimmismr saavutettu."
+
+#: src/ebook-speaker.c:1003 src/list_dir.c:55 src/list_dir.c:255
+msgid "'h' for help"
+msgstr "Saat ohjeita painamalla 'h'"
+
+#: src/ebook-speaker.c:1008
+#, c-format
+msgid "%d pages"
+msgstr "%d sivua"
+
+#: src/ebook-speaker.c:1013
+#, c-format
+msgid "level: %d of %d"
+msgstr "taso: %d / %d"
+
+#: src/ebook-speaker.c:1017
+#, c-format
+msgid "total phrases: %d"
+msgstr "lauseita yhteens: %d"
+
+#: src/ebook-speaker.c:1115
+#, c-format
+msgid "Be sure that the used TTS is installed:"
+msgstr "Varmista, ett kytettv teksti puheeksi -sovellus on asennettu:"
+
+#: src/ebook-speaker.c:1172 src/list_dir.c:171
+msgid "These commands are available in this version:"
+msgstr "Seuraavat komennot ovat kytettviss tss versiossa:"
+
+#: src/ebook-speaker.c:1176 src/list_dir.c:175
+msgid "cursor down,2   - move cursor to the next item"
+msgstr "nuoli alas,2   - siirr kohdistin seuraavaan kohteeseen"
+
+#: src/ebook-speaker.c:1178 src/list_dir.c:177
+msgid "cursor up,8     - move cursor to the previous item"
+msgstr "nuoli yls,8     - siirr kohdistin edelliseen kohteeseen"
+
+#: src/ebook-speaker.c:1180
+msgid "cursor right,6  - skip to next phrase"
+msgstr "nuoli oikealle,6  - siirry seuraavaan lauseeseen"
+
+#: src/ebook-speaker.c:1182
+msgid "cursor left,4   - skip to previous phrase"
+msgstr "nuoli vasemmalle,4   - siirry edelliseen lauseeseen"
+
+#: src/ebook-speaker.c:1184 src/list_dir.c:183
+msgid "page-down,3     - view next page"
+msgstr "page down,3     - nyt seuraava sivu"
+
+#: src/ebook-speaker.c:1186 src/list_dir.c:185
+msgid "page-up,9       - view previous page"
+msgstr "page up,9       - nyt edellinen sivu"
+
+#: src/ebook-speaker.c:1188
+msgid "enter           - start playing"
+msgstr "enter           - aloita toisto"
+
+#: src/ebook-speaker.c:1190
+msgid "space,0         - pause/resume playing"
+msgstr "vli,0         - pysyt/jatka toistoa"
+
+#: src/ebook-speaker.c:1192
+msgid "home,*          - play on normal speed"
+msgstr "home,*          - toista normaalinopeudella"
+
+#: src/ebook-speaker.c:1194 src/ebook-speaker.c:1238
+msgid "Press any key for next page..."
+msgstr "Siirry seuraavalle sivulle painamalla mit tahansa nppint..."
+
+#: src/ebook-speaker.c:1201 src/list_dir.c:189
+msgid "/               - search for a label"
+msgstr "/               - hae nimikett"
+
+#: src/ebook-speaker.c:1203
+msgid "A               - store current item to disk in ASCII-format"
+msgstr "A               - tallenna nykyinen kohde levylle ASCII-muodossa"
+
+#: src/ebook-speaker.c:1205
+msgid "b               - consider the end of an input line as a phrase-break"
+msgstr "b               - ksittele rivin loppua lausetaukona"
+
+#: src/ebook-speaker.c:1207
+msgid "B               - move cursor to the last item"
+msgstr "B               - siirr kohdistin viimeiseen kohteeseen"
+
+#: src/ebook-speaker.c:1209
+msgid "d               - store current item to disk in WAV-format"
+msgstr "d               - tallenna nykyinen kohde levylle WAV-muodossa"
+
+#: src/ebook-speaker.c:1211
+msgid "D,-             - decrease playing speed"
+msgstr "D,-             - vhenn toistonopeutta"
+
+#: src/ebook-speaker.c:1213
+msgid ""
+"f               - find the currently playing item and place the cursor there"
+msgstr ""
+"f               - etsi tll hetkell toistettava kohde ja siirr kohdistin "
+"siihen"
+
+#: src/ebook-speaker.c:1215
+msgid "g               - go to phrase in current item"
+msgstr "g               - siirry lauseeseen nykyisess kohteessa"
+
+#: src/ebook-speaker.c:1218
+msgid "G               - go to page number"
+msgstr "G               - siirry sivulle"
+
+#: src/ebook-speaker.c:1220 src/list_dir.c:193
+msgid "h,?             - give this help"
+msgstr "h,?             - nyt tm ohje"
+
+#: src/ebook-speaker.c:1222
+msgid "j,5             - just play current item"
+msgstr "j,5             - toista vain nykyinen kohde"
+
+#: src/ebook-speaker.c:1224
+msgid "l               - switch to next level"
+msgstr "l               - vaihda seuraavalle tasolle"
+
+#: src/ebook-speaker.c:1226
+msgid "L               - switch to previous level"
+msgstr "L               - vaihda edelliselle tasolle"
+
+#: src/ebook-speaker.c:1228
+msgid "m               - mute sound output on/off"
+msgstr "m               - nen mykistys plle/pois"
+
+#: src/ebook-speaker.c:1230 src/list_dir.c:197
+msgid "n               - search forwards"
+msgstr "n               - hae eteenpin"
+
+#: src/ebook-speaker.c:1232 src/list_dir.c:199
+msgid "N               - search backwards"
+msgstr "N               - hae taaksepin"
+
+#: src/ebook-speaker.c:1234
+msgid "o               - select next output sound device"
+msgstr "o               - valitse seuraava nen ulostulolaite"
+
+#: src/ebook-speaker.c:1236
+msgid "p               - place a bookmark"
+msgstr "p               - lis kirjanmerkki"
+
+#: src/ebook-speaker.c:1245
+msgid "q               - quit eBook-speaker and place a bookmark"
+msgstr "q               - poistu eBook-speakerista ja lis kirjanmerkki"
+
+#: src/ebook-speaker.c:1248
+msgid "r               - rotate scanned document"
+msgstr "r               - knn skannattua dokumenttia"
+
+#: src/ebook-speaker.c:1250
+msgid "s               - stop playing"
+msgstr "s               - lopeta toisto"
+
+#: src/ebook-speaker.c:1252
+msgid "t               - select next TTS"
+msgstr "t               - valitse seuraava teksti puheeksi -sovellus"
+
+#: src/ebook-speaker.c:1254
+msgid "T               - move cursor to the first item"
+msgstr "T               - siirr kohdistin ensimmiseen kohteeseen"
+
+#: src/ebook-speaker.c:1256
+msgid "U,+             - increase playing speed"
+msgstr "U,+             - kasvata toistonopeutta"
+
+#: src/ebook-speaker.c:1258
+msgid "v,1             - decrease playback volume"
+msgstr "v,1             - vhenn toiston nenvoimakkuutta"
+
+#: src/ebook-speaker.c:1260
+msgid "V,7             - increase playback volume (beware of Clipping)"
+msgstr ""
+"V,7             - kasvata toiston nenvoimakkuutta (varo leikkautumista)"
+
+#: src/ebook-speaker.c:1262
+msgid "x               - go to the file-manager"
+msgstr "x               - siirry tiedostonhallintaan"
+
+#: src/ebook-speaker.c:1264 src/list_dir.c:205
+msgid "Press any key to leave help..."
+msgstr "Poistu ohjeesta painamalla mit tahansa nppint..."
+
+#: src/ebook-speaker.c:1532 src/list_dir.c:107
+msgid "What do you search?"
+msgstr "Mit haet?"
+
+#: src/ebook-speaker.c:1612
+msgid "Break phrases at EOL or at a specific position (y/n/position)"
+msgstr ""
+"Listnk lausetauko rivin loppuun vai johonkin muuhun sijaintiin (y/n/position)"
+
+#: src/ebook-speaker.c:1780
+#, c-format
+msgid "Language code \"%s\" is not a valid tesseract code."
+msgstr "\"%s\" ei ole kelvollinen tesseract-kielikoodi."
+
+#: src/ebook-speaker.c:1782
+msgid "See the tesseract manual for valid codes."
+msgstr "Katso kelvolliset koodit tesseractin ksikirjasta."
+
+#: src/ebook-speaker.c:1784
+#, c-format
+msgid ""
+"Be sure the package \"tesseract-ocr-%s\" is installed onto your system.\n"
+msgstr "Varmista, ett paketti \"tesseract-ocr-%s\" on asennettu jrjestelmsi.\n"
+
+#: src/ebook-speaker.c:1793
+#, c-format
+msgid "Language code \"%s\" is not a valid cuneiform code."
+msgstr "\"%s\" ei ole kelvollinen cuneiform-kielikoodi."
+
+#: src/ebook-speaker.c:1795
+msgid "See the cuneiform manual for valid codes."
+msgstr "Katso kelvolliset koodit cuneiformin ksikirjasta."
+
+#: src/ebook-speaker.c:1909
+msgid "Go to phrase in current item:"
+msgstr "Siirry lauseeseen nykyisess kohteessa:"
+
+#: src/ebook-speaker.c:2039 src/ebook-speaker.c:2257 src/ebook-speaker.c:2276
+#: src/ebook-speaker.c:2301 src/ebook-speaker.c:2332 src/ebook-speaker.c:2595
+#: src/ebook-speaker.c:2810 src/ebook-speaker.c:2854 src/ebook-speaker.c:3197
+#: src/ebook-speaker.c:3247
+msgid "eBook-speaker cannot handle this file."
+msgstr "eBook-speaker ei voi ksitell tt tiedostoa."
+
+#: src/ebook-speaker.c:2075 src/ebook-speaker.c:2730
+msgid "Press 'h' for help"
+msgstr "Saat ohjeita painamalla 'h'"
+
+#: src/ebook-speaker.c:2310
+msgid "Unknown format"
+msgstr "Tuntematon muoto"
+
+#: src/ebook-speaker.c:2566 src/ebook-speaker.c:3061
+msgid "eBook-speaker - Version"
+msgstr "eBook-speaker - versio"
+
+#: src/ebook-speaker.c:2570
+#, c-format
+msgid ""
+"Usage: %s [eBook_file | URL | -s [-r resolution]] [-b n | y | position] [-c] "
+"[-d pulseaudio_device] [-h] [-H] [-i] [-o language-code] [-t TTS_command] [-"
+"v]"
+msgstr ""
+"Kytt: %s [e-kirja-tiedosto | URL | -s [-r resolution]] [-o kielikoodi] [-d "
+"pulseaudio-laite] [-h] [-H] [-i] [-t TTS-komento] [-b n | y | sijainti] [-c] "
+"[-v]"
+
+#: src/list_dir.c:51 src/list_dir.c:252
+#, c-format
+msgid "%s - Choose an input-file"
+msgstr "%s - Valitse sytetiedosto"
+
+#: src/list_dir.c:179
+msgid "cursor right,6  - open this directory or file"
+msgstr "nuoli oikealle,6  - avaa tm hakemisto tai tiedosto"
+
+#: src/list_dir.c:181
+msgid "cursor left,4   - open previous directory"
+msgstr "nuoli vasemmalle,4   - avaa edellinen hakemisto"
+
+#: src/list_dir.c:187
+msgid "enter,6         - open this directory or file"
+msgstr "enter,6         - avaa tm hakemisto tai tiedosto"
+
+#: src/list_dir.c:191
+msgid "end,B           - move cursor to the last item"
+msgstr "end,B           - siirr kohdistin viimeiseen kohteeseen"
+
+#: src/list_dir.c:195
+msgid "H,0             - display \"hidden\" files on/off"
+msgstr "H,0             - nyt piilotiedostot plle/pois"
+
+#: src/list_dir.c:201
+msgid "q               - quit eBook-speaker"
+msgstr "q               - poistu eBook-speakerista"
+
+#: src/list_dir.c:203
+msgid "home,T          - move cursor to the first item"
+msgstr "home,T          - siirr kohdistin ensimmiseen kohteeseen"
+
+#~ msgid "This book has no audio. Play this book with eBook-speaker"
+#~ msgstr "Tss kirjassa ei ole audiota. Kyt toistamiseen eBook-speakeria."
+
+#~ msgid "No items found. Try option \"-N\"."
+#~ msgstr "Kohteita ei lytynyt. Kokeile valitsinta \"-N\"."
+
+#~ msgid "No items found. Try option \"-O\"."
+#~ msgstr "Kohteita ei lytynyt. Kokeile valitsinta \"-O\"."
+
+#~ msgid "Provide a new TTS."
+#~ msgstr "Lis uusi teksti puheeksi -sovellus."
+
+#~ msgid "Be sure that the new TTS reads its information from the file"
+#~ msgstr ""
+#~ "Varmista, ett uusi teksti puheeksi -sovellus lukee sytteens tiedostosta"
+
+#~ msgid "eBook-speaker.txt and that it writes to the file eBook-speaker.wav."
+#~ msgstr ""
+#~ "eBook-speaker.txt ja ett se kirjoittaa tiedostoon eBook-speaker.wav."
+
+#~ msgid "Press DEL to delete a TTS"
+#~ msgstr "Poista teksti puheeksi -sovellus painamalla DEL"

@@ -1,15 +1,40 @@
 AUTOMAKE_OPTIONS = foreign
+
 SUBDIRS = man doc po src
 
 ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = config.rpath m4/Makefile.in doc/COMPILE \
              doc/COPYING doc/Changelog doc/License doc/Readme doc/TODO \
-             doc/eBook-speaker.* \
+             doc/ebook-speaker.* \
              doc/icons_copyright.txt doc/screenshot.html \
-             man/eBook-speaker.1
+             man/ebook-speaker.1 \
+             src/pactl/aclocal.m4 src/pactl/AGPL \
+             src/pactl/compile src/pactl/config.guess \
+             src/pactl/config.sub \
+             src/pactl/config.h.in src/pactl/configure \
+             src/pactl/configure.ac src/pactl/depcomp \
+             src/pactl/GPL src/pactl/install-sh \
+             src/pactl/LGPL src/pactl/LICENSE \
+             src/pactl/m4 \
+             src/pactl/Makefile.am src/pactl/Makefile.in \
+             src/pactl/missing src/pactl/NEWS \
+             src/pactl/README \
+             src/pactl/src/core-error.h \
+             src/pactl/src/core-util.h \
+             src/pactl/src/i18n.h \
+             src/pactl/src/install.sh \
+             src/pactl/src/macro.h \
+             src/pactl/src/Makefile.am \
+             src/pactl/src/Makefile.in \
+             src/pactl/src/pactl.c \
+             src/pactl/src/pactl-set-cmd.c \
+             src/pactl/src/socket.h \
+             src/pactl/src/strbuf.h \
+             src/pactl/src/strlist.h \
+             src/pactl/todo
 
-check-gettext:                         
+check-gettext:
 	@if test x$(USE_NLS) != "xyes" ; then \
 	  echo "Missing gettext. Rerun configure and check for" \"'checking whether to use NLS... yes'!" ; exit 1; fi
 
@@ -28,7 +53,7 @@ update-gmo: check-gettext
 force-update-gmo: check-gettext
 	touch po/*.po
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-gmo
-
+                          
 force-update-gmo-%: check-gettext
 	@language=`echo $@ | sed s/force-update-gmo-//` ; \
 	if test ! -f po/$$language.po ; then \
@@ -36,5 +61,16 @@ force-update-gmo-%: check-gettext
 	fi ; \
 	touch po/$$language.po ; \
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-gmo
+	
+checkinstall:
+	@echo
+	@echo "checkinstall..."
+	@echo
+	make distdir
+	cd $(PACKAGE)-$(VERSION)
+	checkinstall -D --fstrans enable --pkgname "$(PACKAGE)" \
+	--pkgversion $(VERSION) --pkggroup audio \
+	--maintainer "Jos Lemmens <jos@jlemmens.nl>" --strip --stripso \
+	--review-control
 
 .PHONY: check-gettext update-po update-gmo force-update-gmo

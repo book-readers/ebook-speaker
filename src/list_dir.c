@@ -1,5 +1,5 @@
 /* eBook-speaker - read aloud an eBook using a speech synthesizer
- *  Copyright (C) 2017 J. Lemmens
+ *  Copyright (C) 2019 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -54,7 +54,7 @@ void ls (misc_t *misc, size_t n, struct dirent **namelist, magic_t myt)
    wprintw (misc->titlewin, "----------------------------------------");
    mvwprintw (misc->titlewin, 1, 0, "%s ", gettext ("'h' for help"));
    wprintw (misc->titlewin, "- %s ", misc->src_dir);
-   str = malloc (15);
+   str = malloc (25);
    sprintf (str, "%d/%d", (int) page, (int) (misc->list_total - 1) / 23 + 1);
    mvwprintw (misc->titlewin, 1, 77 - strlen (str), " %s -", str);
    wrefresh (misc->titlewin);
@@ -78,7 +78,6 @@ void ls (misc_t *misc, size_t n, struct dirent **namelist, magic_t myt)
       else
          mvwprintw (misc->screenwin, y, 41, "%.39s", magic_file (myt, str));
       wmove (misc->screenwin, n - (page - 1) * 23, 0);
-      wrefresh (misc->screenwin);
       if ((int) n >= misc->list_total)
          break;
    } // for
@@ -207,9 +206,10 @@ void help_list (misc_t *misc)
    nodelay (misc->screenwin, FALSE);
    wgetch (misc->screenwin);
    nodelay (misc->screenwin, TRUE);
-} // help_list                                 
+} // help_list
 
-char *get_input_file (misc_t *misc, char *src)
+char *get_input_file (misc_t *misc, my_attribute_t *my_attribute,
+                      daisy_t *daisy, char *src)
 {
    struct dirent **namelist;
    char *file, search_str[MAX_STR], str[MAX_STR + 1];
@@ -229,9 +229,14 @@ char *get_input_file (misc_t *misc, char *src)
    }
    else
    {
-      file = strdup (basename (file));
+      char *basec, *dirc;
+
+      basec = strdup (file);
+      file = strdup (basename (basec));
+      free (misc->src_dir);
       misc->src_dir = strdup (src);
-      misc->src_dir = strdup (dirname (misc->src_dir));
+      dirc = strdup (misc->src_dir);
+      misc->src_dir = strdup (dirname (dirc));
    } // if
    nodelay (misc->screenwin, FALSE);
    namelist = NULL;
@@ -274,16 +279,26 @@ char *get_input_file (misc_t *misc, char *src)
             break;
          if (strcmp (namelist[n]->d_name, "..") == 0)
          {
+            char *dirc, *name;
+
             if (strcmp (misc->src_dir, "/") == 0)
             {
                beep ();
                break;
             } // if
-            misc->src_dir = strdup (dirname (misc->src_dir));
+            dirc = strdup (misc->src_dir);
+            misc->src_dir = strdup (dirname (dirc));
             if (misc->src_dir[strlen (misc->src_dir) - 1] != '/')
                strcat (misc->src_dir, "/");
             n = 0;
             page = n / 23 + 1;
+            if (misc->src_dir[strlen (misc->src_dir) - 1] != '/')
+               strncat (misc->src_dir, "/", MAX_STR);
+            name = strdup (misc->src_dir);
+            namelist = get_dir (misc, namelist);
+            for (n = misc->list_total - 1; n > 0; n--)
+               if (strcmp (namelist[n]->d_name, name) == 0)
+                  break;
             break;
          } // if ".."
          src = malloc (strlen (misc->src_dir) +
@@ -293,14 +308,16 @@ char *get_input_file (misc_t *misc, char *src)
          file_type = magic_file (myt, src);
          if (strstr (file_type, "directory"))
          {
+            free (misc->src_dir);
             misc->src_dir = malloc (strlen (src) + 5);
             strcpy (misc->src_dir, src);
             if (misc->src_dir[strlen (misc->src_dir) - 1] != '/')
                strcat (misc->src_dir, "/");
             n = 0;
             page = n / 23 + 1;
-            return get_input_file (misc, src);
+            return get_input_file (misc, my_attribute, daisy, src);
          } // if "directory"
+         free (file);
          file = malloc (strlen (misc->src_dir) +
                         strlen (namelist[n]->d_name) +  10);
          strcpy (file, misc->src_dir);
@@ -312,7 +329,7 @@ char *get_input_file (misc_t *misc, char *src)
       case KEY_LEFT:
       case '4':
       {
-         char name[MAX_STR + 1];
+         char name[MAX_STR + 1], *basec, *dirc;
 
          if (strcmp (misc->src_dir, "/") == 0)
          {
@@ -320,8 +337,10 @@ char *get_input_file (misc_t *misc, char *src)
             beep ();
             break;
          } // if
-         strncpy (name, basename (misc->src_dir), MAX_STR);
-         strcpy (misc->src_dir, dirname (misc->src_dir));
+         basec = strdup (misc->src_dir);
+         strncpy (name, basename (basec), MAX_STR);
+         dirc = strdup (misc->src_dir);
+         strcpy (misc->src_dir, dirname (dirc));
          if (misc->src_dir[strlen (misc->src_dir) - 1] != '/')
             strncat (misc->src_dir, "/", MAX_STR);
          namelist = get_dir (misc, namelist);
@@ -385,16 +404,17 @@ char *get_input_file (misc_t *misc, char *src)
       case 'H':
       case '0':
       {
-         char name[55];
+         char *current_name;
+         int len;
 
          misc->show_hidden_files = 1 - misc->show_hidden_files;
-         if (n <= 0)
-            break;
-         strncpy (name, namelist[n]->d_name, 50);
+         len = strlen (namelist[n]->d_name);
+         current_name = malloc (len);
+         strncpy (current_name, namelist[n]->d_name, len);
          free (namelist);
          namelist = get_dir (misc, namelist);
          for (n = misc->list_total - 1; n > 0; n--)
-            if (strncmp (namelist[n]->d_name, name, MAX_STR) == 0)
+            if (strncmp (namelist[n]->d_name, current_name, len) == 0)
                break;
          break;
       }
@@ -411,8 +431,8 @@ char *get_input_file (misc_t *misc, char *src)
       case 'q':
          free (namelist);
          magic_close (myt);
-         quit_eBook_speaker (misc);
-         _exit (0);
+         quit_eBook_speaker (misc, my_attribute, daisy);
+         _exit (EXIT_SUCCESS);
       case 'T':
       case KEY_HOME:
          n = 0;
