@@ -38,7 +38,7 @@ void fill_xml_anchor_ncx (misc_t *misc, my_attribute_t *my_attribute,
       return;
    } // if
    misc->depth = 0;
-   misc->current = misc->displaying = 0;
+   misc->current = 0;
    if (misc->verbose)
    {
       printf ("\n\rParsing SMIL files\n");
@@ -272,7 +272,7 @@ void parse_ncx (misc_t *misc, my_attribute_t *my_attribute,
       return;
    } // if
    ncx = xmlReaderWalker (doc);
-   misc->current = misc->displaying = 0;
+   misc->current = 0;
    misc->level = misc->depth = 0;
    daisy[misc->current].x = 0;
    if (misc->verbose)
@@ -365,7 +365,7 @@ void parse_ncx (misc_t *misc, my_attribute_t *my_attribute,
       *daisy[i].class = 0;
       if (misc->verbose)
       {
-         printf ("\r\norig %d %s ", i, daisy[i].orig_xml_file);           
+         printf ("\r\norig %d %s ", i, daisy[i].orig_xml_file);
          fflush (stdout);
       } // if
    } //for

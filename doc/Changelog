@@ -212,4 +212,11 @@
 	Added a new -v option for verbosity while readding a book,
 	so one can see what's going on.
 	Thanks to Colomban Wendling <cwendling@hypra.fr> for his
-	patch to gracefully quit daisy-player upon receiving a signal.
+	patch to gracefully quit eBook-speaker upon receiving a signal.
+5.4	The name of the desired pulsaudio device no longer resides in
+	the ~/.eBook-speaker.xml file, but it resides in files in
+	the directory ~/.eBook-speaker/.
+	In previous versions "skip left" crashed sometimes; solved.
+	The file-manager reacted to slow. The list of files no longer
+	contains the type of the file. Instead command "i" is introduced.
+	"i" gives some information about the current file.

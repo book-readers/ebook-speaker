@@ -210,8 +210,8 @@ void get_label_2 (misc_t *misc, daisy_t *daisy, int indent, int i)
    daisy[i].label[80] = 0;
    if (misc->verbose)
       printf ("\r\n%d %s", i + 1, daisy[i].label);
-   if (misc->displaying == misc->max_y)
-      misc->displaying = 1;
+   if (misc->current == misc->max_y)
+      misc->current = 1;
    if (*daisy[i].class)
    {
       if (strcasecmp (daisy[i].class, "pagenum") == 0)
@@ -239,7 +239,7 @@ void fill_daisy_struct_2 (misc_t *misc, my_attribute_t *my_attribute,
       snprintf (misc->str, MAX_STR, gettext ("Cannot read %s"), misc->ncc_html);      failure (misc, misc->str, e);
    } // if
 
-   i = misc->displaying = misc->depth = 0;
+   i = misc->current = misc->depth = 0;
    indent = 0;
    if (misc->verbose)
       printf ("\n");
@@ -307,7 +307,7 @@ void fill_daisy_struct_2 (misc_t *misc, my_attribute_t *my_attribute,
                     daisy[i - 1].page_number;
       } // if (strcasecmp (misc->tag, "h1") == 0 || ...
    } // while
-   misc->displaying = i;
+   misc->current = i;
    parse_smil_2 (misc, my_attribute, daisy);
    xmlTextReaderClose (ncc);
    xmlFreeDoc (doc);

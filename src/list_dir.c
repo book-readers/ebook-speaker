@@ -1,5 +1,5 @@
 /* eBook-speaker - read aloud an eBook using a speech synthesizer
- *  Copyright (C) 2019 J. Lemmens
+ *  Copyright (C) 2020 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -40,7 +40,7 @@ struct dirent **get_dir (misc_t *misc, struct dirent **namelist)
    return namelist;
 } // get_dir
 
-void ls (misc_t *misc, size_t n, struct dirent **namelist, magic_t myt)
+void ls (misc_t *misc, size_t n, struct dirent **namelist)
 {
    size_t y, page;
    char *str;
@@ -66,24 +66,18 @@ void ls (misc_t *misc, size_t n, struct dirent **namelist, magic_t myt)
       index = (page - 1) * 23 + y;
       if ((int) index >= misc->list_total)
          break;
-      mvwprintw (misc->screenwin, y, 1, "%.39s", namelist[index]->d_name);
-      str = realloc
-        (str, strlen (misc->src_dir) + strlen (namelist[index]->d_name) + 10);
-      strcpy (str, misc->src_dir);
-      if (str[strlen (str) - 1] != '/')
-         strcat (str, "/");
-      strcat (str, namelist[index]->d_name);
-      if (magic_file (myt, str) == NULL)
-         mvwprintw (misc->screenwin, y, 41, "%.39s", "Unknown format");
-      else
-         mvwprintw (misc->screenwin, y, 41, "%.39s", magic_file (myt, str));
+      mvwprintw (misc->screenwin, y, 1, "%.77s", namelist[index]->d_name);
+
+#ifdef _DIRENT_HAVE_D_TYPE
+      if (namelist[index]->d_type == DT_DIR)
+         wprintw (misc->screenwin, "/");
+#endif
       wmove (misc->screenwin, n - (page - 1) * 23, 0);
       if ((int) n >= misc->list_total)
          break;
    } // for
    wmove (misc->screenwin, n - (page - 1) * 23, 0);
    wrefresh (misc->screenwin);
-   free (str);
 } // ls
 
 int hidden_files (const struct dirent *entry)
@@ -194,6 +188,8 @@ void help_list (misc_t *misc)
    wprintw (misc->screenwin, "%s\n", gettext
             ("H,0             - display \"hidden\" files on/off"));
    wprintw (misc->screenwin, "%s\n", gettext
+            ("i               - give some information about current file"));
+   wprintw (misc->screenwin, "%s\n", gettext
             ("n               - search forwards"));
    wprintw (misc->screenwin, "%s\n", gettext
             ("N               - search backwards"));
@@ -220,7 +216,7 @@ char *get_input_file (misc_t *misc, my_attribute_t *my_attribute,
    myt = magic_open (MAGIC_FLAGS);
    magic_load (myt, NULL);
    file = strdup (src);
-   if (strcasestr (magic_file (myt, file), "directory"))
+   if (strcasecmp (magic_file (myt, file), "directory") == 0)
    {
       misc->src_dir = malloc (strlen (src) + 10);
       strcpy (misc->src_dir, src);
@@ -230,7 +226,7 @@ char *get_input_file (misc_t *misc, my_attribute_t *my_attribute,
    else
    {
       char *basec, *dirc;
-
+                              
       basec = strdup (file);
       file = strdup (basename (basec));
       free (misc->src_dir);
@@ -264,7 +260,7 @@ char *get_input_file (misc_t *misc, my_attribute_t *my_attribute,
       int search_flag;
 
       if (n >= 0)
-         ls (misc, n, namelist, myt);
+         ls (misc, n, namelist);
       switch (wgetch (misc->screenwin))
       {
       case 13: // ENTER
@@ -303,8 +299,7 @@ char *get_input_file (misc_t *misc, my_attribute_t *my_attribute,
          } // if ".."
          src = malloc (strlen (misc->src_dir) +
                        strlen (namelist [n]->d_name) + 5);
-         strcpy (src, misc->src_dir);
-         strcat (src, namelist [n]->d_name);
+         sprintf (src, "%s%s", misc->src_dir, namelist[n]->d_name);
          file_type = magic_file (myt, src);
          if (strstr (file_type, "directory"))
          {
@@ -317,6 +312,7 @@ char *get_input_file (misc_t *misc, my_attribute_t *my_attribute,
             page = n / 23 + 1;
             return get_input_file (misc, my_attribute, daisy, src);
          } // if "directory"
+
          free (file);
          file = malloc (strlen (misc->src_dir) +
                         strlen (namelist[n]->d_name) +  10);
@@ -416,6 +412,41 @@ char *get_input_file (misc_t *misc, my_attribute_t *my_attribute,
          for (n = misc->list_total - 1; n > 0; n--)
             if (strncmp (namelist[n]->d_name, current_name, len) == 0)
                break;
+         break;
+      }
+      case 'i':
+      {
+         char *str;
+         struct stat sb;
+
+         wclear (misc->screenwin);
+         str = malloc (strlen (misc->src_dir) +
+                       strlen (namelist[n]->d_name) + 10);
+         sprintf (str, "%s%s", misc->src_dir, namelist[n]->d_name);
+         wprintw (misc->screenwin,
+                "\nHere is some information about the file\n\n   \"%s\"\n\n",
+                  namelist[n]->d_name);
+         wprintw (misc->screenwin, "File type: ");
+         if (magic_file (myt, str) == NULL)
+            wprintw (misc->screenwin, "%s\n", "Unknown format");
+         else
+            wprintw (misc->screenwin, "%s\n", magic_file (myt, str));
+         stat (str, &sb);
+         wprintw (misc->screenwin, "File size: %ld bytes (%ld KB)\n",
+                  sb.st_size, sb.st_size / 1024);
+         wprintw (misc->screenwin, "File mode: %lo (octal)\n",
+                  (unsigned long) sb.st_mode);
+         wprintw (misc->screenwin, "Ownership: UID=%ld GID=%ld\n",
+                  sb.st_uid, sb.st_gid);
+         wprintw (misc->screenwin, "Last status change: %s",
+                  ctime (&sb.st_ctime));
+         wprintw (misc->screenwin, "Last file access: %s",
+                  ctime(&sb.st_atime));
+         wprintw (misc->screenwin, "Last file modification: %s",
+                  ctime(&sb.st_mtime));
+         wprintw (misc->screenwin, "\n%s", gettext
+                  ("Press any key to leave help..."));
+         wgetch (misc->screenwin);
          break;
       }
       case 'n':
