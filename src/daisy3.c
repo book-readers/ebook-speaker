@@ -26,7 +26,7 @@ int get_page_number_3 (misc_t *misc, my_attribute_t *my_attribute)
    {
       if (! get_tag_or_label (misc, my_attribute, misc->reader))
          return 0;
-      if (strcasecmp (misc->tag, "text") == 0) // is this necessary?
+      if (strcasecmp (misc->tag, "text") == 0) // is this neccessary?
       {
          char *file, *anchor;
          xmlTextReaderPtr page;
@@ -40,7 +40,7 @@ int get_page_number_3 (misc_t *misc, my_attribute_t *my_attribute)
          } // if
          file = malloc (strlen (misc->daisy_mp) +
                         strlen (my_attribute->src) + 5);
-         get_realpath_name (misc->daisy_mp,
+         get_real_pathname (misc->daisy_mp,
                         convert_URL_name (misc, my_attribute->src), file);
          doc = htmlParseFile (file, "UTF-8");
          if (! (page = xmlReaderWalker (doc)))
@@ -55,7 +55,6 @@ int get_page_number_3 (misc_t *misc, my_attribute_t *my_attribute)
                if (! get_tag_or_label (misc, my_attribute, page))
                {
                   xmlTextReaderClose (page);
-                  xmlFreeDoc (doc);
                   free (file);
                   free (anchor);
                   return 0;
@@ -67,7 +66,6 @@ int get_page_number_3 (misc_t *misc, my_attribute_t *my_attribute)
             if (! get_tag_or_label (misc, my_attribute, page))
             {
                xmlTextReaderClose (page);
-               xmlFreeDoc (doc);
                free (file);
                free (anchor);
                return 0;
@@ -75,7 +73,6 @@ int get_page_number_3 (misc_t *misc, my_attribute_t *my_attribute)
             if (*misc->label)
             {
                xmlTextReaderClose (page);
-               xmlFreeDoc (doc);
                misc->current_page_number = atoi (misc->label);
                free (file);
                free (anchor);
@@ -165,7 +162,6 @@ void fill_page_numbers (misc_t *misc, daisy_t *daisy,
          } // if
       } // while
       xmlTextReaderClose (page);
-      xmlFreeDoc (doc);
       if (misc->verbose)
       {
          printf (". ");
@@ -202,7 +198,7 @@ void parse_page_number (misc_t *misc, my_attribute_t *my_attribute,
             anchor = strdup (strchr (my_attribute->src, '#') + 1);
             *strchr (my_attribute->src, '#') = 0;
          } // if
-         get_realpath_name (misc->daisy_mp, my_attribute->src, src);
+         get_real_pathname (misc->daisy_mp, my_attribute->src, src);
          doc = htmlParseFile (src, "UTF-8");
          if (! (text = xmlReaderWalker (doc)))
          {
@@ -218,7 +214,6 @@ void parse_page_number (misc_t *misc, my_attribute_t *my_attribute,
                if (! get_tag_or_label (misc, my_attribute, text))
                {
                   xmlTextReaderClose (text);
-                  xmlFreeDoc (doc);
                   free (anchor);
                   free (src);
                   return;
@@ -231,14 +226,12 @@ void parse_page_number (misc_t *misc, my_attribute_t *my_attribute,
             if (! get_tag_or_label (misc, my_attribute, text))
             {
                xmlTextReaderClose (text);
-               xmlFreeDoc (doc);
                free (anchor);
                free (src);
                return;
             } // if
          } while (! *misc->label);
          xmlTextReaderClose (text);
-         xmlFreeDoc (doc);
          misc->current_page_number = atoi (misc->label);
          free (anchor);
          free (src);

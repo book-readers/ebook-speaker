@@ -220,3 +220,12 @@
 	The file-manager reacted to slow. The list of files no longer
 	contains the type of the file. Instead command "i" is introduced.
 	"i" gives some information about the current file.
+5.4.1	Bug in the ncx.c file solved.
+	The file ncx.c treated filenames  not case insensitive.
+5.5	Added support for PulseAudio sinks with # > 9.
+	Added option '-S' not to update the playing phrase-number during
+	playback. This helps users with screen readers that would otherwise
+	read the phrase-number as it updates, leading to highly annoying
+	noise.
+	Lower the amount of screen refresh to better play with screen readers.
+5.5.1	Bug in break-phrase-command solved.

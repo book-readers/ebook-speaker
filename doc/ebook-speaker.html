@@ -2,7 +2,7 @@
 <HTML><HEAD><TITLE>Man page of ebook-speaker</TITLE>
 </HEAD><BODY>
 <H1>ebook-speaker</H1>
-Section: Linux Reference Manual (1)<BR>Updated: 02 February 2020<BR><A HREF="#index">Index</A>
+Section: Linux Reference Manual (1)<BR>Updated: 06 September 2020<BR><A HREF="#index">Index</A>
 <A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
 
 <A NAME="lbAB">&nbsp;</A>
@@ -14,7 +14,7 @@ Section: Linux Reference Manual (1)<BR>Updated: 02 February 2020<BR><A HREF="#in
 <H2>SYNOPSIS</H2>
 
 <PRE>
-<B>ebook-speaker</B> [<I>eBook_file</I> | <I>URL</I> | <B>-s</B> [<B>-r</B> <I>resolution</I>]] [<B>-b</B> <I>n</I> | <I>y</I> | <I>position</I>] [<B>-c</B>] [<B>-d</B> <I>pulseaudio_sound_device</I>] [<B>-h</B>] [<B>-H</B>] [<B>-i</B>] [<B>-o</B> <I>language-code</I>] [<B>-t</B> <I>TTS_command</I>] [<B>-v</B>]
+<B>ebook-speaker</B> [<I>eBook_file</I> | <I>URL</I> | <B>-s</B> [<B>-r</B> <I>resolution</I>]] [<B>-b</B> <I>n</I> | <I>y</I> | <I>position</I>] [<B>-c</B>] [<B>-d</B> <I>pulseaudio_sound_device</I>] [<B>-h</B>] [<B>-H</B>] [<B>-i</B>] [<B>-o</B> <I>language-code</I>] [<B>-S</B>] [<B>-t</B> <I>TTS_command</I>] [<B>-v</B>]
 
 </PRE>
 
@@ -93,7 +93,7 @@ When no input-file is supplied, eBook-speaker will bring up a file-manager. See 
 <DT><B>-b</B> <I>n</I> | <I>y</I> | <I>position</I>
 
 <DD>
-Set the initial break_on_EOL or <I>position</I>. After quiting eBook-speaker. this setting will be saved and used as default for future books. It can be overruled with the 'b'<B>-command</B> for each individual book. See the 'b' command.
+Set the initial break_on_EOL or <I>position</I>. After quiting eBook-speaker. This setting will be saved and used as default for future books. It can be overruled with the 'b'<B>-command</B> for each individual book. See the 'b' command.
 <DT><B>-c</B>
 
 <DD>
@@ -130,6 +130,10 @@ By default the option &quot;<B>-s</B>&quot; will scan at a <I>resolution</I> of 
 
 <DD>
 Scan a document using a hardware scanner and OCR it with either tesseract or cuneiform.
+<DT><B>-S</B>
+
+<DD>
+Do not display the phrase-numbers passing during playback.
 <DT><B>-t</B> TTS-command
 
 <DD>
@@ -159,7 +163,7 @@ The name and version of this program and the name of the author is displayed lef
 The second row of the screen displays the number of pages of the current loaded book (if any), the current selected level and the total number of levels, the total number of phrases and the current displayed screen and the total number of screens.
 <P>
 
-The next rows displays the title of the item, the first page of the item within brackets (if there are pages) and the total number of phrases in this item. Items in higher levels are indented. (Three spaces each level.) When &quot;just reading this item&quot; is active, a &quot;J&quot; is viewed at the first column of that item.
+The next rows displays the title of the item, the first page of that item within brackets (if there are pages) and the total number of phrases in this item. Items in higher levels are indented. (Three spaces each level.) When &quot;just reading this item&quot; is active, a &quot;J&quot; is viewed at the first column of that item.
 <P>
 
 The spoken phrase will be displayed on the bottom-line of the screen, so one can follow along on a braille-terminal what he/she hears.
@@ -288,6 +292,10 @@ Rotate the scanned document. If the document is accidentally placed upside-down 
 
 <DD>
 Stop reading.
+<DT><B>S</B>
+
+<DD>
+Toggle show progress on/off.
 <DT><B>t</B>
 
 <DD>
@@ -300,14 +308,14 @@ Move cursor to the first item.
 
 <DD>
 Increase reading speed.
+<DT><B>v,1</B>
+
+<DD>
+Decraese playback volume.
 <DT><B>V,7</B>
 
 <DD>
 Increase playback volume. (beware of Clipping)
-<DT><B>v,1</B>
-
-<DD>
-Decrease playback volume.
 <DT><B>x</B>
 
 <DD>
@@ -348,7 +356,7 @@ Search for a file.
 <DT><B>end,B</B>
 
 <DD>
-Move cursor to the last file.  
+Move cursor to the last file.
 <DT><B>h,?</B>
 
 <DD>
@@ -459,17 +467,21 @@ This file, in XML-format, contains the desired OCR language and the TTS's to use
 eBook-speaker makes use of a temporary directory. It is removed after quiting.
 </DL>
 <A NAME="lbAM">&nbsp;</A>
+<H2>NOTES</H2>
+
+An EPUB-book has two index-files for navigation, a NCX and an OPF file. eBook-speaker tries to detemine which of these two files give the best result. But sometimes eBook-speaker is not able to make the best choice. When in doubt use option &quot;<B>--N</B>&quot; to force the use of NCX or &quot;<B>-O</B>&quot; to force the OPF.
+<A NAME="lbAN">&nbsp;</A>
 <H2>SEE ALSO</H2>
 
-<B><A HREF="/cgi-bin/man/man2html?1+ebook-convert">ebook-convert</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pandoc">pandoc</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+calibre">calibre</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+iconv">iconv</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+lowriter">lowriter</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+tesseract">tesseract</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+cuneiform">cuneiform</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+espeak">espeak</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+flite">flite</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+text2wave">text2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+mbrola">mbrola</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pico2wave">pico2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+scanimage">scanimage</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pnmflip">pnmflip</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+gif2png">gif2png</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+man2html">man2html</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unar">unar</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+swift">swift</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unrtf">unrtf</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+wget">wget</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pulseaudio">pulseaudio</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?5+magic">magic</A></B>(5), <B><A HREF="/cgi-bin/man/man2html?7+locale">locale</A></B>(7), <B><A HREF="/cgi-bin/man/man2html?8+usermod">usermod</A></B>(8)
-<A NAME="lbAN">&nbsp;</A>
+<B><A HREF="/cgi-bin/man/man2html?1+ebook-convert">ebook-convert</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pandoc">pandoc</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+calibre">calibre</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+iconv">iconv</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+lowriter">lowriter</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+tesseract">tesseract</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+cuneiform">cuneiform</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+espeak">espeak</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+flite">flite</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+text2wave">text2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+mbrola">mbrola</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pico2wave">pico2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+scanimage">scanimage</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pnmflip">pnmflip</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+gif2png">gif2png</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+man2html">man2html</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unar">unar</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+swift">swift</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unrtf">unrtf</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+wget">wget</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pulseaudio">pulseaudio</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pactl">pactl</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?5+magic">magic</A></B>(5), <B><A HREF="/cgi-bin/man/man2html?7+locale">locale</A></B>(7), <B><A HREF="/cgi-bin/man/man2html?8+usermod">usermod</A></B>(8)
+<A NAME="lbAO">&nbsp;</A>
 <H2>AUTHOR</H2>
 
 Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
-<A NAME="lbAO">&nbsp;</A>
+<A NAME="lbAP">&nbsp;</A>
 <H2>COPYRIGHT</H2>
 
-Copyright (C)2011-2019 Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
+Copyright (C)2011-2020 Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
 <P>
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program (see the file COPYING); if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
@@ -489,14 +501,15 @@ This program is free software; you can redistribute it and/or modify it under th
 <DT><A HREF="#lbAJ">TTS EXAMPLES</A><DD>
 <DT><A HREF="#lbAK">THANKS TO</A><DD>
 <DT><A HREF="#lbAL">FILES</A><DD>
-<DT><A HREF="#lbAM">SEE ALSO</A><DD>
-<DT><A HREF="#lbAN">AUTHOR</A><DD>
-<DT><A HREF="#lbAO">COPYRIGHT</A><DD>
+<DT><A HREF="#lbAM">NOTES</A><DD>
+<DT><A HREF="#lbAN">SEE ALSO</A><DD>
+<DT><A HREF="#lbAO">AUTHOR</A><DD>
+<DT><A HREF="#lbAP">COPYRIGHT</A><DD>
 </DL>
 <HR>
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 18:13:16 GMT, February 02, 2020
+Time: 13:34:22 GMT, September 06, 2020
 </BODY>
 </HTML>
