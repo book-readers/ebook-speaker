@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gettext 0.11.2\n"
 "Report-Msgid-Bugs-To: <jos@jlemmens.nl>\n"
-"POT-Creation-Date: 2020-09-07 15:16+0200\n"
+"POT-Creation-Date: 2020-09-12 14:50+0200\n"
 "PO-Revision-Date: 2019-01-01 11:06+0200\n"
 "Last-Translator: Jani Kinnunen <janikinnunen340@gmail.com>\n"
 "Language-Team: Jani Kinnunen <janikinnunen340@gmail.com>\n"
@@ -32,7 +32,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/common.c:35 src/common.c:289 src/common.c:503 src/ebook-speaker.c:2085
+#: src/common.c:35 src/common.c:289 src/common.c:503 src/ebook-speaker.c:2084
 msgid "Please try to play this book with daisy-player"
 msgstr "Kokeile toistaa tm kirja daisy-playerilla"
 
@@ -45,8 +45,8 @@ msgstr "Ei voi lukea tyyppi: %d"
 msgid "Go to page number:"
 msgstr "Siirry sivulle:"
 
-#: src/common.c:853 src/ebook-speaker.c:1677 src/ebook-speaker.c:2463
-#: src/ebook-speaker.c:2760
+#: src/common.c:853 src/ebook-speaker.c:1677 src/ebook-speaker.c:2462
+#: src/ebook-speaker.c:2758
 msgid "Please wait..."
 msgstr "Odota..."
 
@@ -55,7 +55,7 @@ msgid "Select a soundcard:"
 msgstr "Valitse nikortti:"
 
 #: src/daisy2.02.c:49 src/daisy2.02.c:130 src/daisy2.02.c:236
-#: src/ebook-speaker.c:2351
+#: src/ebook-speaker.c:2350
 #, c-format
 msgid "Cannot read %s"
 msgstr "Ei voi lukea %s"
@@ -265,20 +265,19 @@ msgid "Break phrases at EOL or at a specific position (y/n/position)"
 msgstr ""
 "Listnk lausetauko rivin loppuun vai johonkin muuhun sijaintiin (y/n/position)"
 
+#: src/ebook-speaker.c:1419
+msgid "Be sure the package \"tesseract-ocr\" is installed onto your system."
+msgstr "Varmista, ett paketti \"tesseract-ocr-%s\" on asennettu jrjestelmsi."
+
 #: src/ebook-speaker.c:1421
 #, c-format
 msgid "Language code \"%s\" is not a valid tesseract code."
 msgstr "\"%s\" ei ole kelvollinen tesseract-kielikoodi."
 
 #: src/ebook-speaker.c:1423
+#, c-format
 msgid "See the tesseract manual for valid codes."
 msgstr "Katso kelvolliset koodit tesseractin ksikirjasta."
-
-#: src/ebook-speaker.c:1425
-#, c-format
-msgid ""
-"Be sure the package \"tesseract-ocr-%s\" is installed onto your system.\n"
-msgstr "Varmista, ett paketti \"tesseract-ocr-%s\" on asennettu jrjestelmsi.\n"
 
 #: src/ebook-speaker.c:1434
 #, c-format
@@ -293,26 +292,26 @@ msgstr "Katso kelvolliset koodit cuneiformin ksikirjasta."
 msgid "Go to phrase in current item:"
 msgstr "Siirry lauseeseen nykyisess kohteessa:"
 
-#: src/ebook-speaker.c:1691 src/ebook-speaker.c:1930 src/ebook-speaker.c:1949
-#: src/ebook-speaker.c:1974 src/ebook-speaker.c:2005 src/ebook-speaker.c:2284
-#: src/ebook-speaker.c:2502 src/ebook-speaker.c:2546 src/ebook-speaker.c:2901
-#: src/ebook-speaker.c:2952
+#: src/ebook-speaker.c:1691 src/ebook-speaker.c:1929 src/ebook-speaker.c:1948
+#: src/ebook-speaker.c:1973 src/ebook-speaker.c:2004 src/ebook-speaker.c:2283
+#: src/ebook-speaker.c:2501 src/ebook-speaker.c:2545 src/ebook-speaker.c:2900
+#: src/ebook-speaker.c:2950
 msgid "eBook-speaker cannot handle this file."
 msgstr "eBook-speaker ei voi ksitell tt tiedostoa."
 
-#: src/ebook-speaker.c:1728 src/ebook-speaker.c:2420
+#: src/ebook-speaker.c:1727 src/ebook-speaker.c:2419
 msgid "Press 'h' for help"
 msgstr "Saat ohjeita painamalla 'h'"
 
-#: src/ebook-speaker.c:1983
+#: src/ebook-speaker.c:1982
 msgid "Unknown format"
 msgstr "Tuntematon muoto"
 
-#: src/ebook-speaker.c:2256 src/ebook-speaker.c:2757
+#: src/ebook-speaker.c:2255 src/ebook-speaker.c:2755
 msgid "eBook-speaker - Version"
 msgstr "eBook-speaker - versio"
 
-#: src/ebook-speaker.c:2260
+#: src/ebook-speaker.c:2259
 #, c-format
 msgid ""
 "Usage: %s [eBook_file | URL | -s [-r resolution]] [-b n | y | position] [-c] "

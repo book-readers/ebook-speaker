@@ -1,6 +1,6 @@
 /* daisy3.c - functions to insert daisy3 info into a struct.
  *
- * Copyright (C) 2019 J. Lemmens
+ * Copyright (C)2020 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -22,7 +22,7 @@
 int get_page_number_3 (misc_t *misc, my_attribute_t *my_attribute)
 {
 // function for daisy 3
-   while (1)
+   while (1)    
    {
       if (! get_tag_or_label (misc, my_attribute, misc->reader))
          return 0;
