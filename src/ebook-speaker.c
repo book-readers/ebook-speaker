@@ -1,6 +1,6 @@
 /* eBook-speaker - read aloud an eBook using a speech synthesizer
  *
- *  Copyright (C) 2020 J. Lemmens
+ *  Copyright (C) 2021 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -25,15 +25,15 @@ void clear_tmp_dir (misc_t *misc)
    {
 // Be sure not to remove wrong files
       snprintf (misc->cmd, MAX_CMD - 1, "rm -rf %s/*", misc->tmp_dir);
-      switch (system (misc->cmd));
+      system (misc->cmd);
    } // if
 } // clear_tmp_dir
 
 void quit_eBook_speaker (misc_t *misc, my_attribute_t *my_attribute,
                          daisy_t *daisy)
 {
-   save_bookmark (misc);
-   switch (system ("reset"));
+   save_bookmark_and_xml (misc);
+   system ("reset");
    close (misc->tmp_wav_fd);
    unlink (misc->tmp_wav);
    remove_tmp_dir (misc);
@@ -111,7 +111,7 @@ void skip_left (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
 } // skip_left
 
 void start_playing (misc_t *misc, my_attribute_t *my_attribute,
-                    daisy_t *daisy)
+                    daisy_t *daisy, audio_info_t *sound_devices)
 {
    FILE *w;
    struct stat buf;
@@ -119,7 +119,7 @@ void start_playing (misc_t *misc, my_attribute_t *my_attribute,
    if (*misc->tts[misc->tts_no] == 0 && *misc->option_t == 0)
    {
       misc->tts_no = 0;
-      select_tts (misc, daisy);
+      select_tts (misc, my_attribute, daisy);
    } // if
 
    if ((w = fopen (misc->eBook_speaker_txt, "w")) == NULL)
@@ -143,8 +143,9 @@ void start_playing (misc_t *misc, my_attribute_t *my_attribute,
    stat (misc->eBook_speaker_txt, &buf);
    if (buf.st_size == 0)
       return;
+   setlocale (LC_NUMERIC, "en_GB");
    lseek (misc->tmp_wav_fd, SEEK_SET, 0);
-   switch (system (misc->tts[misc->tts_no]));
+   system (misc->tts[misc->tts_no]);
    switch (misc->player_pid = fork ())
    {
    case -1:
@@ -159,13 +160,13 @@ void start_playing (misc_t *misc, my_attribute_t *my_attribute,
    }
    case 0: // child
    {
-      char tempo_str[10], dev[5];
+      char tempo_str[10];
 
       reset_term_signal_handlers_after_fork ();
       snprintf (tempo_str, 10, "%lf", misc->speed);
-      sprintf (dev, "%d", misc->pulseaudio_device);
-      playfile (misc, misc->tmp_wav, "wav", dev,
-                "pulseaudio", tempo_str);
+      playfile (misc->tmp_wav, "wav",
+                sound_devices[misc->current_sink].device,
+                sound_devices[misc->current_sink].type, tempo_str);
       _exit (EXIT_SUCCESS);
    }
    default: // parent
@@ -174,7 +175,7 @@ void start_playing (misc_t *misc, my_attribute_t *my_attribute,
 } // start_playing
 
 void go_to_next_item (misc_t *misc, my_attribute_t *my_attribute,
-                      daisy_t *daisy)
+                      daisy_t *daisy, audio_info_t *sound_devices)
 {
    misc->phrase_nr = 0;
    if (++misc->playing >= misc->total_items)
@@ -207,7 +208,7 @@ void go_to_next_item (misc_t *misc, my_attribute_t *my_attribute,
          wclear (misc->screenwin);
          wrefresh (misc->screenwin);
          create_epub (misc, my_attribute, daisy, file, 1);
-         play_epub (misc, my_attribute, daisy, file);
+         play_epub (misc, my_attribute, daisy, sound_devices, file);
          return;
       } // if
       remove_tmp_dir (misc);
@@ -231,7 +232,8 @@ void go_to_next_item (misc_t *misc, my_attribute_t *my_attribute,
 } // go_to_next_item
 
 void get_next_phrase (misc_t *misc, my_attribute_t *my_attribute,
-                      daisy_t *daisy, int give_sound)
+                      daisy_t *daisy, audio_info_t *sound_devices,
+                      int give_sound)
 {
    int eof;
 
@@ -243,7 +245,7 @@ void get_next_phrase (misc_t *misc, my_attribute_t *my_attribute,
          if (daisy[misc->playing].screen == daisy[misc->current].screen)
          {
             wattron (misc->screenwin, A_BOLD);
-            if (misc->current_page_number)
+            if (misc->current_page_number && misc->update_progress)
                mvwprintw (misc->screenwin, daisy[misc->playing].y, 63,
                           "(%3d)", misc->current_page_number);
             misc->phrase_nr++;
@@ -256,7 +258,7 @@ void get_next_phrase (misc_t *misc, my_attribute_t *my_attribute,
             wrefresh (misc->screenwin);
          } // if
          if (give_sound)
-            start_playing (misc, my_attribute, daisy);
+            start_playing (misc, my_attribute, daisy, sound_devices);
          break;
       } // if
       if (strcasestr (misc->daisy_version, "2.02") &&
@@ -277,7 +279,7 @@ void get_next_phrase (misc_t *misc, my_attribute_t *my_attribute,
       } // if
       if (eof)
       {
-         go_to_next_item (misc, my_attribute, daisy);
+         go_to_next_item (misc, my_attribute, daisy, sound_devices);
          break;
       } // if
       if (misc->playing + 1 < misc->total_items &&
@@ -285,13 +287,14 @@ void get_next_phrase (misc_t *misc, my_attribute_t *my_attribute,
           strcmp (my_attribute->id,
                   daisy[misc->playing + 1].xml_anchor) == 0)
       {
-         go_to_next_item (misc, my_attribute, daisy);
+         go_to_next_item (misc, my_attribute, daisy, sound_devices);
          break;
       } // if
    } // while
 } // get_next_phrase
 
-void select_tts (misc_t *misc, daisy_t *daisy)
+void select_tts (misc_t *misc, my_attribute_t *my_attribute,
+                 daisy_t *daisy)
 {
    int y;
 
@@ -300,6 +303,7 @@ void select_tts (misc_t *misc, daisy_t *daisy)
    wprintw (misc->screenwin, "\n%s\n\n", gettext
             ("Select a Text-To-Speech application"));
    wprintw (misc->screenwin, "    1 %s\n", misc->tts[0]);
+   load_xml (misc, my_attribute);
    for (y = 1; y < 15; y++)
    {
       char str[MAX_STR];
@@ -324,7 +328,7 @@ void select_tts (misc_t *misc, daisy_t *daisy)
    while (1)
    {
       switch (wgetch (misc->screenwin))
-      {                   
+      {
       case 13:
          misc->tts_no = y;
          view_screen (misc, daisy);
@@ -349,6 +353,8 @@ void select_tts (misc_t *misc, daisy_t *daisy)
             } // while
          } // if
          wmove (misc->screenwin, y + 3, 2);
+         break;
+      case ERR:
          break;
       default:
          view_screen (misc, daisy);
@@ -427,10 +433,10 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
       strncpy (misc->xmlversion, "1.0", 5);
    if (! *misc->encoding)
       strncpy (misc->encoding, "utf-8", 8);
+   xmlTextWriterSetIndent (writer, 1);
+   xmlTextWriterSetIndentString (writer, BAD_CAST "   ");
    xmlTextWriterStartDocument
                 (writer, misc->xmlversion, misc->encoding, misc->standalone);
-   xmlTextWriterSetIndent (writer, 1);
-   xmlTextWriterSetIndentString (writer, BAD_CAST "");
    xmlTextWriterStartElement (writer, (const xmlChar *) misc->tag);
    if (*my_attribute->id)
    {
@@ -499,7 +505,6 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
             xmlTextWriterWriteFormatAttribute
                  (writer, BAD_CAST "href", "%s", my_attribute->href);
          } // if href
-         xmlTextWriterWriteString (writer, (const xmlChar *) "\n");
          continue;
       } // if misc->tag
       if (! *misc->label)
@@ -530,7 +535,6 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
          {
             xmlTextWriterWriteFormatString (writer, "%c", *p);
             p++;
-            xmlTextWriterWriteString (writer, BAD_CAST "\n");
             xmlTextWriterWriteElement (writer, BAD_CAST "br", NULL);
             start_of_new_phrase = 1;
             continue;
@@ -545,7 +549,6 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
          {
             if (misc->break_phrase == 'y')
             {
-               xmlTextWriterWriteString (writer, BAD_CAST "\n");
                xmlTextWriterWriteElement (writer, BAD_CAST "br", NULL);
                start_of_new_phrase = 1;
             }
@@ -562,7 +565,7 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
    xmlTextWriterEndDocument (writer);
    xmlFreeTextWriter (writer);
    daisy[i].xml_file = strdup (new);
-   free (new);
+   free (new);             
 } // split_phrases
 
 void put_bookmark (misc_t *misc)
@@ -606,7 +609,7 @@ void put_bookmark (misc_t *misc)
       xmlTextWriterWriteFormatAttribute
          (writer, BAD_CAST "break_phrase", "%d", misc->break_phrase);
    xmlTextWriterWriteFormatAttribute (writer, BAD_CAST
-                          "pulseaudio_device", "%d", misc->pulseaudio_device);
+                          "current_sink", "%d", misc->current_sink);
    xmlTextWriterEndElement (writer);
    xmlTextWriterEndDocument (writer);
    xmlFreeTextWriter (writer);
@@ -614,7 +617,7 @@ void put_bookmark (misc_t *misc)
 } // put_bookmark
 
 void get_bookmark (misc_t *misc, my_attribute_t *my_attribute,
-                   daisy_t *daisy)
+                   daisy_t *daisy, audio_info_t *sound_devices)
 {
    xmlTextReaderPtr local_reader;
    htmlDocPtr local_doc;
@@ -629,12 +632,17 @@ void get_bookmark (misc_t *misc, my_attribute_t *my_attribute,
    local_doc = htmlParseFile (str, "UTF-8");
    free (str);
    if (! (local_reader = xmlReaderWalker (local_doc)))
+   {
+      select_next_output_device (misc, daisy, sound_devices); 
       return;
+   } // if
    do
    {
       if (! get_tag_or_label (misc, my_attribute, local_reader))
          break;
    } while (strcasecmp (misc->tag, "bookmark") != 0);
+   if (misc->current_sink < 0)
+      select_next_output_device (misc, daisy, sound_devices);
    xmlTextReaderClose (local_reader);
    if (*misc->option_t)
       misc->tts_no = 0;
@@ -666,7 +674,7 @@ void show_progress (misc_t *misc, daisy_t *daisy)
 
 void view_screen (misc_t *misc, daisy_t *daisy)
 {
-   int i, x, l;
+   long i, x, l;
 
    mvwaddstr (misc->titlewin, 1, 0,
               "----------------------------------------");
@@ -698,7 +706,7 @@ void view_screen (misc_t *misc, daisy_t *daisy)
    {
       mvwprintw (misc->screenwin, daisy[i].y, daisy[i].x, "%s",
                  daisy[i].label);
-      l = strlen (daisy[i].label) + daisy[i].x;
+      l = (long) strlen (daisy[i].label) + daisy[i].x;
       if (l / 2 * 2 == l)
          waddstr (misc->screenwin, " ");
       for (x = l; x < 56; x += 2)
@@ -735,7 +743,7 @@ void view_screen (misc_t *misc, daisy_t *daisy)
 void view_total_phrases (misc_t *misc, daisy_t *daisy, int nth)
 {
 // added by Colomban Wendling <cwendling@hypra.fr>
-   if (daisy[nth].screen == daisy[misc->current].screen &&
+   if (daisy[nth].screen == daisy[misc->current].screen &&     
        (daisy[nth].level <= misc->level || misc->playing == nth))
    {
       int x, total_phrases;
@@ -748,7 +756,6 @@ void view_total_phrases (misc_t *misc, daisy_t *daisy, int nth)
          if (++x >= misc->total_items)
             break;
       } while (misc->playing != nth && daisy[x].level > misc->level);
-      total_phrases /= misc->speed;
       if (misc->playing == nth)
       {
          mvwprintw (misc->screenwin, daisy[misc->playing].y, 68, "      ");
@@ -757,117 +764,18 @@ void view_total_phrases (misc_t *misc, daisy_t *daisy, int nth)
          wattroff (misc->screenwin, A_BOLD);
          wmove (misc->screenwin, daisy[misc->current].y,
                 daisy[misc->current].x - 1);
-      } // if
+      } // if 
    } // if
 } // view_total_phrases
 
-
-void write_wav (misc_t *misc, my_attribute_t *my_attribute,
-                daisy_t *daisy, char *outfile)
-{
-   FILE *w;
-   sox_format_t *first, *output;
-   sox_sample_t samples[2048];
-   size_t number_read;
-   char *first_eBook_speaker_wav;
-   float secs;
-   int total;
-
-   if (! *misc->tts[misc->tts_no])
-   {
-      misc->tts_no = 0;
-      select_tts (misc, daisy);
-   } // if
-   wprintw (misc->screenwin,
-            "\nStoring \"%s\" as \"%s\" into your home-folder...",
-            daisy[misc->current].label, basename (outfile));
-   wrefresh (misc->screenwin);
-   if ((w = fopen (misc->eBook_speaker_txt, "w")) == NULL)
-      failure (misc, "Can't make a temp file", errno);
-   if (fwrite ("init\n", 5, 1, w) == 0)
-   {
-      int e;
-      char str[MAX_STR];
-
-      e = errno;
-      snprintf (str, MAX_STR, "write (\"%s\"): failed.\n", misc->label);
-      failure (misc, str, e);
-   } // if
-   fclose (w);
-   switch (system (misc->tts[misc->tts_no]));
-   secs = 0;
-   while (1)
-   {
-      if (access (misc->tmp_wav, R_OK) == 0)
-         break;
-      secs += 0.01;
-      if (secs >= 1)        
-      {
-         int e;
-         char *str;
-
-         e = errno;
-         endwin ();
-         str = malloc (20 + strlen (misc->tmp_wav) +
-                       strlen (strerror (e)));
-         sprintf (str, "sox_open_read: %s: %s",
-                   misc->tmp_wav, strerror (e));
-         printf ("%s\n\n", str);
-         printf (gettext ("Be sure that the used TTS is installed:"));
-         printf ("\n\n   \"%s\"\n\n", misc->tts[misc->tts_no]);
-         beep ();
-         remove_tmp_dir (misc);
-         _exit (EXIT_SUCCESS);
-      } // if
-   } // while
-
-   sox_init ();
-   first_eBook_speaker_wav = malloc (strlen (misc->daisy_mp) + 50);
-   sprintf (first_eBook_speaker_wav, "%s/first_eBook_speaker.wav",
-            misc->daisy_mp);
-   rename (misc->tmp_wav, first_eBook_speaker_wav);
-   first = sox_open_read (first_eBook_speaker_wav, NULL, NULL, NULL);
-   output = sox_open_write (outfile, &first->signal, &first->encoding,
-                            NULL, NULL, NULL);
-   open_xml_file (misc, my_attribute, daisy, daisy[misc->current].xml_file,
-                   daisy[misc->current].xml_anchor);
-   total = misc->total_phrases;
-   while (1)
-   {
-      sox_format_t *input;
-
-      if (! get_tag_or_label (misc, my_attribute, misc->reader))
-         break;
-      if (misc->current < misc->total_items - 1 &&
-          *daisy[misc->current + 1].xml_anchor &&
-          strcasecmp (my_attribute->id,
-                      daisy[misc->current + 1].xml_anchor) == 0)
-         break;
-      if (! *misc->label)
-         continue;;
-      mvwprintw (misc->screenwin, 7, 3, "Writing phrase %d...", total--);
-      wrefresh (misc->screenwin);
-      w = fopen (misc->eBook_speaker_txt, "w");
-      fwrite (misc->label, strlen (misc->label), 1, w);
-      fclose (w);
-      switch (system (misc->tts[misc->tts_no]));
-      input = sox_open_read (misc->tmp_wav, NULL, NULL, NULL);
-      while ((number_read = sox_read (input, samples, 2048)))
-         sox_write (output, samples, number_read);
-      sox_close (input);
-   } // while
-   sox_close (output);
-   sox_close (first);
-   sox_quit ();
-} // write_wav
-
-void help (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
+void help (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
+           audio_info_t *sound_devices)
 {
    int y, x, playing;
 
    playing = misc->playing;
    if (playing > -1)
-      pause_resume (misc, my_attribute, daisy);
+      pause_resume (misc, my_attribute, daisy, sound_devices);
    getyx (misc->screenwin, y, x);
    wclear (misc->screenwin);
    wprintw (misc->screenwin, "\n%s\n", gettext
@@ -963,6 +871,8 @@ void help (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
    wprintw (misc->screenwin, "%s\n", gettext
         ("V,7             - increase playback volume (beware of Clipping)"));
    wprintw (misc->screenwin, "%s\n", gettext
+            ("w               - store whole book to disk in WAV-format"));
+   wprintw (misc->screenwin, "%s\n", gettext
             ("x               - go to the file-manager"));
    wprintw (misc->screenwin, "\n%s", gettext
             ("Press any key to leave help..."));
@@ -972,7 +882,7 @@ void help (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
    view_screen (misc, daisy);
    wmove (misc->screenwin, y, x);
    if (playing > -1)
-      pause_resume (misc, my_attribute, daisy);
+      pause_resume (misc, my_attribute, daisy, sound_devices);
 } // help
 
 void previous_item (misc_t *misc, daisy_t *daisy)
@@ -1017,78 +927,121 @@ void change_level (misc_t *misc, daisy_t *daisy, char key)
    view_screen (misc, daisy);
 } // change_level
 
-void load_xml (misc_t *misc, my_attribute_t *my_attribute,
-               daisy_t *daisy)
+void save_xml (misc_t *misc)
 {
-   int x = 1, i;
+   int x;
+   char str[MAX_STR];
+   xmlTextWriterPtr writer;
+   struct passwd *pw;
+
+   pw = getpwuid (geteuid ());
+   snprintf (str, MAX_STR - 1, "%s/.eBook-speaker.xml", pw->pw_dir);
+   if (! (writer = xmlNewTextWriterFilename (str, 0)))
+      return;
+   xmlTextWriterSetIndent (writer, 1);
+   xmlTextWriterSetIndentString (writer, BAD_CAST "   ");
+   xmlTextWriterStartDocument (writer, NULL, NULL, NULL);
+   xmlTextWriterStartElement (writer, BAD_CAST "eBook-speaker");
+   xmlTextWriterStartElement (writer, BAD_CAST "voices");
+   xmlTextWriterStartComment (writer);
+   xmlTextWriterWriteString (writer, BAD_CAST "\n\
+/*\n\
+ * This list of TTS is initially populated with a voice, accordinly\n\
+ * set to the current locale, of the espeak synthesizer, provided as\n\
+ * a fall back, that will be recreated if removed.\n\
+ * You can add new lines for other TTS, which should also be surrounded\n\
+ * by lines with just <tts> above and </tts> below.\n\
+ * The command should read eBook-speaker.txt and write eBook-speaker.wav.\n\
+ * Most synthesizers have a man page and a --help option that can help\n\
+ * to write the corresponding command lines.\n\
+ * Examples using the flite, pico2wave, mbrola, text2wave and Cepstral\n\
+ * synthesizers are shown the first time you start the ebook-speaker program.\n\
+ * You may remove them. You may modify and delete any added item.\n\
+ * If you delete an item, remove also the lines with <tts> and </tts>\n\
+ * that surround it.\n\
+ * Warning: a character '<' in the command should be replaced &lt; and a\n\
+ * character '>' by &gt; else ebook-speaker will fail.\n\
+ */\n      ");
+   xmlTextWriterEndComment (writer);
+
+   x = 1;
+   do
+   {
+      char str[MAX_STR];
+
+      xmlTextWriterStartElement (writer, BAD_CAST "tts");
+      snprintf (str, MAX_STR - 1, "\n         %s\n      ", misc->tts[x]);
+      xmlTextWriterWriteString (writer, BAD_CAST str);
+      xmlTextWriterEndElement (writer);
+      x++;
+   } while (*misc->tts[x] && x < 15);
+   xmlTextWriterEndElement (writer);
+   xmlTextWriterEndElement (writer);
+   xmlTextWriterEndDocument (writer);
+   xmlFreeTextWriter (writer);
+} // save_xml
+
+void load_xml (misc_t *misc, my_attribute_t *my_attribute)
+{
+   long x, i;
    char str[MAX_STR], *p;
    struct passwd *pw;;
    xmlTextReaderPtr reader;
    htmlDocPtr doc;
 
+// first clear tts list
+   for (x = 0; x < 15; x++)
+      *misc->tts[x] = 0;
+
+   x = 1;
    pw = getpwuid (geteuid ());
+
    snprintf (str, MAX_STR - 1, "%s/.eBook-speaker.xml", pw->pw_dir);
+
+// eSpeak NG text-to-speech: 1.49.2  Data
    snprintf (misc->tts[0], MAX_STR - 1,
      "espeak -f eBook-speaker.txt -w eBook-speaker.wav -v %s", misc->locale);
-   snprintf (misc->tts[1], MAX_STR - 1,
-             "espeak -f eBook-speaker.txt -w eBook-speaker.wav -v en");
    if ((doc = htmlParseFile (str, "UTF-8")) == NULL)
    {
-      xmlTextWriterPtr writer;
-
 // If no TTS; give some examples
-      strncpy (misc->tts[2],
-        "flite  eBook-speaker.txt eBook-speaker.wav",
-         MAX_STR - 1);
-      strncpy (misc->tts[3],
-        "pico2wave -l=en-GB -w=eBook-speaker.wav \"`cat eBook-speaker.txt`\"",
-         MAX_STR - 1);
-      if (! (writer = xmlNewTextWriterFilename (str, 0)))
-         return;
-      select_next_output_device (misc, daisy);
-      xmlTextWriterStartDocument (writer, NULL, NULL, NULL);
-      xmlTextWriterStartElement (writer, BAD_CAST "eBook-speaker");
-      xmlTextWriterWriteString (writer, BAD_CAST "\n   ");
-      xmlTextWriterStartElement (writer, BAD_CAST "voices");
-      xmlTextWriterWriteString (writer, BAD_CAST "\n   ");
-      xmlTextWriterStartComment (writer);
-      xmlTextWriterWriteString (writer, BAD_CAST "\n   ");
-      xmlTextWriterWriteString (writer, BAD_CAST
-"This list of TTS is initially populated with a voice, accordinly\n \
- set to the current locale, of the espeak synthesizer, provided as\n \
- a fall back, that will be recreated if removed.\n \
- You can add new lines for other TTS, which should also be surrounded\n \
- by lines with just <tts> above and </tts> below.\n \
- The command should read eBook-speaker.txt and write eBook-speaker.wav.\n \
- Most synthesizers have a man page and a --help option that can help\n \
- to write the corresponding command lines.\n \
- Examples using the pico and flite synthesizers are shown the first\n \
- time you start the ebook-speaker program. You may remove them.\n \
- You may modify and delete any added item. If you delete an item,\n \
- remove also the lines with <tts> and </tts> that surround it.\n \
- Warning: a character '<' in the command should be replaced &lt; and a\n \
- character '>' by &gt; else ebook-speaker will fail.\n");
-      xmlTextWriterEndComment (writer);
-      x = 0;
-      while (1)
-      {
-         char str[MAX_STR];
 
-         xmlTextWriterWriteString (writer, BAD_CAST "\n      ");
-         xmlTextWriterStartElement (writer, BAD_CAST "tts");
-         snprintf (str, MAX_STR - 1, "\n         %s\n      ", misc->tts[x]);
-         xmlTextWriterWriteString (writer, BAD_CAST str);
-         xmlTextWriterEndElement (writer);
-         if (! *misc->tts[++x])
-            break;
-      } // while
-      xmlTextWriterWriteString (writer, BAD_CAST "\n   ");
-      xmlTextWriterEndElement (writer);
-      xmlTextWriterWriteString (writer, BAD_CAST "\n");
-      xmlTextWriterEndElement (writer);
-      xmlTextWriterEndDocument (writer);
-      xmlFreeTextWriter (writer);
-   } // if
+/* Carnegie Mellon University, Copyright (c) 1999-2016, all rights reserved
+ * version: flite-2.1-release Dec 2017 (http://cmuflite.org)
+ */
+      strcpy (misc->tts[1],
+              "flite  eBook-speaker.txt eBook-speaker.wav");
+
+// pico2wave
+      strcpy (misc->tts[2],
+       "pico2wave -l=en-GB -w=eBook-speaker.wav < eBook-speaker.txt");
+
+/* Cepstral Swift v5.1.0, July 2008
+ * Copyright (C) 2000-2006, Cepstral LLC.
+ */
+      strcpy (misc->tts[3],
+   "swift -n Callie -f eBook-speaker.txt -m text -o eBook-speaker.wav");
+      strcpy (misc->tts[4],
+   "swift -n Lawrence -f eBook-speaker.txt -m text -o eBook-speaker.wav");
+
+/* mbrola -                                                 
+ * Copyright (C) 1996-2008  Dr Thierry Dutoit <thierry.dutoit@fpms.ac.be>
+ */
+      strcpy (misc->tts[5],
+   "espeak -f eBook-speaker.txt -w eBook-speaker.wav -v mb-en1");
+
+/* (C) Centre for Speech Technology Research, 1996-1998
+ * University of Edinburgh
+ * 80 South Bridge
+ * Edinburgh EH1 1HN
+ * http://www.cstr.ed.ac.uk/projects/festival.html
+ */
+      strcpy (misc->tts[6],
+   "text2wave eBook-speaker.txt -o eBook-speaker.wav");
+      save_xml (misc);
+      misc->tts_no = 0;                 
+      return;
+   } // if no tts give examples
+
    if ((reader = xmlReaderWalker (doc)))
    {
       while (1)
@@ -1108,7 +1061,7 @@ void load_xml (misc_t *misc, my_attribute_t *my_attribute,
                if (misc->label[i] != ' ' && misc->label[i] != '\n')
                   break;;
             p = misc->label + i;
-            for (i = strlen (p) - 1; i > 0; i--)
+            for (i = (long) strlen (p) - 1; i > 0; i--)
                if (p[i] != ' ' && p[i] != '\n')
                   break;
             p[i + 1] = 0;
@@ -1117,31 +1070,35 @@ void load_xml (misc_t *misc, my_attribute_t *my_attribute,
                break;
          } // if
       } // while
+      if (misc->tts_no >= x)
+         misc->tts_no = (int) 0;
       xmlTextReaderClose (reader);
       xmlFreeDoc (doc);
    } // if
 } // load_xml
 
-void save_bookmark (misc_t *misc)
+void save_bookmark_and_xml (misc_t *misc)
 {
    endwin ();
    kill_player (misc);
    wait (NULL);
    put_bookmark (misc);
+   save_xml (misc);
    remove_tmp_dir (misc);
-} // save_bookmark
+} // save_bookmark_and_xml
 
-void pause_resume (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
+void pause_resume (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
+                   audio_info_t *sound_devices)
 {
    if (*misc->tts[misc->tts_no] == 0)
    {
       misc->tts_no = 0;
-      select_tts (misc, daisy);
+      select_tts (misc, my_attribute, daisy);
    } // if
    if (misc->playing < 0 && misc->pause_resume_playing < 0)
       return;
-   if (misc->pulseaudio_device < 0)
-      select_next_output_device (misc, daisy);
+   if (misc->current_sink < 0)
+      select_next_output_device (misc, daisy, sound_devices);
    if (misc->playing > -1)
    {
       misc->pause_resume_playing = misc->playing;
@@ -1157,7 +1114,7 @@ void pause_resume (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
 } // pause_resume
 
 void search (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
-             int start, char mode)
+             audio_info_t *sound_devices, int start, char mode)
 {
    int c, found = 0;
 
@@ -1239,7 +1196,7 @@ void search (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
    else
    {
       beep ();
-      pause_resume (misc, my_attribute, daisy);
+      pause_resume (misc, my_attribute, daisy, sound_devices);
    } // if
 } // search
 
@@ -1268,6 +1225,7 @@ void break_phrase (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
       misc->break_phrase = atoi (pos);
    if (misc->break_phrase == 0)
       misc->break_phrase = 'n';
+
 // reset original xml_file
    for (misc->current = 0; misc->current < misc->total_items;
         misc->current++)
@@ -1325,6 +1283,10 @@ void start_OCR (misc_t *misc, char *file)
 {
    char str[MAX_STR + 1];
 
+   if (misc->option_o == NULL)
+      misc->ocr_language = strdup (misc->locale);
+   else
+      misc->ocr_language = strdup (misc->option_o);
    if (misc->use_cuneiform == 0)
    {
 // tesseract languages
@@ -1343,17 +1305,15 @@ void start_OCR (misc_t *misc, char *file)
                            {"sv", "swe"}};
       int i;
 
-      if (! *misc->ocr_language)
+      for (i = 0; i < 13; i++)
       {
-         for (i = 0; i < 13; i++)
+         if (strcmp (misc->ocr_language, codes[i][0]) == 0)
          {
-            if (strcmp (misc->locale, codes[i][0]) == 0)
-            {
-               strncpy (misc->ocr_language, codes[i][1], 3);
-               break;
-            } // if
-         } // for
-      } // if
+            misc->ocr_language = strdup (codes[i][1]);
+            misc->ocr_language[3] = 0;
+            break;
+         } // if
+      } // for
    }
    else
    {
@@ -1384,23 +1344,21 @@ void start_OCR (misc_t *misc, char *file)
                            {"uk", "ukr"}};
       int i;
 
-      if (! *misc->ocr_language)
+      for (i = 0; i < 24; i++)
       {
-         for (i = 0; i < 24; i++)
+         if (strcmp (misc->ocr_language, codes[i][0]) == 0)
          {
-            if (strcmp (misc->locale, codes[i][0]) == 0)
-            {
-               strncpy (misc->ocr_language, codes[i][1], 3);
-               break;
-            } // if
-         } // for
-      } // if
+            misc->ocr_language = strdup (codes[i][1]);
+            misc->ocr_language[3] = 0;
+            break;
+         } // if
+      } // for
    } // if
 
    if (misc->use_cuneiform == 0)
       snprintf (misc->cmd, MAX_CMD - 1,
-             "tesseract \"%s\" \"%s/out\" -l %s 2> /dev/null", file,
-              misc->daisy_mp, misc->ocr_language);
+             "tesseract -l %s \"%s\" \"%s/out\" quiet", misc->ocr_language, 
+             file, misc->daisy_mp);
    else
       snprintf (misc->cmd, MAX_CMD - 1,
              "cuneiform \"%s\" -o \"%s/out.txt\" -l %s > /dev/null", file,
@@ -1445,25 +1403,53 @@ void start_OCR (misc_t *misc, char *file)
 } // start_OCR
 
 void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
-             char *file)
+             audio_info_t *sound_devices, char *file)
 {
    int old;
 
-   misc->current = misc->phrase_nr = 0; 
+   misc->current = misc->phrase_nr = 0;
    misc->level = 1;
+   misc->current_sink = 0;
+   get_list_of_sound_devices (misc, sound_devices);
    if (misc->ignore_bookmark == 1)
-      select_next_output_device (misc, daisy);
+   {
+      if (misc->option_d == NULL)
+         select_next_output_device (misc, daisy, sound_devices);
+   }
    else
    {
-      get_bookmark (misc, my_attribute, daisy);
-      load_xml (misc, my_attribute, daisy);
+      get_bookmark (misc, my_attribute, daisy, sound_devices);
+      load_xml (misc, my_attribute);
       check_phrases (misc, my_attribute, daisy);
       go_to_phrase (misc, my_attribute, daisy, misc->current,
                     ++misc->phrase_nr - 1);
    } // if
-   if (*misc->option_d)
-      misc->pulseaudio_device = atoi (misc->option_d);
-   check_pulseaudio_device (misc, daisy);
+   if (misc->option_d)
+   {
+      int sink;
+
+      if (! strchr (misc->option_d, ':'))
+      {
+         beep ();
+         endwin ();
+         printf ("\n");
+         usage ();
+         _exit (EXIT_FAILURE);
+      } // if
+      get_list_of_sound_devices (misc, sound_devices);
+      for (sink = 0; sink < misc->total_sinks; sink++)
+      {
+         char dt[50];
+
+         sprintf (dt, "%s:%s", sound_devices[sink].device,
+                  sound_devices[sink].type);
+         if (strcasecmp (misc->option_d, dt) == 0)
+         {
+            misc->current_sink = sink;
+            break;
+         } // if
+      } // for
+   } // if
    if (*misc->option_t)
    {
       misc->tts_no = 0;
@@ -1508,7 +1494,8 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
              daisy[misc->current].xml_file, daisy[misc->current].xml_anchor);
          break;
       case '/':
-         search (misc, my_attribute, daisy, misc->current + 1, '/');
+         search (misc, my_attribute, daisy, sound_devices,
+                 misc->current + 1, '/');
          view_screen (misc, daisy);
          break;
       case ' ':
@@ -1521,7 +1508,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
             else
                view_total_phrases (misc, daisy, misc->playing);
          } // if
-         pause_resume (misc, my_attribute, daisy);
+         pause_resume (misc, my_attribute, daisy, sound_devices);
          break;
       case 'b':
          kill_player (misc);
@@ -1562,8 +1549,8 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          if (! *pn || atoi (pn) >= daisy[misc->current].n_phrases)
          {
             beep ();
-            pause_resume (misc, my_attribute, daisy);
-            pause_resume (misc, my_attribute, daisy);
+            pause_resume (misc, my_attribute, daisy, sound_devices);
+            pause_resume (misc, my_attribute, daisy, sound_devices);
             break;
          } // if
          go_to_phrase (misc, my_attribute, daisy, misc->current , atoi (pn));
@@ -1571,14 +1558,13 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
       }
       case 'G':
          if (misc->total_pages)
-            go_to_page_number (misc, my_attribute, daisy);
+            go_to_page_number (misc, my_attribute, daisy, sound_devices);
          else
             beep ();
          break;
       case 'h':
       case '?':
-         misc->current = misc->playing;
-         help (misc, my_attribute, daisy);
+         help (misc, my_attribute, daisy, sound_devices);
          view_screen (misc, daisy);
          break;
       case 'j':
@@ -1621,30 +1607,41 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          change_level (misc, daisy, 'L');
          break;
       case 'm':
-         if (fork () == 0)
+         if (strcmp (sound_devices[misc->current_sink].type, "alsa") == 0)
          {
-            char dev[5];
-
-            reset_term_signal_handlers_after_fork ();
-            sprintf (dev, "%d", misc->pulseaudio_device);
-            pactl ("set-sink-mute", dev, "toggle");
-            _exit (EXIT_SUCCESS);
+            sprintf (misc->cmd, "/usr/bin/amixer -q -D %s set Master playback toggle",
+                     sound_devices[misc->current_sink].device);
+            system (misc->cmd);
+         }
+         else
+         {
+            if (fork () == 0)
+            {
+               reset_term_signal_handlers_after_fork ();
+               pactl ("set-sink-mute",
+                      sound_devices[misc->current_sink].device,
+                      "toggle");
+               _exit (EXIT_SUCCESS);
+            } // if
          } // if
          break;
       case 'n':
-         search (misc, my_attribute, daisy, misc->current + 1, 'n');
+         search (misc, my_attribute, daisy, sound_devices,
+                 misc->current + 1, 'n');
          view_screen (misc, daisy);
          break;
       case 'N':
-         search (misc, my_attribute, daisy, misc->current - 1, 'N');
+         search (misc, my_attribute, daisy, sound_devices,
+                 misc->current - 1, 'N');
          view_screen (misc, daisy);
          break;
       case 'o':
          kill_player (misc);
-         select_next_output_device (misc, daisy);
+         select_next_output_device (misc, daisy, sound_devices);
          break;
       case 'p':
          put_bookmark (misc);
+         save_xml (misc);
          break;
       case 'q':
          quit_eBook_speaker (misc, my_attribute, daisy);
@@ -1667,7 +1664,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          misc->current = 0;
          snprintf (misc->cmd, MAX_CMD - 1,
                    "cd \"%s\" && rm -rf out*", misc->daisy_mp);
-         switch (system (misc->cmd));
+         system (misc->cmd);
          wclear (misc->titlewin);
          wclear (misc->screenwin);
          wrefresh (misc->titlewin);
@@ -1715,10 +1712,12 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          if ((int) strlen (misc->daisy_title) +
              (int) strlen (misc->copyright) >= misc->max_x)
          {
-            mvwprintw (misc->titlewin, 0, misc->max_x - strlen (
-                       misc->daisy_title) - 4, "... ");
+            mvwprintw (misc->titlewin, 0,
+                       misc->max_x - (int) strlen
+                       (misc->daisy_title) - 4, "... ");
          } // if
-         mvwprintw (misc->titlewin, 0, misc->max_x - strlen (misc->daisy_title),
+         mvwprintw (misc->titlewin, 0,
+                    misc->max_x - (int) strlen (misc->daisy_title),
                     "%s", misc->daisy_title);
          mvwprintw (misc->titlewin, 1, 0,
                     "----------------------------------------");
@@ -1742,7 +1741,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          break;
       case 't':
          misc->playing = -1;
-         select_tts (misc, daisy);
+         select_tts (misc, my_attribute, daisy);
          view_screen (misc, daisy);
          break;
       case 'T':
@@ -1808,16 +1807,16 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          misc->speed += 0.1;
          if (misc->playing == -1)
             break;
-         pause_resume (misc, my_attribute, daisy);
-         pause_resume (misc, my_attribute, daisy);
+         pause_resume (misc, my_attribute, daisy, sound_devices);
+         pause_resume (misc, my_attribute, daisy, sound_devices);
          break;
       case 'd':
-         store_item_as_WAV_file (misc, my_attribute, daisy);
+         store_item_as_WAV_file (misc, my_attribute, daisy,
+                                 sound_devices, NO);
          skip_left (misc, my_attribute, daisy);
          break;
       case 'A':
-         store_item_as_ASCII_file (misc, my_attribute, daisy);
-         skip_left (misc, my_attribute, daisy);
+         store_item_as_ASCII_file (misc, my_attribute, daisy, sound_devices);
          break;
       case 'D':
       case '-':
@@ -1829,8 +1828,8 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          misc->speed -= 0.1;
          if (misc->playing == -1)
             break;
-         pause_resume (misc, my_attribute, daisy);
-         pause_resume (misc, my_attribute, daisy);
+         pause_resume (misc, my_attribute, daisy, sound_devices);
+         pause_resume (misc, my_attribute, daisy, sound_devices);
          break;
       case KEY_HOME:
       case '*':
@@ -1838,32 +1837,53 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          if (misc->playing < 0)
             break;
          misc->current = misc->playing;
-         pause_resume (misc, my_attribute, daisy);
-         pause_resume (misc, my_attribute, daisy);
+         pause_resume (misc, my_attribute, daisy, sound_devices);
+         pause_resume (misc, my_attribute, daisy, sound_devices);
          break;
       case 'v':
       case '1':
-         if (fork () == 0)
+         if (strcmp (sound_devices[misc->current_sink].type, "alsa") == 0)
          {
-            char dev[5];
-
-            reset_term_signal_handlers_after_fork ();
-            sprintf (dev, "%d", misc->pulseaudio_device);
-            pactl ("set-sink-volume", dev, "-5%");
-            _exit (EXIT_SUCCESS);
+            sprintf (misc->cmd, "/usr/bin/amixer -q -D %s set Master playback 5%%-",
+                     sound_devices[misc->current_sink].device);
+            system (misc->cmd);
+         }
+         else
+         {
+            if (fork () == 0)
+            {
+               reset_term_signal_handlers_after_fork ();
+               pactl ("set-sink-volume",
+                      sound_devices[misc->current_sink].device,
+                      "-5%");
+               _exit (EXIT_SUCCESS);
+            } // if
          } // if
          break;
       case 'V':
       case '7':
-         if (fork () == 0)
+         if (strcmp (sound_devices[misc->current_sink].type, "alsa") == 0)
          {
-            char dev[5];
-
-            reset_term_signal_handlers_after_fork ();
-            sprintf (dev, "%d", misc->pulseaudio_device);
-            pactl ("set-sink-volume", dev, "+5%");
-            _exit (EXIT_SUCCESS);
+            sprintf (misc->cmd, "/usr/bin/amixer -q -D %s set Master playback 5%%+",
+                     sound_devices[misc->current_sink].device);
+            system (misc->cmd);
+         }
+         else
+         {
+            if (fork () == 0)
+            {
+               reset_term_signal_handlers_after_fork ();
+               pactl ("set-sink-volume",
+                      sound_devices[misc->current_sink].device,
+                      "+5%");
+               _exit (EXIT_SUCCESS);
+            } // if
          } // if
+         break;
+      case 'w':
+         store_item_as_WAV_file (misc, my_attribute, daisy,
+                                 sound_devices, YES);
+         skip_left (misc, my_attribute, daisy);
          break;
       case 'x':
       {
@@ -1878,7 +1898,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          wclear (misc->screenwin);
          wrefresh (misc->screenwin);
          create_epub (misc, my_attribute, daisy, file, 1);
-         play_epub (misc, my_attribute, daisy, file);
+         play_epub (misc, my_attribute, daisy, sound_devices, file);
          break;
       }
       default:
@@ -1892,7 +1912,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          {
 // if not playing
             misc->player_pid = -2;
-            get_next_phrase (misc, my_attribute, daisy, 1);
+            get_next_phrase (misc, my_attribute, daisy, sound_devices, 1);
 
             if (misc->update_progress)
                show_progress (misc, daisy);
@@ -1917,7 +1937,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
 void extract_epub (misc_t *misc, char *file)
 {
    snprintf (misc->cmd, MAX_CMD - 1,
-             "unar \"%s\" -f -o \"%s\" > /dev/null", file, misc->tmp_dir);
+             "unar -q \"%s\" -f -o \"%s\"", file, misc->tmp_dir);
    switch (system (misc->cmd))
    {
    case 0:
@@ -1950,7 +1970,7 @@ Be sure the package \"libreoffice-core\" is installed onto your system.\n");
 } // lowriter_to_txt
 
 void pandoc_to_epub (misc_t *misc, char *from, char *file)
-{      
+{
    char str[MAX_STR + 1];
 
    strncpy (str, misc->tmp_dir, MAX_STR);
@@ -2009,7 +2029,8 @@ void pdf_to_txt (misc_t *misc, const char *file)
 void fold (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy, int i)
 {
    char *txt_file, *folded_file;
-   FILE *p, *w;
+   FILE *p;
+   xmlTextWriterPtr writer;
    char *id;
 
    id = strdup (my_attribute->id);
@@ -2021,14 +2042,17 @@ void fold (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy, int i)
    folded_file = malloc (strlen (txt_file) + 10);
    sprintf (folded_file, "%s.folded", txt_file);
    p = popen (misc->cmd, "r");
-   w = fopen (folded_file, "w");
-   fprintf (w,
-        "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
-   fprintf (w, "<html>\n");
-   fprintf (w, "<head>\n");
-   fprintf (w, "</head>\n");
-   fprintf (w, "<body>\n");
-   fprintf (w, "<div id=\"%s\">\n", id);
+   if (! (writer = xmlNewTextWriterFilename (folded_file, 0)))
+      return;
+   xmlTextWriterSetIndent (writer, 1);
+   xmlTextWriterSetIndentString (writer, BAD_CAST "   ");
+   xmlTextWriterStartDocument (writer, NULL, NULL, NULL);
+   xmlTextWriterStartElement (writer, BAD_CAST "head");
+   xmlTextWriterEndElement (writer);
+   xmlTextWriterStartElement (writer, BAD_CAST "body");
+   xmlTextWriterStartElement (writer, BAD_CAST "div");
+   xmlTextWriterWriteFormatAttribute (writer, BAD_CAST "id", "%s", id);
+   xmlTextWriterWriteString (writer, BAD_CAST "\n");
    while (1)
    {
       size_t len;
@@ -2038,12 +2062,15 @@ void fold (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy, int i)
          break;
       len = 0;
       str = NULL;
-      if ((int) (len = getline (&str, &len, p)) == -1)
+      if ((signed) (len = (size_t) getline (&str, &len, p)) == -1)
          break;
-      fprintf (w, "%s<br/>\n", str);
+      xmlTextWriterWriteFormatString (writer, "%s", str);
+      xmlTextWriterStartElement (writer, BAD_CAST "br");
+      xmlTextWriterEndElement (writer);
    } // while
-   fprintf (w, "</div>\n</body>\n</html>\n");
-   fclose (w);
+   xmlTextWriterEndElement (writer);
+   xmlTextWriterEndDocument (writer);
+   xmlFreeTextWriter (writer);
    pclose (p);
    daisy[i].xml_file = strdup (folded_file);
    free (txt_file);
@@ -2073,11 +2100,11 @@ void check_phrases (misc_t *misc, my_attribute_t *my_attribute,
          fold (misc, my_attribute, daisy, i);
       if (daisy[i].x <= 0)
          daisy[i].x = 2;
-      if (strlen (daisy[i].label) + daisy[i].x >= 53)
+      if ((signed) strlen (daisy[i].label) + daisy[i].x >= 53)
          daisy[i].label[57 - daisy[i].x] = 0;
    } // for
 
-   if (misc->total_items == 0)           
+   if (misc->total_items == 0)
    {
       endwin ();
       printf ("%s\n",
@@ -2088,6 +2115,15 @@ void check_phrases (misc_t *misc, my_attribute_t *my_attribute,
    } // if
 
    count_phrases (misc, my_attribute, daisy);
+   if (misc->total_phrases == 0)
+   {
+      endwin ();
+      printf ("%s\n",
+              gettext ("Please try to play this book with daisy-player"));
+      beep ();
+      quit_eBook_speaker (misc, my_attribute, daisy);
+      _exit (EXIT_FAILURE);
+   } // if
 
 // remove item with 0 phrases
    int j = 0;
@@ -2144,34 +2180,135 @@ void check_phrases (misc_t *misc, my_attribute_t *my_attribute,
 } // check_phrases
 
 void store_item_as_WAV_file (misc_t *misc, my_attribute_t *my_attribute,
-                        daisy_t *daisy)
+            daisy_t *daisy, audio_info_t *sound_devices, int whole_book_flag)
 {
-   char *str, s2[MAX_STR];
-   int i, pause_flag;
+   char *label;
+   char complete_wav[MAX_STR], complete_cdr[MAX_STR], out_cdr[MAX_STR];
+   int i, current, pause_flag, phrase_nr, n_phrases;
+   int tot_phrase_nr, total_phrases, w;
    struct passwd *pw;
+   FILE *fw;
 
    pause_flag = misc->playing;
    wclear (misc->screenwin);
-   str = strdup (daisy[misc->current].label);
-   for (i = 0; str[i] != 0; i++)
+   if (whole_book_flag == YES)
    {
-      if (str[i] == '/')
-         str[i] = '-';
-      if (isspace (str[i]))
-         str[i] = '_';
+      current = 0;
+   }
+   else
+   {
+      current = misc->current;
+   } // if
+   if (whole_book_flag == NO)
+   {
+      while (1)
+      {
+         if (current == 0)
+            break;
+         if (daisy[current].level <= misc->level)
+            break;
+         current--;
+      } // while
+   } // if
+   label = strdup (daisy[current].label);
+   for (i = 0; label[i] != 0; i++)
+   {
+      if (label[i] == '/' ||
+          isspace (label[i]))
+         label[i] = '_';
    } // for
    pw = getpwuid (geteuid ());
-   strncpy (s2, pw->pw_dir, MAX_STR - 1);
-   strncat (s2, "/", MAX_STR - 1);
-   strncat (s2, str, MAX_STR - 1);
-   strncat (s2, ".wav", MAX_STR - 1);
-   while (access (s2, F_OK) == 0)
-      strncat (s2, ".wav", MAX_STR - 1);
+   sprintf (complete_wav, "%s/%s.wav", pw->pw_dir, label);
+   sprintf (complete_cdr, "%s/complete.cdr", misc->tmp_dir);
+   unlink (complete_cdr);
+   sprintf (out_cdr, "%s/out.cdr", misc->tmp_dir);
+   unlink (out_cdr);
+   while (access (complete_wav, F_OK) == 0)
+      strncat (complete_wav, ".wav", MAX_STR - 1);
    if (pause_flag > -1)
-      pause_resume (misc, my_attribute, daisy);
-   write_wav (misc, my_attribute, daisy, s2);
+      pause_resume (misc, my_attribute, daisy, sound_devices);
+
+   if (! *misc->tts[misc->tts_no])
+   {
+      misc->tts_no = 0;
+      select_tts (misc, my_attribute, daisy);
+   } // if
+   wprintw (misc->screenwin,
+            "\nStoring \"%s\" as \"%s\" into your home-folder...",
+            daisy[current].label, basename (complete_wav));
+   wrefresh (misc->screenwin);
+   total_phrases = 0;
+   i = current;
+   while (1)
+   {
+      total_phrases += daisy[i].n_phrases;
+      i++;
+      if (i == misc->total_items)
+         break;
+      if (whole_book_flag == NO)
+         if (daisy[i].level <= misc->level)
+            break;
+   } // while
+
+   w = open (complete_cdr, O_CREAT | O_TRUNC | O_WRONLY, S_IRUSR);
+   tot_phrase_nr = 1;
+   while (1)
+   {
+      n_phrases = daisy[current].n_phrases;
+      open_xml_file (misc, my_attribute, daisy,
+             daisy[current].xml_file, daisy[current].xml_anchor);
+      phrase_nr = 1;
+      while (phrase_nr <= n_phrases)
+      {
+         int r;
+
+         if (! get_tag_or_label (misc, my_attribute, misc->reader))
+            break;
+         if (! *misc->label)
+            continue;
+         mvwprintw (misc->screenwin, 7, 3,
+            "Synthesizing phrase %d of %d...",
+            tot_phrase_nr, total_phrases);
+         wrefresh (misc->screenwin);
+         fw = fopen (misc->eBook_speaker_txt, "w");
+         fwrite (misc->label, strlen (misc->label), 1, fw);
+         fclose (fw);
+         system (misc->tts[misc->tts_no]);
+
+         sprintf (misc->cmd,
+                  "/usr/bin/sox eBook-speaker.wav -b 16 -c 2 -r  44100 \"%s\"",
+                  out_cdr);
+         system (misc->cmd);
+         r = open (out_cdr, O_RDONLY);
+         while (1)
+         {
+#define SIZE 1024
+            char buf[SIZE];
+            ssize_t in;
+
+            in = read (r, buf, SIZE);
+            write (w, buf, (size_t) in);
+            if (in <= 0)
+               break;
+         } // while
+         close (r);
+         phrase_nr++;
+         tot_phrase_nr++;
+      } // while
+      current++;
+      if (current >= misc->total_items)
+         break;
+      if (whole_book_flag == NO)
+         if (daisy[current].level <= misc->level)
+            break;
+   } // while
+   close (w);
+   sprintf (misc->cmd, "/usr/bin/sox \"%s\" -c 1 -r 22050 \"%s\"",
+            complete_cdr, complete_wav);
+   system (misc->cmd);
+
    if (pause_flag > -1)
-      pause_resume (misc, my_attribute, daisy);
+      pause_resume (misc, my_attribute, daisy, sound_devices);
    view_screen (misc, daisy);
 } // store_item_as_WAV_file
 
@@ -2204,15 +2341,26 @@ void write_ascii (misc_t *misc, my_attribute_t *my_attribute,
 } // write_ascii
 
 void store_item_as_ASCII_file (misc_t *misc, my_attribute_t *my_attribute,
-                       daisy_t *daisy)
+                       daisy_t *daisy, audio_info_t *sound_devices)
 {
-   char *str, s2[MAX_STR];
-   int i, pause_flag;
+   char *str, out_file[MAX_STR];
+   int i, pause_flag, current;
    struct passwd *pw;;
+   FILE *w;
 
    pause_flag = misc->playing;
    wclear (misc->screenwin);
-   str = strdup (daisy[misc->current].label);
+   current = misc->current;
+   while (1)
+   {
+// find first item to write to output
+      if (current == 0)
+         break;
+      if (daisy[current].level <= misc->level)
+         break;
+      current--;
+   } // while
+   str = strdup (daisy[current].label);
    for (i = 0; str[i] != 0; i++)
    {
       if (str[i] == '/')
@@ -2222,30 +2370,44 @@ void store_item_as_ASCII_file (misc_t *misc, my_attribute_t *my_attribute,
    } // for
    wprintw (misc->screenwin,
             "\nStoring \"%s\" as \"%s\" into your home-folder...",
-            daisy[misc->current].label, str);
+            daisy[current].label, str);
    wrefresh (misc->screenwin);
    pw = getpwuid (geteuid ());
-   strncpy (s2, pw->pw_dir, MAX_STR - 1);
-   strncat (s2, "/", MAX_STR - 1);
-   strncat (s2, str, MAX_STR - 1);
-   strncat (s2, ".txt", MAX_STR - 1);
-   while (access (s2, F_OK) == 0)
-      strncat (s2, ".txt", MAX_STR - 1);
-   if (fopen (s2, "w") == NULL)
+   sprintf (out_file, "%s/%s.txt", pw->pw_dir, str);
+   while (access (out_file, F_OK) == 0)
+      strcat (out_file, ".txt");
+   if (pause_flag > -1)
+      pause_resume (misc, my_attribute, daisy, sound_devices);
+   if ((w = fopen (out_file, "w")) == NULL)
    {
       int e;
 
       e = errno;
       beep ();
-      failure (misc, s2, e);
+      failure (misc, out_file, e);
    } // if
+   while (1)
+   {
+      open_xml_file (misc, my_attribute, daisy,
+            daisy[current].xml_file, daisy[current].xml_anchor);
+      while (1)
+      {
+         if (! get_tag_or_label (misc, my_attribute, misc->reader))
+            break;
+         if (*my_attribute->id && *daisy[current + 1].xml_anchor &&
+             strcasecmp (my_attribute->id, daisy[current + 1].xml_anchor) == 0)
+            break;
+         if (! *misc->label)
+            continue;;
+         fprintf (w, "%s\n", misc->label);
+      } //while
+      current++;
+      if (daisy[current].level <= misc->level)
+         break;
+   } // while
+   fclose (w);
    if (pause_flag > -1)
-      pause_resume (misc, my_attribute, daisy);
-   open_xml_file (misc, my_attribute, daisy, daisy[misc->current].xml_file,
-                   daisy[misc->current].xml_anchor);
-   write_ascii (misc, my_attribute, daisy, misc->current, s2);
-   if (pause_flag > -1)
-      pause_resume (misc, my_attribute, daisy);
+      pause_resume (misc, my_attribute, daisy, sound_devices);
    view_screen (misc, daisy);
 } // store_item_as_ASCII_file
 
@@ -2253,11 +2415,12 @@ void usage ()
 {
    endwin ();
    printf ("%s %s\n", gettext ("eBook-speaker - Version"), PACKAGE_VERSION);
-   puts ("(C)2011-2020 J. Lemmens");
+   puts ("(C)2011-2021 J. Lemmens");
    printf ("\n");
    printf (gettext
       ("Usage: %s [eBook_file | URL | -s [-r resolution]] "
-       "[-b n | y | position] [-c] [-d pulseaudio_device] [-h] [-H] "
+       "[-b n | y | position] [-c] [-d audio_device:audio_type] "
+       "[-h] [-H] "
        "[-i] [-o language-code] [-S] [-t TTS_command] [-v]"), PACKAGE);
    printf ("\n");
    fflush (stdout);
@@ -2310,18 +2473,19 @@ char *ascii2html (misc_t *misc, char *file)
    {
       bytes = 0;
       line = NULL;
-      bytes = getline (&line, &bytes, r);
+      bytes = (size_t) getline (&line, &bytes, r);
       if ((int) bytes == -1)
          break;
       fprintf (w, "%s<br>\n", line);
    } // while
    fclose (r);
+   fprintf (w, "</body>\n</html>\n");
    fclose (w);
    return str;
-} // ascii2html
+} // ascii2html                                            
 
 void play_epub (misc_t *misc, my_attribute_t *my_attribute,
-                daisy_t *daisy, char *file)
+                daisy_t *daisy, audio_info_t *sound_devices, char *file)
 {
    int i;
 
@@ -2390,7 +2554,7 @@ void play_epub (misc_t *misc, my_attribute_t *my_attribute,
       strcpy (misc->daisy_title, "scanned image");
    if (! *misc->daisy_title)
       strncpy (misc->daisy_title, basename (file), MAX_STR - 1);
-   if (! *misc->bookmark_title)
+   if (*misc->bookmark_title == 0)
       strncpy (misc->bookmark_title, basename (file), MAX_STR - 1);
    kill_player (misc);
    unlink (misc->tmp_wav);
@@ -2410,15 +2574,16 @@ void play_epub (misc_t *misc, my_attribute_t *my_attribute,
    mvwprintw (misc->titlewin, 0, 0, misc->copyright);
    if ((int) strlen (misc->daisy_title) + (int)
        strlen (misc->copyright) >= misc->max_x)
-      mvwprintw (misc->titlewin, 0, misc->max_x - strlen (misc->daisy_title) - 4, "... ");
-   mvwprintw (misc->titlewin, 0, misc->max_x - strlen (misc->daisy_title),
+      mvwprintw (misc->titlewin, 0, misc->max_x - (int) 
+                strlen (misc->daisy_title) - 4, "... ");
+   mvwprintw (misc->titlewin, 0, misc->max_x - (int) strlen (misc->daisy_title),
               "%s", misc->daisy_title);
    mvwprintw (misc->titlewin, 1, 0,
               "----------------------------------------");
    wprintw (misc->titlewin, "----------------------------------------");
    mvwprintw (misc->titlewin, 1, 0, "%s ", gettext ("Press 'h' for help"));
    wrefresh (misc->titlewin);
-   browse (misc, my_attribute, daisy, file);
+   browse (misc, my_attribute, daisy, sound_devices, file);
    remove_tmp_dir (misc);
 } // play_epub
 
@@ -2470,10 +2635,10 @@ void create_epub (misc_t *misc, my_attribute_t *my_attribute,
       clear_tmp_dir (misc);
       orig = strdup (file);
       snprintf (misc->cmd, MAX_CMD - 1,
-        "unar \"%s\" -f -o %s > /dev/null && ls -1 %s",
+        "unar -q \"%s\" -f -o %s && ls -1 %s",
          file, misc->tmp_dir, misc->tmp_dir);
       p = popen (misc->cmd, "r");
-      switch (*fgets (str, MAX_STR, p));
+      (void) *fgets (str, MAX_STR, p);
       pclose (p);
       str[strlen (str) - 1] = 0;
       file = malloc (strlen (misc->tmp_dir) + strlen (str) + 5);
@@ -2694,10 +2859,11 @@ endwin ();
 int main (int argc, char *argv[])
 {
    int opt;
-   char c_opt, *o_opt, *r_opt, *t_opt;
+   char c_opt, *r_opt, *t_opt;
    misc_t misc;
    my_attribute_t my_attribute;
    daisy_t *daisy;
+   audio_info_t *sound_devices;
    struct sigaction usr_action;
 
    misc.main_pid = getpid ();
@@ -2706,7 +2872,7 @@ int main (int argc, char *argv[])
    usr_action.sa_flags = SA_RESTART;
    sigaction (SIGCHLD, &usr_action, NULL);
    usr_action.sa_handler = term_eBook_speaker;
-   usr_action.sa_flags = SA_RESETHAND;
+   usr_action.sa_flags = (int) SA_RESETHAND;
    sigaction (SIGINT, &usr_action, NULL);
    sigaction (SIGTERM, &usr_action, NULL);
 // we get two hangups (one from the terminal app, and one from the kernel
@@ -2714,13 +2880,18 @@ int main (int argc, char *argv[])
    usr_action.sa_flags = 0;
    sigaction (SIGHUP, &usr_action, NULL);
    daisy = NULL;
+   sound_devices = (audio_info_t *) calloc (15, sizeof (audio_info_t));
    misc.label = NULL;
    fclose (stderr);
    setbuf (stdout, NULL);
+   setlocale (LC_ALL, "");
    if (setlocale (LC_ALL, "") == NULL)
-      sprintf (misc.locale, "en_US.UTF-8");
+      misc.locale = strdup ("en");
    else
-      snprintf (misc.locale, 3, "%s", setlocale (LC_ALL, ""));
+   {
+      misc.locale = strdup (setlocale (LC_ALL, ""));
+      misc.locale[2] = 0;
+   } // if
    setlocale (LC_NUMERIC, "C");
    textdomain (PACKAGE);
    bindtextdomain (PACKAGE, LOCALEDIR);
@@ -2731,13 +2902,16 @@ int main (int argc, char *argv[])
    misc.tmp_dir = strdup ("");
    make_tmp_dir (&misc);
    misc.daisy_mp = misc.tmp_dir;
-   misc.pulseaudio_device = 0;
+   misc.current_sink = 01;
+   strcpy (sound_devices[0].device, "default");
+   strcpy (sound_devices[0].type, "alsa");
    initscr ();
    misc.titlewin = newwin (2, 80,  0, 0);
    misc.screenwin = newwin (23, 80, 2, 0);
    misc.ignore_bookmark = misc.total_pages = 0;
    misc.update_progress = 1;
    misc.option_b = 0;
+   misc.option_d = misc.option_o = NULL;
    misc.break_phrase = 'n';
    misc.level = 1;
    misc.show_hidden_files = 0;
@@ -2751,7 +2925,7 @@ int main (int argc, char *argv[])
    noecho ();
    misc.player_pid = -2;
    sprintf (misc.scan_resolution, "400");
-   snprintf (misc.copyright, MAX_STR - 1, "%s %s - (C)2020 J. Lemmens",
+   snprintf (misc.copyright, MAX_STR - 1, "%s %s - (C)2021 J. Lemmens",
              gettext ("eBook-speaker - Version"), PACKAGE_VERSION);
    wattron (misc.titlewin, A_BOLD);
    wprintw (misc.titlewin, "%s - %s", misc.copyright,
@@ -2760,16 +2934,16 @@ int main (int argc, char *argv[])
 
    misc.speed = 1;
    for (misc.current = 0; misc.current < 15; misc.current++)
-      memset (misc.tts[misc.current], 0, strlen (misc.tts[misc.current]));
-   snprintf (misc.tts[0], MAX_STR - 1,
-             "espeak -f eBook-speaker.txt -w eBook-speaker.wav -v en");
+   {
+      memset (misc.tts[misc.current], 0, MAX_STR);
+   } // for
    misc.tts_no = 0;
-   memset (misc.ocr_language, 0, strlen (misc.ocr_language));
+   misc.ocr_language = NULL;
    *misc.standalone = 0;
    misc.term_signaled = 0;
    ebook_speaker_term_signaled = &misc.term_signaled;
-   memset (misc.xmlversion, 0, strlen (misc.xmlversion));
-   memset (misc.encoding, 0, strlen (misc.encoding));
+   memset (misc.xmlversion, 0, MAX_STR);
+   memset (misc.encoding, 0, MAX_STR);
    snprintf (misc.eBook_speaker_txt, MAX_STR,
              "%s/eBook-speaker.txt", misc.tmp_dir);
    snprintf (misc.tmp_wav, MAX_STR, "%s/eBook-speaker.wav", misc.tmp_dir);
@@ -2779,9 +2953,8 @@ int main (int argc, char *argv[])
    misc.use_NCX = 0;
    misc.use_OPF = 0;
    misc.option_b = c_opt = 0;
-   memset (misc.option_t, 0, strlen (misc.option_t));
-   o_opt = r_opt = t_opt = NULL;
-   *misc.option_d = 0;
+   memset (misc.option_t, 0, MAX_STR);
+   r_opt = t_opt = NULL;
    misc.verbose = 0;
    misc.use_NCX = 0;
    misc.use_OPF = 0;
@@ -2802,9 +2975,33 @@ int main (int argc, char *argv[])
          misc.use_cuneiform = c_opt = 1;
          break;
       case 'd':
-         misc.pulseaudio_device = atoi (optarg);
-         sprintf (misc.option_d, "%d", misc.pulseaudio_device);
+      {
+         int sink;
+
+         misc.option_d = strdup (optarg);
+         if (! strchr (optarg, ':'))
+         {
+            beep ();
+            endwin ();
+            printf ("\n");
+            usage ();
+            _exit (EXIT_FAILURE);
+         } // if
+         get_list_of_sound_devices (&misc, sound_devices);
+         for (sink = 0; sink < misc.total_sinks; sink++)
+         {
+            char dt[50];
+
+            sprintf (dt, "%s:%s", sound_devices[sink].device,
+                     sound_devices[sink].type);
+            if (strcasecmp (optarg, dt) == 0)
+            {
+               misc.current_sink = sink;
+               break;
+            } // if
+         } // for
          break;
+      }
       case 'h':
          usage ();
          remove_tmp_dir (&misc);
@@ -2822,15 +3019,13 @@ int main (int argc, char *argv[])
       case 'l': // Deprecated
          continue;
       case 'o':
-         strncpy (misc.ocr_language, optarg, 3);
-         o_opt = optarg;
+         misc.option_o = strdup (optarg);
          break;
       case 'r':
          strncpy (misc.scan_resolution, optarg, 5);
          r_opt = optarg;
          break;
       case 's':
-         misc.use_NCX = 1;
          misc.scan_flag = 1;
          misc.start_arg_is_a_dir = 0;
          break;
@@ -2864,8 +3059,8 @@ int main (int argc, char *argv[])
 
    if (c_opt)
       misc.use_cuneiform = c_opt;
-   if (o_opt)
-      strncpy (misc.ocr_language, o_opt, 3);
+   if (misc.option_o)
+      misc.ocr_language = strdup (misc.option_o);
    if (r_opt)
       strncpy (misc.scan_resolution, r_opt, 5);
    if (t_opt)
@@ -2874,7 +3069,7 @@ int main (int argc, char *argv[])
       strncpy (misc.tts[misc.tts_no], t_opt, MAX_STR - 1);
    } // if
 
-   memset (misc.search_str, 0, strlen (misc.search_str));
+   memset (misc.search_str, 0, 29);
 
    if (misc.scan_flag == 1)
    {
@@ -2902,10 +3097,10 @@ int main (int argc, char *argv[])
          remove_tmp_dir (&misc);
          _exit (EXIT_FAILURE);
       } // switch
-      load_xml (&misc, &my_attribute, daisy);
+      load_xml (&misc, &my_attribute);
       create_epub (&misc, &my_attribute, daisy, misc.orig_input_file, 1);
       strcpy (misc.daisy_title, "scanned image");
-      play_epub (&misc, &my_attribute, daisy, misc.orig_input_file);
+      play_epub (&misc, &my_attribute, daisy, sound_devices, misc.orig_input_file);
       return 0;
    } // if
 
@@ -2917,7 +3112,8 @@ int main (int argc, char *argv[])
       snprintf (misc.orig_input_file, MAX_STR - 1, "%s",
                 get_input_file (&misc, &my_attribute, daisy, misc.src_dir));
       create_epub (&misc, &my_attribute, daisy, misc.orig_input_file, 1);
-      play_epub (&misc, &my_attribute, daisy, misc.orig_input_file);
+      play_epub (&misc, &my_attribute, daisy, sound_devices,
+                 misc.orig_input_file);
       quit_eBook_speaker (&misc, &my_attribute, daisy);
       return 0;
    } // if
@@ -2957,9 +3153,9 @@ int main (int argc, char *argv[])
       }
       else
       {
-         strncpy (misc.orig_input_file, misc.src_dir, MAX_STR);
+         strcpy (misc.orig_input_file, misc.src_dir);
          if (misc.orig_input_file[strlen (misc.orig_input_file) - 1] != '/')
-            strncat (misc.orig_input_file, "/", MAX_STR);
+            strcat (misc.orig_input_file, "/");
          strncat (misc.orig_input_file, argv[optind], MAX_STR - 1);
       } // if
    } // if
@@ -2971,6 +3167,7 @@ int main (int argc, char *argv[])
 
    misc.current = 0;
    create_epub (&misc, &my_attribute, daisy, misc.orig_input_file, 1);
-   play_epub (&misc, &my_attribute, daisy, misc.orig_input_file);
+   play_epub (&misc, &my_attribute, daisy, sound_devices,
+              misc.orig_input_file);
    remove_tmp_dir (&misc);
 } // main

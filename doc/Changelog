@@ -230,3 +230,20 @@
 	Lower the amount of screen refresh to better play with screen readers.
 5.5.1	Bug in break-phrase-command solved.
 5.5.2	Updated the german translation.
+	Bug in option '-s' (scanimage) solved.
+5.6	Option 'S' and key-command 'S' now also stops the update of
+	the pagenumbers.
+	Patch for better audio card probing.
+	(Thanks to Samuel Thibault <<sthibault@debian.org>)
+6.0	Some OPF improvements.
+	pulseaudio is not always able to use all soundcards.
+	So one now can choose between pulseaudio or ALSA.
+6.1	Bug in option d solved.
+	Bug in command 'b' (in OPF books) solved.
+	The config-file ~/.eBook-speaker.xml is now reread everytime
+	the 't' command is given.
+	Force english output using setlocale () when an external
+	command like amixer or pactl is executed.
+	Command 'A' and 'd' now takes in account the current level.
+	Added the new keyboard-command 'w' to store the whole book to
+	disk in WAV-format.

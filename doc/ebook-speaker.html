@@ -2,7 +2,7 @@
 <HTML><HEAD><TITLE>Man page of ebook-speaker</TITLE>
 </HEAD><BODY>
 <H1>ebook-speaker</H1>
-Section: Linux Reference Manual (1)<BR>Updated: 08 September 2020<BR><A HREF="#index">Index</A>
+Section: Linux Reference Manual (1)<BR>Updated: 22 June 2021<BR><A HREF="#index">Index</A>
 <A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
 
 <A NAME="lbAB">&nbsp;</A>
@@ -14,7 +14,7 @@ Section: Linux Reference Manual (1)<BR>Updated: 08 September 2020<BR><A HREF="#i
 <H2>SYNOPSIS</H2>
 
 <PRE>
-<B>ebook-speaker</B> [<I>eBook_file</I> | <I>URL</I> | <B>-s</B> [<B>-r</B> <I>resolution</I>]] [<B>-b</B> <I>n</I> | <I>y</I> | <I>position</I>] [<B>-c</B>] [<B>-d</B> <I>pulseaudio_sound_device</I>] [<B>-h</B>] [<B>-H</B>] [<B>-i</B>] [<B>-o</B> <I>language-code</I>] [<B>-S</B>] [<B>-t</B> <I>TTS_command</I>] [<B>-v</B>]
+<B>ebook-speaker</B> [<I>eBook_file</I> | <I>URL</I> | <B>-s</B> [<B>-r</B> <I>resolution</I>]] [<B>-b</B> <I>n</I> | <I>y</I> | <I>position</I>] [<B>-c</B>] [<B>-d</B> <I>audio_device:audio_type</I>] [<B>-h</B>] [<B>-H</B>] [<B>-i</B>] [<B>-o</B> <I>language-code</I>] [<B>-S</B>] [<B>-t</B> <I>TTS_command</I>] [<B>-v</B>]
 
 </PRE>
 
@@ -98,10 +98,10 @@ Set the initial break_on_EOL or <I>position</I>. After quiting eBook-speaker. Th
 
 <DD>
 eBook-speaker use tesseract for OCR by default. This option forces eBook-speaker to use cuneiform instead.
-<DT><B>-d</B> <I>pulseaudio_sound_device</I>
+<DT><B>-d</B> <I>audio_device:audio_type</I>
 
 <DD>
-eBook-speaker will play on this sound device. Default is &quot;0&quot;. (The first soundcard) This option overrules the value in the ~/.eBook-speaker/* config file. Be sure the user is a member of the group &quot;audio&quot;.
+eBook-speaker will play on this sound device of given audio_type. The value must be of the form &quot;<I>audio_device:audio_type</I>&quot;. Example: &quot;<B>-d</B> default:alsa&quot;, &quot;hw:0:alsa&quot; or &quot;0:pulseaudio&quot;. This option overrules the value in the ~/.eBook-speaker/* config file. Be sure the user is a member of the group &quot;audio&quot;.
 <DT><B>-h</B>
 
 <DD>
@@ -316,6 +316,10 @@ Decraese playback volume.
 
 <DD>
 Increase playback volume. (beware of Clipping)
+<DT><B>w</B>
+
+<DD>
+Store whole book to disk in WAV-format.
 <DT><B>x</B>
 
 <DD>
@@ -456,11 +460,11 @@ for the TTS enhancements.
 <DT><B>~/.eBook-speaker/</B>
 
 <DD>
-This directory contains the bookmarks in XML-format.  Each file has the name of the book and contains the name of the current item, the start-phrase of that item, the current level, the desired TTS, the desired reading speed and the name of the desired pulseaudio device.
+This directory contains the bookmarks in XML-format.  Each file has the name of the book and contains the name of the current item, the start-phrase of that item, the current level, the desired TTS, the desired reading speed, the desired phrase-break point and the current sink in the list of the available sound devices.
 <DT><B>~/.eBook-speaker.xml</B>
 
 <DD>
-This file, in XML-format, contains the desired OCR language and the TTS's to use. (See TTS EXAMPLES)
+This file, in XML-format, contains a list of available TTS's. (See TTS EXAMPLES)
 <DT><B>/tmp/eBook-speaker.XXXXXX</B>
 
 <DD>
@@ -473,7 +477,7 @@ An EPUB-book has two index-files for navigation, a NCX and an OPF file. eBook-sp
 <A NAME="lbAN">&nbsp;</A>
 <H2>SEE ALSO</H2>
 
-<B><A HREF="/cgi-bin/man/man2html?1+ebook-convert">ebook-convert</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pandoc">pandoc</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+calibre">calibre</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+iconv">iconv</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+lowriter">lowriter</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+tesseract">tesseract</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+cuneiform">cuneiform</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+espeak">espeak</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+flite">flite</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+text2wave">text2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+mbrola">mbrola</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pico2wave">pico2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+scanimage">scanimage</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pnmflip">pnmflip</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+gif2png">gif2png</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+man2html">man2html</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unar">unar</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+swift">swift</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unrtf">unrtf</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+wget">wget</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pulseaudio">pulseaudio</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pactl">pactl</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?5+magic">magic</A></B>(5), <B><A HREF="/cgi-bin/man/man2html?7+locale">locale</A></B>(7), <B><A HREF="/cgi-bin/man/man2html?8+usermod">usermod</A></B>(8)
+<B><A HREF="/cgi-bin/man/man2html?1+ebook-convert">ebook-convert</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pandoc">pandoc</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+calibre">calibre</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+iconv">iconv</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+lowriter">lowriter</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+tesseract">tesseract</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+cuneiform">cuneiform</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+espeak">espeak</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+flite">flite</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+text2wave">text2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+mbrola">mbrola</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pico2wave">pico2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+scanimage">scanimage</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pnmflip">pnmflip</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+gif2png">gif2png</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+man2html">man2html</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unar">unar</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+swift">swift</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unrtf">unrtf</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+wget">wget</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pulseaudio">pulseaudio</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pactl">pactl</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+amixer">amixer</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+alsamixer">alsamixer</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?5+magic">magic</A></B>(5), <B><A HREF="/cgi-bin/man/man2html?7+locale">locale</A></B>(7), <B><A HREF="/cgi-bin/man/man2html?8+usermod">usermod</A></B>(8)
 <A NAME="lbAO">&nbsp;</A>
 <H2>AUTHOR</H2>
 
@@ -481,7 +485,7 @@ Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
 <A NAME="lbAP">&nbsp;</A>
 <H2>COPYRIGHT</H2>
 
-Copyright (C)2011-2020 Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
+Copyright (C)2011-2021 Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
 <P>
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program (see the file COPYING); if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
@@ -510,6 +514,6 @@ This program is free software; you can redistribute it and/or modify it under th
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 07:49:18 GMT, September 08, 2020
+Time: 12:27:04 GMT, June 22, 2021
 </BODY>
 </HTML>

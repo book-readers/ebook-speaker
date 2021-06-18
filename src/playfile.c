@@ -1,6 +1,6 @@
 /* playfile.c - plays the audio using the sox library.
  *
- * Copyright (C)2003-2020 J. Lemmens
+ * Copyright (C)2003-2021 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -64,9 +64,8 @@ output_effect_fn (void)
   return &handler;
 }				// output_effect_fn
 
-void
-playfile (misc_t *misc, char *in_file, char *in_type,
-          char *out_file, char *out_type, char *tempo)
+void playfile (char *in_file, char *in_type,
+               char *out_file, char *out_type, char *tempo)
 {
   sox_format_t *in, *out;	/* input and output files */
   sox_effects_chain_t *chain;
@@ -74,21 +73,24 @@ playfile (misc_t *misc, char *in_file, char *in_type,
   sox_signalinfo_t interm_signal;
   char *args[10];
 
-  chain = malloc (1);
   sox_init ();
-
   in = sox_open_read (in_file, NULL, NULL, in_type);
-  if (! (out = sox_open_write (out_file, &in->signal, NULL, out_type,
-      NULL, NULL)))
+  in->encoding.reverse_bytes = 0;
+  if (! (out = sox_open_write (out_file,
+         (LSX_PARAM_IN sox_signalinfo_t const*) &in->signal, NULL,
+         out_type, NULL, NULL)))
   {
     int e;
 
     e = errno;
     beep ();
     endwin ();
-    printf ("\n\npulseaudio %s: %s\n", out_file, strerror (e));
-    kill (misc->main_pid, SIGTERM);
+    printf ("\n\n%s (%s): %s\n", out_file, out_type, strerror (e));
+    printf ("%s\n", gettext ("Try option \"-i\"."));
+    kill (getppid (), SIGHUP);
+    _exit (EXIT_FAILURE);
   } // if
+
   chain = sox_create_effects_chain (&in->encoding, &out->encoding);
   interm_signal = in->signal;	/* NB: deep copy */
 
@@ -97,10 +99,7 @@ playfile (misc_t *misc, char *in_file, char *in_type,
   sox_add_effect (chain, e, &interm_signal, &in->signal);
 
   e = sox_create_effect (sox_find_effect ("tempo"));
-  if (strcasecmp (in_type, "cdda") == 0)
-    args[0] = "-m", args[1] = tempo, sox_effect_options (e, 2, args);
-  else
-    args[0] = "-s", args[1] = tempo, sox_effect_options (e, 2, args);
+  args[0] = "-s", args[1] = tempo, sox_effect_options (e, 2, args);
   sox_add_effect (chain, e, &interm_signal, &in->signal);
 
   if (in->signal.rate != out->signal.rate)

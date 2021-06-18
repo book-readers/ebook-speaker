@@ -4,3 +4,4 @@
 - mathml. Convert with natbraille
 - Replace the external command iconv by the function iconv ()
 - if started from a dir, return to that dir after finishing a book
+- gzipped files

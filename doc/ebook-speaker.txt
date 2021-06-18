@@ -2,7 +2,7 @@ NAME
 eBook-speaker - read aloud eBooks and other text formats using a software speech-synthesizer
 
 SYNOPSIS
-ebook-speaker [eBook_file | URL | -s [-r resolution]] [-b n | y | position] [-c] [-d pulseaudio_sound_device] [-h] [-H] [-i] [-o language-code] [-S] [-t TTS_command] [-v]
+ebook-speaker [eBook_file | URL | -s [-r resolution]] [-b n | y | position] [-c] [-d audio_device:audio_type] [-h] [-H] [-i] [-o language-code] [-S] [-t TTS_command] [-v]
 
 DESCRIPTION
 eBook-speaker reads aloud eBooks and other text formats and even scanned documents using a software speech-synthesizer. By default the tool espeak is used for speech output.
@@ -62,7 +62,7 @@ eBook_file  Give an eBook_file as argument to eBook-speaker.  Many eBook formats
 
 -c  eBook-speaker use tesseract for OCR by default. This option forces eBook-speaker to use cuneiform instead.
 
--d pulseaudio_sound_device  eBook-speaker will play on this sound device. Default is "0". (The first soundcard) This option overrules the value in the ~/.eBook-speaker/* config file. Be sure the user is a member of the group "audio".
+-d audio_device:audio_type  eBook-speaker will play on this sound device of given audio_type. The value must be of the form "audio_device:audio_type". Example: "-d default:alsa", "hw:0:alsa" or "0:pulseaudio". This option overrules the value in the ~/.eBook-speaker/* config file. Be sure the user is a member of the group "audio".
 
 -h  Print this usage message.
 
@@ -139,6 +139,7 @@ T               Move cursor to the first item.
 U,+             Increase reading speed.
 v,1             Decraese playback volume.
 V,7             Increase playback volume. (beware of Clipping)
+w               Store whole book to disk in WAV-format.
 x               Go to the file-manager.
 
 KEYBOARD COMMANDS IN THE FILEMANAGER
@@ -191,20 +192,20 @@ Rob Sykes <aquegg@yahoo.co.uk>  for sox.
 Didier Spaier <didier@slint.fr>  for the TTS enhancements.
 
 FILES
-~/.eBook-speaker/  This directory contains the bookmarks in XML-format.  Each file has the name of the book and contains the name of the current item, the start-phrase of that item, the current level, the desired TTS, the desired reading speed and the name of the desired pulseaudio device.
-~/.eBook-speaker.xml  This file, in XML-format, contains the desired OCR language and the TTS's to use. (See TTS EXAMPLES)
+~/.eBook-speaker/  This directory contains the bookmarks in XML-format.  Each file has the name of the book and contains the name of the current item, the start-phrase of that item, the current level, the desired TTS, the desired reading speed, the desired phrase-break point and the current sink in the list of the available sound devices.
+~/.eBook-speaker.xml  This file, in XML-format, contains a list of available TTS's. (See TTS EXAMPLES)
 /tmp/eBook-speaker.XXXXXX  eBook-speaker makes use of a temporary directory. It is removed after quiting.
 
 NOTES
 An EPUB-book has two index-files for navigation, a NCX and an OPF file. eBook-speaker tries to detemine which of these two files give the best result. But sometimes eBook-speaker is not able to make the best choice. When in doubt use option "--N" to force the use of NCX or "-O" to force the OPF.
 
 SEE ALSO
-ebook-convert(1), pandoc(1), calibre(1), iconv(1), lowriter(1), tesseract(1), cuneiform(1), espeak(1), flite(1), text2wave(1), mbrola(1), pico2wave(1), scanimage(1), pnmflip(1), gif2png(1), man2html(1), unar(1), swift(1), unrtf(1), wget(1), pulseaudio(1), pactl(1), magic(5), locale(7), usermod(8)
+ebook-convert(1), pandoc(1), calibre(1), iconv(1), lowriter(1), tesseract(1), cuneiform(1), espeak(1), flite(1), text2wave(1), mbrola(1), pico2wave(1), scanimage(1), pnmflip(1), gif2png(1), man2html(1), unar(1), swift(1), unrtf(1), wget(1), pulseaudio(1), pactl(1), amixer(1), alsamixer(1), magic(5), locale(7), usermod(8)
 
 AUTHOR
 Jos Lemmens <jos@jlemmens.nl>
 
 COPYRIGHT
-Copyright (C)2011-2020 Jos Lemmens <jos@jlemmens.nl>
+Copyright (C)2011-2021 Jos Lemmens <jos@jlemmens.nl>
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program (see the file COPYING); if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA

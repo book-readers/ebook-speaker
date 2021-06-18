@@ -1,4 +1,4 @@
-/* daisy3.c - functions to insert daisy3 info into a struct. (ncx)
+/* ncx.c - functions to insert daisy3 info into a struct. (ncx)
  *
  * Copyright (C) 2020 J. Lemmens
  *
@@ -26,7 +26,7 @@ void fill_xml_anchor_ncx (misc_t *misc, my_attribute_t *my_attribute,
    htmlDocPtr doc;
    xmlTextReaderPtr ncx;
 
-   misc->total_items = misc->items_in_ncx;
+   misc->total_items = misc->items_in_ncx;           
    if (! (doc = htmlParseFile (misc->ncx_name, "UTF-8")))
    {
       misc->ncx_failed = 1;
@@ -109,7 +109,7 @@ void fill_xml_anchor_ncx (misc_t *misc, my_attribute_t *my_attribute,
                       convert_URL_name (misc, src),
                       daisy[misc->current].xml_file);
                daisy[misc->current].orig_xml_file = strdup
-                                       (daisy[misc->current].xml_file);
+                           (daisy[misc->current].xml_file);
                doc = htmlParseFile (daisy[misc->current].xml_file, "UTF-8");
                if (! (content = xmlReaderWalker (doc)))
                {
@@ -140,8 +140,8 @@ void fill_xml_anchor_ncx (misc_t *misc, my_attribute_t *my_attribute,
                   if (*my_attribute->id)
                   {
                      if (! *daisy[misc->current].first_id)
-                        strncpy (daisy[misc->current].first_id,
-                                 my_attribute->id, MAX_STR);
+                        strcpy (daisy[misc->current].first_id,
+                                 my_attribute->id);
                   } // if
                   if (strcasecmp (misc->tag, "text") == 0)
                   {
@@ -195,6 +195,8 @@ void parse_content_ncx (misc_t *misc, my_attribute_t *my_attribute,
    get_real_pathname (misc->tmp_dir,
                       convert_URL_name (misc, my_attribute->src),
                       daisy[misc->current].xml_file);
+   daisy[misc->current].orig_xml_file =
+                  strdup (daisy[misc->current].xml_file);
    if (! (doc = htmlParseFile (daisy[misc->current].xml_file, "UTF-8")))
    {
       misc->ncx_failed = 1;
@@ -231,8 +233,7 @@ void parse_content_ncx (misc_t *misc, my_attribute_t *my_attribute,
       if (*my_attribute->id)
       {
          if (! *daisy[misc->current].first_id)
-            strncpy (daisy[misc->current].first_id, my_attribute->id,
-                     MAX_STR);
+            strcpy (daisy[misc->current].first_id, my_attribute->id);
       } // if
       if (strcasecmp (misc->tag, "audio") == 0)
          break;
@@ -292,8 +293,7 @@ void parse_ncx (misc_t *misc, my_attribute_t *my_attribute,
       if (! *daisy[misc->current].first_id)
       {
          if (*my_attribute->id)
-            strncpy (daisy[misc->current].first_id, my_attribute->id,
-                     MAX_STR);
+            strcpy (daisy[misc->current].first_id, my_attribute->id);
       } // if
       if (strcasecmp (misc->tag, "docAuthor") == 0)
       {
@@ -310,8 +310,7 @@ void parse_ncx (misc_t *misc, my_attribute_t *my_attribute,
          misc->level++;
          if (misc->level > misc->depth)
             misc->depth = misc->level;
-         strncpy (daisy[misc->current].my_class, my_attribute->my_class,
-                  MAX_STR - 1);
+         strcpy (daisy[misc->current].my_class, my_attribute->my_class);
          while (1)
          {
             if (! get_tag_or_label (misc, my_attribute, ncx))
@@ -365,6 +364,7 @@ void parse_ncx (misc_t *misc, my_attribute_t *my_attribute,
    for (i = 0; i < misc->items_in_ncx; i++)
    {
       *daisy[i].class = 0;
+      daisy[i].orig_xml_file = strdup (daisy[i].xml_file);
       if (misc->verbose)
       {
          printf ("\r\norig %d %s ", i, daisy[i].orig_xml_file);

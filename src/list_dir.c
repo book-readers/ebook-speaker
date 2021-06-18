@@ -56,7 +56,7 @@ void ls (misc_t *misc, size_t n, struct dirent **namelist)
    wprintw (misc->titlewin, "- %s ", misc->src_dir);
    str = malloc (25);
    sprintf (str, "%d/%d", (int) page, (int) (misc->list_total - 1) / 23 + 1);
-   mvwprintw (misc->titlewin, 1, 77 - strlen (str), " %s -", str);
+   mvwprintw (misc->titlewin, 1, 77 - (int) strlen (str), " %s -", str);
    wrefresh (misc->titlewin);
    wclear (misc->screenwin);
    for (y = 0; y < 23; y++)
@@ -66,17 +66,17 @@ void ls (misc_t *misc, size_t n, struct dirent **namelist)
       index = (page - 1) * 23 + y;
       if ((int) index >= misc->list_total)
          break;
-      mvwprintw (misc->screenwin, y, 1, "%.77s", namelist[index]->d_name);
+      mvwprintw (misc->screenwin, (int) y, 1, "%.77s", namelist[index]->d_name);
 
 #ifdef _DIRENT_HAVE_D_TYPE
       if (namelist[index]->d_type == DT_DIR)
          wprintw (misc->screenwin, "/");
 #endif
-      wmove (misc->screenwin, n - (page - 1) * 23, 0);
+      wmove (misc->screenwin, (int) n - ((int) page - 1) * 23, 0);
       if ((int) n >= misc->list_total)
          break;
    } // for
-   wmove (misc->screenwin, n - (page - 1) * 23, 0);
+   wmove (misc->screenwin, (int) n - ((int) page - 1) * 23, 0);
    wrefresh (misc->screenwin);
 } // ls
 
@@ -211,7 +211,7 @@ char *get_input_file (misc_t *misc, my_attribute_t *my_attribute,
    char *file, search_str[MAX_STR], str[MAX_STR + 1];
    const char *file_type = 0;
    int n, page;
-   magic_t myt;
+   magic_t myt;                    
 
    myt = magic_open (MAGIC_FLAGS);
    magic_load (myt, NULL);
@@ -252,7 +252,7 @@ char *get_input_file (misc_t *misc, my_attribute_t *my_attribute,
    wprintw (misc->titlewin, "- %s ", misc->src_dir);
    snprintf (str, MAX_STR, "%d/%d",
              (int) page, (int) (misc->list_total - 1) / 23 + 1);
-   mvwprintw (misc->titlewin, 1, 77 - strlen (str), " %s -", str);
+   mvwprintw (misc->titlewin, 1, 77 - (int) strlen (str), " %s -", str);
    wrefresh (misc->titlewin);
    *search_str = 0;
    while (1)
@@ -260,7 +260,7 @@ char *get_input_file (misc_t *misc, my_attribute_t *my_attribute,
       int search_flag;
 
       if (n >= 0)
-         ls (misc, n, namelist);
+         ls (misc, (size_t) n, namelist);
       switch (wgetch (misc->screenwin))
       {
       case 13: // ENTER
@@ -401,12 +401,12 @@ char *get_input_file (misc_t *misc, my_attribute_t *my_attribute,
       case '0':
       {
          char *current_name;
-         int len;
+         size_t len;
 
          misc->show_hidden_files = 1 - misc->show_hidden_files;
-         len = strlen (namelist[n]->d_name);
+         len = strlen (namelist[(size_t) n]->d_name);
          current_name = malloc (len);
-         strncpy (current_name, namelist[n]->d_name, len);
+         strcpy (current_name, namelist[n]->d_name);
          free (namelist);
          namelist = get_dir (misc, namelist);
          for (n = misc->list_total - 1; n > 0; n--)

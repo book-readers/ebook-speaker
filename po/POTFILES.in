@@ -1,7 +1,11 @@
 # List of source files which contain translatable strings.
 
+src/alsa_ctl.c
 src/common.c
 src/daisy2.02.c
 src/daisy3.c
 src/ebook-speaker.c
 src/list_dir.c
+src/ncx.c
+src/opf.c
+src/playfile.c
