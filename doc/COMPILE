@@ -1,14 +1,14 @@
 To compile eBook-speaker, be sure the following extra packages are installed:
 
+   libasound2-dev
    libpulse-dev
    libncursesw5-dev
    libsox-dev
    libmagic-dev
    libxml2-dev
    libsndfile1-dev
-   libflac-dev 
-   libogg-dev 
-   libsndfile1-dev 
+   libflac-dev
+   libogg-dev
    libvorbis-dev
 
 Give the following command:

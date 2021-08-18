@@ -31,7 +31,7 @@ int alsa_ctl (misc_t *misc, int action, int current_sink,
    {
       FILE *r, *p;
       int found;                        
-      char *str;
+      char *str, *c;
       size_t bytes;
 
       if (! (r = fopen ("/proc/asound/cards", "r")))
@@ -54,12 +54,14 @@ int alsa_ctl (misc_t *misc, int action, int current_sink,
          if (getline (&str, &bytes, r) == -1)
             break;
          while (isspace (*++str));
-         *strrchr (str, ' ') = 0;
+         c = strrchr (str, ' ');
+         if (c)
+            *c = 0;
          snprintf (sound_devices[current_sink].name, 80, "(alsa) %s", str);
 
 // force english output
          orig_language = strdup (setlocale (LC_ALL, ""));
-         setlocale (LC_ALL, "en_GB.UTF-8");
+         setlocale (LC_ALL, "en_GB");
          sprintf (misc->cmd, "/usr/bin/amixer -D %s get Master playback",
                   sound_devices[current_sink].device);
          if (! (p = popen (misc->cmd, "r")))

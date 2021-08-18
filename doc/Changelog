@@ -247,3 +247,8 @@
 	Command 'A' and 'd' now takes in account the current level.
 	Added the new keyboard-command 'w' to store the whole book to
 	disk in WAV-format.
+6.2	Added an Ukrainian translation.
+	Better search for the ".ncx" and ".opf" iles. Be sure to only compare
+	the last 4 characters of d_name in the dirent struct.
+	Bug in get list of ALSA-cards solved.
+	Thanks Samuel THIBAULT <samuel.thibault@ens-lyon.org> for his patch.

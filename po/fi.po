@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gettext 0.11.2\n"
 "Report-Msgid-Bugs-To: <jos@jlemmens.nl>\n"
-"POT-Creation-Date: 2021-06-22 11:59+0200\n"
+"POT-Creation-Date: 2021-08-21 13:35+0200\n"
 "PO-Revision-Date: 2019-01-01 11:06+0200\n"
 "Last-Translator: Jani Kinnunen <janikinnunen340@gmail.com>\n"
 "Language-Team: Jani Kinnunen <janikinnunen340@gmail.com>\n"
@@ -36,26 +36,26 @@ msgstr ""
 msgid "Cannot read /proc/asound/cards"
 msgstr ""
 
-#: src/common.c:33 src/common.c:290 src/common.c:506 src/ebook-speaker.c:2111
+#: src/common.c:33 src/common.c:294 src/common.c:510 src/ebook-speaker.c:2111
 #: src/ebook-speaker.c:2122
 msgid "Please try to play this book with daisy-player"
 msgstr "Kokeile toistaa tm kirja daisy-playerilla"
 
-#: src/common.c:769
+#: src/common.c:773
 #, c-format
 msgid "Cannot read type: %d"
 msgstr "Ei voi lukea tyyppi: %d"
 
-#: src/common.c:834
+#: src/common.c:838
 msgid "Go to page number:"
 msgstr "Siirry sivulle:"
 
-#: src/common.c:852 src/ebook-speaker.c:1674 src/ebook-speaker.c:2627
+#: src/common.c:856 src/ebook-speaker.c:1674 src/ebook-speaker.c:2627
 #: src/ebook-speaker.c:2932
 msgid "Please wait..."
 msgstr "Odota..."
 
-#: src/common.c:1092
+#: src/common.c:1096
 msgid "Select a soundcard:"
 msgstr "Valitse nikortti:"
 
