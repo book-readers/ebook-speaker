@@ -20,13 +20,12 @@
 
 #include "src/daisy.h"
 
-#define MY_VERSION "2.4"
+#define MY_VERSION "2.5"
 
 WINDOW *screenwin, *titlewin;
 daisy_t daisy[2000];
-xmlTextReaderPtr reader;
 int discinfo_fp, discinfo = 00, multi = 0, displaying = 0, total_phrases;
-int playing, just_this_item, phrase_nr, total_time, tts_flag;
+int playing, just_this_item, total_time, tts_flag, phrase_nr;
 int bytes_read, current_page_number, total_pages, tts_no = 0;
 char tag[MAX_TAG], label[max_phrase_len], sound_dev[MAX_STR];
 char bookmark_title[MAX_STR], opf_name[MAX_STR], prog_name[MAX_STR];
@@ -43,6 +42,29 @@ time_t start_time;
 DIR *dir;
 my_attribute_t my_attribute;
 
+void get_tag ();
+void get_page_number ();
+void view_screen ();
+void player_ended ();
+void play_now ();
+void pause_resume ();
+void help ();
+void previous_item ();
+void next_item ();
+void skip_right ();
+void read_rc ();
+void save_rc ();
+void kill_player ();
+void go_to_page_number ();
+void select_next_output_device ();
+void browse ();
+char *sort_by_playorder ();
+void read_out_eBook (const char *);
+const char *read_eBook (char *);
+void get_eBook_struct (int);
+void parse_smil ();
+void start_element (void *, const char *, const char **);
+void end_element (void *, const char *);
 void get_clips (char *, char *);
 void save_xml ();
 void parse_opf (char *);
@@ -50,30 +72,35 @@ void select_tts ();
 void playfile (char *, char *, char *, char *, float);
 void read_daisy_3 (char *);
 int get_tag_or_label (xmlTextReaderPtr);
-void quit_eBook_speaker ();
-char *get_input_file (char *, char *, WINDOW *, WINDOW *);
+void save_bookmark_and_xml ();
+xmlTextReaderPtr open_text_file (xmlTextReaderPtr, xmlDocPtr, char *, char *);
+extern char *get_input_file (char *, char *, WINDOW *, WINDOW *);
+void put_bookmark ();
+xmlTextReaderPtr skip_left (xmlTextReaderPtr, xmlDocPtr);
 
-int read_text (int playing, int local_phrase_nr)
+void quit_eBook_speaker ()
 {
-   char str[MAX_STR], *l;
-   int nr, w;
+   save_bookmark_and_xml ();
+   _exit (0);
+} // quit_eBook_speaker
+
+int get_next_phrase (xmlTextReaderPtr reader, xmlDocPtr doc, int playing)
+{
+   FILE *w;
 
    if (access ("eBook-speaker.wav", R_OK) == 0)
+   // when still playing
       return 0;
-
-   open_text_file (daisy[playing].smil_file,
-                   daisy[playing].anchor);
-   phrase_nr++;
-   nr = 0;
    while (1)
    {
       if (! get_tag_or_label (reader))
       {
          if (playing >= total_items - 1)
          {
+            char str[MAX_STR];
             struct passwd *pw;;
 
-            quit_eBook_speaker ();
+            save_bookmark_and_xml ();
             pw = getpwuid (geteuid ());
             snprintf (str, MAX_STR - 1, "%s/.eBook-speaker/%s",
                       pw->pw_dir, bookmark_title);
@@ -85,44 +112,34 @@ int read_text (int playing, int local_phrase_nr)
       if (*daisy[playing + 1].anchor &&
           strcasecmp (my_attribute.id, daisy[playing + 1].anchor) == 0)
          return -1;
-      if (*label == 0)
-         continue;
-      if (*label == '.' || *label == ',' || *label == '\'') // Acapela
-         *label = ' ';
-      for (l = label; isspace (l[0]); l++);
-      if (*l == '.' || *l == ',' || *l == '\'')
-      {
-         phrase_nr++;
-         continue;
-      } // if
-      if (nr++ == local_phrase_nr)
+      if (*label)
          break;
    } // while
 
    wattron (screenwin, A_BOLD);
    mvwprintw (screenwin, daisy[playing].y, 69, "%5d %5d",
-           local_phrase_nr + 1, daisy[playing].n_phrases - local_phrase_nr);
+               phrase_nr + 1, daisy[playing].n_phrases - phrase_nr - 1);
+   (phrase_nr)++;
    wattroff (screenwin, A_BOLD);
    wmove (screenwin, daisy[displaying].y, daisy[displaying].x);
    wrefresh (screenwin);
-   if ((w = open ("eBook-speaker.txt",
-                  O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR)) == -1)
+   if ((w = fopen ("eBook-speaker.txt", "w")) == NULL)
    {
       endwin ();
       beep ();
       printf ("Can't make a temp file %s\n", "eBook-speaker.txt");
       fflush (stdout);
-      kill (getppid (), SIGINT);
+      _exit (0);
    } // if
-   if (write (w, l, strlen (l)) == -1)
+   if (fwrite (label, strlen (label), 1, w) == 0)
    {
       endwin ();
       beep ();
-      printf ("write (\"%s\"): failed.\n", l);
+      printf ("write (\"%s\"): failed.\n", label);
       fflush (stdout);
       kill (getppid (), SIGINT);
    } // if
-   close (w);
+   fclose (w);
 
    if (! *tts[tts_no])
    {
@@ -144,7 +161,7 @@ int read_text (int playing, int local_phrase_nr)
       e = errno;
       endwin ();
       beep ();
-      skip_left ();
+      reader = skip_left (reader, doc);
       put_bookmark ();
       printf ("%s\n", strerror (e));
       fflush (stdout);
@@ -157,7 +174,7 @@ int read_text (int playing, int local_phrase_nr)
    default:
       return 0;
    } // switch
-} // read_text                                 
+} // get_next_phrase
 
 void select_tts ()
 {
@@ -263,31 +280,35 @@ int count_phrases (char *f_file, char *f_anchor,
 {
    int n_phrases;
    xmlTextReaderPtr r;
-   xmlDocPtr doc;
+   xmlDocPtr d;
 
    if (! *f_file)
       return 0;
-   doc = xmlRecoverFile (f_file);
-   if (! (r = xmlReaderWalker (doc)))
+   d = xmlRecoverFile (f_file);
+   if (! (r = xmlReaderWalker (d)))
    {
+      int e;
+
+      e = errno;
       endwin ();
-      printf ("%s\n", strerror (errno));
+      printf ("%s\n", strerror (e));
       beep ();
       fflush (stdout);
       _exit (1);
    } // if
-   n_phrases = 1;
+   n_phrases = 0;
    if (*f_anchor)
    {
+// if there is a "from" anchor, look for it
       do
       {
          if (! get_tag_or_label (r))
          {
 // if f_anchor couldn't be found, start from the beginning
             xmlTextReaderClose (r);
-            xmlFreeDoc (doc);
-            doc = xmlRecoverFile (f_file);
-            r = xmlReaderWalker (doc);
+            xmlFreeDoc (d);
+            d = xmlRecoverFile (f_file);
+            r = xmlReaderWalker (d);
             break;
          } // if
       } while (strcasecmp (my_attribute.id, f_anchor) != 0);
@@ -299,7 +320,7 @@ int count_phrases (char *f_file, char *f_anchor,
       if (! get_tag_or_label (r))
       {
          xmlTextReaderClose (r);
-         xmlFreeDoc (doc);
+         xmlFreeDoc (d);
          return n_phrases + 1;
       } // if
       if (*label)
@@ -314,7 +335,7 @@ int count_phrases (char *f_file, char *f_anchor,
             if (strcasecmp (my_attribute.id, t_anchor) == 0)
             {
                xmlTextReaderClose (r);
-               xmlFreeDoc (doc);
+               xmlFreeDoc (d);
                return n_phrases;
             } // if
          } // if
@@ -322,28 +343,35 @@ int count_phrases (char *f_file, char *f_anchor,
    } // while
 } // count_phrases
 
-static char *re_organize (char *fname)
+char *re_organize (char *fname)
 {
    xmlTextReaderPtr local_reader;
    static char tmp[MAX_STR];
-   char *p;
+   char *p, text[max_phrase_len];
    xmlDocPtr doc;
    FILE *w;
-   
+   int phrases;
+
    doc = xmlRecoverFile (fname);
    if (! (local_reader = xmlReaderWalker (doc)))
    {
+      int e;
+
+      e = errno;
       endwin ();
-      printf ("%s: %s\n", fname, strerror (errno));
+      printf ("%s: %s\n", fname, strerror (e));
       beep ();
       fflush (stdout);
       _exit (1);
-   } // if
+   } // if      
    snprintf (tmp, MAX_STR - 1, "%s/%s.tmp.xhtml", tmp_dir, basename (fname));
    if (! (w = fopen (tmp, "w")))
    {
+      int e;
+
+      e = errno;
       endwin ();
-      printf ("%s\n", strerror (errno));
+      printf ("%s\n", strerror (e));
       beep ();
       fflush (stdout);
       _exit (1);
@@ -352,6 +380,7 @@ static char *re_organize (char *fname)
 
    while (1)
    {
+// discard header
       if (! get_tag_or_label (local_reader))
          break;
       if (! strcasecmp (tag, "/head"))
@@ -363,15 +392,9 @@ static char *re_organize (char *fname)
       if (! get_tag_or_label (local_reader))
          break;
       if (strcasecmp (tag, "a") == 0)
-      {
-         fprintf (w, "<%s id=\"%s\">", tag, my_attribute.id);
          continue;
-      } // if
       if (strcasecmp (tag, "/a") == 0)
-      {
-         fprintf (w, "<%s>\n", tag);
          continue;
-      } // if
       if (strcasecmp (tag, "h1") == 0 ||
           strcasecmp (tag, "h2") == 0 ||
           strcasecmp (tag, "h3") == 0 ||
@@ -379,7 +402,7 @@ static char *re_organize (char *fname)
           strcasecmp (tag, "h5") == 0 ||
           strcasecmp (tag, "h6") == 0)
       {
-         fprintf (w, "<%s id=\"%s\">", tag, my_attribute.id);
+         fprintf (w, "<%s id=\"%s\">\n<br />\n", tag, my_attribute.id);
          continue;
       } // if
       if (strcasecmp (tag, "/h1") == 0 ||
@@ -389,32 +412,60 @@ static char *re_organize (char *fname)
           strcasecmp (tag, "/h5") == 0 ||
           strcasecmp (tag, "/h6") == 0)
       {
-         fprintf (w, "<%s>\n", tag);
+         fprintf (w, "<%s>\n<br />\n", tag);
          continue;
-      } // if /h1
+      } // if
       if (! *label)
          continue;
       p = label;
+      *text = 0;
+      phrases = 0;
       while (1)
       {
          if (*p == 0)
          {
-            fprintf (w, "<br />\n");
+            char *t;
+
+            t = text;
+            while (1)
+            {
+               if (*t == ' ')
+                  t++;
+               if (*t != ' ')
+                  break;
+            } // while
+            if (*t)
+            {
+               fprintf (w, "%s\n<br />\n", t);
+               phrases++;
+            } // if
+            *text = 0;
             break;
          } // if
-         if (! isascii (*p) || *p == '\"' || *p == '\'')
+         if (! isascii (*p) || *p == '\"' || *p == '\'' || *p == '`')
          {
-            fprintf (w, " ");
+            strncat (text, " ", 1);
+            p++;
+            continue;
+         } // if
+         if (*p == '&')
+         {
+            strncat (text, " ampersand ", 11);
             p++;
             continue;
          } // if
          if (*p == '.' || *p == ',' || *p == '!' || *p == '?' ||
-             *p == ':' || *p == ';')
+             *p == ':' || *p == ';' || *p == '-' || *p == '*')
          {
-            fprintf (w, "%c<br />\n", *p++);
+            strncat (text, p++, 1);
+            if (strlen (text) > 1)
+               fprintf (w, "%s\n", text);
+            fprintf (w, "<br />\n");
+            *text = 0;
+            phrases++;
             continue;
          } // if
-         fprintf (w, "%c", *p++);
+         strncat (text, p++, 1);
       } // while
    } // while
    fprintf (w, "</body>\n</html>\n");
@@ -498,7 +549,7 @@ void put_bookmark ()
    if (playing < 0)
       xmlTextWriterWriteFormatAttribute
          (writer, BAD_CAST "item", "%d", current);
-   else
+   else                                               
       xmlTextWriterWriteFormatAttribute
          (writer, BAD_CAST "item", "%d", playing);
    xmlTextWriterWriteFormatAttribute
@@ -511,47 +562,65 @@ void put_bookmark ()
    xmlFreeTextWriter (writer);
 } // put_bookmark
 
-void get_bookmark ()
+xmlTextReaderPtr get_bookmark (xmlTextReaderPtr reader, xmlDocPtr doc)
 {
    char str[MAX_STR];
    xmlTextReaderPtr local_reader;
-   xmlDocPtr doc;
+   xmlDocPtr local_doc;
+   int start;
    struct passwd *pw;;
 
    pw = getpwuid (geteuid ());
    snprintf (str, MAX_STR - 1, "%s/.eBook-speaker/%s",
              pw->pw_dir, bookmark_title);
-   doc = xmlRecoverFile (str);
-   if (! (local_reader = xmlReaderWalker (doc)))
-      return;
+   local_doc = xmlRecoverFile (str);
+   if (! (local_reader = xmlReaderWalker (local_doc)))
+   {
+      xmlFreeDoc (local_doc);
+      return NULL;
+   } // if
    do
    {
       if (! get_tag_or_label (local_reader))
          break;
    } while (strcasecmp (tag, "bookmark") != 0);
    xmlTextReaderClose (local_reader);
-   xmlFreeDoc (doc);
+   xmlFreeDoc (local_doc);
    if (current < 0 || current == total_items)
       current = 0;
    if (! *daisy[current].smil_file)
-      return;
-   open_text_file (daisy[current].smil_file,
-                   daisy[current].anchor);
+      return NULL;
+   reader = open_text_file (reader, doc,
+                            daisy[current].smil_file, daisy[current].anchor);
    if (phrase_nr < 0)
       phrase_nr = 0;
+   start = phrase_nr;
+   phrase_nr = 0;
    if (level < 1)
       level = 1;
    displaying = playing = current;
    just_this_item = -1;
    if (tts_flag > -1)
       tts_no = tts_flag;
+   while (1)
+   {
+      if (! get_tag_or_label (reader))
+         break;
+      if (! *label)
+         continue;
+      phrase_nr++;
+      if (phrase_nr == start)
+         break;
+   } // while
+   return reader;               
 } // get_bookmark
 
 void get_page_number (char *NCX)
 {
    xmlTextReaderPtr fd;
+   xmlDocPtr doc;
 
-   xmlDocPtr doc = xmlRecoverFile (NCX);
+   doc = xmlRecoverFile (NCX);
    fd = xmlReaderWalker (doc);
    do
    {
@@ -605,9 +674,9 @@ void view_screen ()
       l = daisy[i].n_phrases;
       x = i + 1;
       while (daisy[x].level > level)
-         l += daisy[x++].n_phrases + 1;
+         l += daisy[x++].n_phrases;
       if (daisy[i].level <= level)
-         mvwprintw (screenwin, daisy[i].y, 75, "%5d", l + 1);
+         mvwprintw (screenwin, daisy[i].y, 75, "%5d", l);
       if (i >= total_items - 1)
          break;
    } while (daisy[++i].screen == daisy[current].screen);
@@ -623,12 +692,13 @@ void player_ended ()
    wait (NULL);
 } // player_ended
 
-void open_text_file (char *text_file, char *anchor)
+xmlTextReaderPtr open_text_file (xmlTextReaderPtr reader, xmlDocPtr doc,
+                                 char *text_file, char *anchor)
 {
-   xmlDocPtr doc;
-
+   xmlTextReaderClose (reader);
+   xmlFreeDoc (doc);
    doc = xmlRecoverFile (text_file);
-   if (! (reader = xmlReaderWalker (doc)))
+   if ((reader = xmlReaderWalker (doc)) == NULL)
    {
       endwin ();
       beep ();
@@ -641,8 +711,8 @@ void open_text_file (char *text_file, char *anchor)
       if (! get_tag_or_label (reader))
          break;
    } while (strcasecmp (tag, "body") != 0);
-   if (! *anchor)
-      return;
+   if (*anchor == 0)
+      return reader;
 
 // look if anchor exists in this text_file
    while (1)
@@ -659,22 +729,76 @@ void open_text_file (char *text_file, char *anchor)
       if (strcasecmp (anchor, my_attribute.id) == 0)
          break;
    } // while
+   return reader;
 } // open_text_file
 
-void pause_resume ()
+void pause_resume (xmlTextReaderPtr reader, xmlDocPtr doc)
 {
    if (playing != -1)
       playing = -1;
    else
       playing = displaying;
    if (! reader)
-         return;
+      return;
    else
    {
       if (playing != -1)
       {
-         kill_player ();
-         read_text (playing, phrase_nr - 1);
+         FILE *w;
+
+         kill (player_pid, SIGKILL);
+         wattron (screenwin, A_BOLD);
+         mvwprintw (screenwin, daisy[playing].y, 69, "%5d %5d",
+                    phrase_nr, daisy[playing].n_phrases - phrase_nr - 1);
+         wattroff (screenwin, A_BOLD);
+         wmove (screenwin, daisy[displaying].y, daisy[displaying].x);
+         wrefresh (screenwin);
+         if ((w = fopen ("eBook-speaker.txt", "w")) == NULL)
+         {
+            endwin ();
+            beep ();
+            printf ("Can't make a temp file %s\n", "eBook-speaker.txt");
+            fflush (stdout);
+            _exit (0);
+         } // if
+         if (fwrite (label, strlen (label), 1, w) == 0)
+         {
+            endwin ();
+            beep ();
+            printf ("write (\"%s\"): failed.\n", label);
+            fflush (stdout);
+            kill (getppid (), SIGINT);
+         } // if
+         fclose (w);
+
+         switch (system (tts[tts_no]))
+         {
+         default:
+            break;
+         } // switch
+
+         switch (player_pid = fork ())
+         {
+         case -1:
+         {
+            int e;
+
+            e = errno;
+            endwin ();
+            beep ();
+            reader = skip_left (reader, doc);
+            put_bookmark ();
+            printf ("%s\n", strerror (e));
+            fflush (stdout);
+            _exit (1);
+         }
+         case 0:
+            setsid ();
+            playfile ("eBook-speaker.wav", "wav", sound_dev, "alsa", speed);
+            _exit (0);
+         default:
+            return;
+         } // switch
       }
       else
          kill_player ();
@@ -727,6 +851,7 @@ void help ()
    nodelay (screenwin, TRUE);
    wclear (screenwin);
    waddstr (screenwin, gettext ("\n/               - search for a label\n"));
+   waddstr (screenwin, gettext ("B               - move cursor to the last item\n"));
    waddstr (screenwin, gettext ("D               - decrease playing speed\n"));
    waddstr (screenwin, gettext ("f               - find the currently playing item and place the cursor there\n"));
    waddstr (screenwin, gettext ("g               - go to phrase in current item\n"));
@@ -741,6 +866,7 @@ void help ()
    waddstr (screenwin, gettext ("q               - quit eBook-speaker and place a bookmark\n"));
    waddstr (screenwin, gettext ("s               - stop playing\n"));
    waddstr (screenwin, gettext ("t               - select next TTS\n"));
+   waddstr (screenwin, gettext ("T               - move cursor to the first item\n"));
    waddstr (screenwin, gettext ("U               - increase playing speed\n"));
    waddstr (screenwin, gettext ("\nPress any key to leave help..."));
    nodelay (screenwin, FALSE);
@@ -781,38 +907,48 @@ void next_item ()
    view_screen ();
 } // next_item
 
-void skip_left ()
+xmlTextReaderPtr skip_left (xmlTextReaderPtr reader, xmlDocPtr doc)
 {
+   int old_phrase_nr;
+
    if (playing == -1)
    {
       beep ();
-      return;
+      return NULL;
    } // if
+   old_phrase_nr = phrase_nr;
    kill_player ();
-   open_text_file (daisy[playing].smil_file,
-                   daisy[playing].anchor);
+   if (phrase_nr <= 2)
+   {
+      if (playing == 0)
+         return reader;
+      playing--;
+      displaying = current = playing;
+      reader = open_text_file (reader, doc, daisy[playing].smil_file,
+                               daisy[playing].anchor);
+      phrase_nr = 0;
+      while (1)
+      {
+         if (! get_tag_or_label (reader))
+            return NULL;
+         if (! *label)
+            continue;
+         if (phrase_nr >= daisy[playing].n_phrases - 1)
+            return reader;
+         phrase_nr++;
+      } // while
+   } // if
+   reader = open_text_file (reader, doc, daisy[playing].smil_file,
+                            daisy[playing].anchor);
+   phrase_nr = 0;
    while (1)
    {
       if (! get_tag_or_label (reader))
-         break;
+         return NULL;
       if (! *label)
          continue;
-      phrase_nr -= 2;
-      if (phrase_nr == -1)
-      {
-         if (playing == 0) // first item
-         {
-            phrase_nr = 0;
-            break;
-         } // if
-         current = playing;
-         previous_item ();
-         playing = displaying = current;
-         phrase_nr = daisy[playing].n_phrases - 1;
-         break;
-      }
-      else
-         break;
+      if (++phrase_nr >= old_phrase_nr - 2)
+         return reader;
    } // while
 } // skip_left
 
@@ -824,7 +960,7 @@ void skip_right ()
       return;
    } // if
    kill_player ();
-} // skip_right
+} // skip_right      
 
 void change_level (char key)
 {
@@ -850,7 +986,7 @@ void read_xml ()
 
    pw = getpwuid (geteuid ());
    snprintf (str, MAX_STR - 1, "%s/.eBook-speaker.xml", pw->pw_dir);
-   if (! (doc = xmlRecoverFile (str)))
+   if ((doc = xmlRecoverFile (str)) == NULL)
    {
 // If no TTS; give some examples
       strncpy (tts[0], "espeak -f eBook-speaker.txt -w eBook-speaker.wav",
@@ -954,7 +1090,7 @@ void save_xml ()
    xmlFreeTextWriter (writer);
 } // save_xml
 
-void quit_eBook_speaker ()
+void save_bookmark_and_xml ()
 {
    char cmd[MAX_CMD];
 
@@ -963,20 +1099,19 @@ void quit_eBook_speaker ()
    wait (NULL);
    put_bookmark ();
    save_xml ();
-   xmlTextReaderClose (reader);
    xmlCleanupParser ();
    if (! tmp_dir)
       return;
-   snprintf (cmd, MAX_CMD - 1, "rm -rf %s", tmp_dir);
+   snprintf (cmd, MAX_CMD - 1, "rm -rf %s", tmp_dir);          
    if (system (cmd) > 0)
    {
       endwin ();
       beep ();
       _exit (1);
    } // if
-} // quit_eBook_speaker
+} // save_bookmark_and_xml
 
-void search (int start, char mode)
+void search (xmlTextReaderPtr reader, xmlDocPtr doc, int start, char mode)
 {
    int c, found = 0;
 
@@ -1044,14 +1179,17 @@ void search (int start, char mode)
       displaying = playing = current;
       if (playing != -1)
          kill_player ();
-      open_text_file (daisy[current].smil_file,
+      xmlTextReaderClose (reader);
+      xmlFreeDoc (doc);
+      reader = open_text_file (reader, doc, daisy[current].smil_file,
                       daisy[current].anchor);
    }
    else
    {
-      beep ();
+      beep ();                                            
       kill_player ();
-      read_text (playing, phrase_nr - 1);
+      phrase_nr--;
+      get_next_phrase (reader, doc, playing);
    } // if
    view_screen ();
 } // search
@@ -1121,7 +1259,7 @@ void select_next_output_device ()
    } // for
 } // select_next_output_device
 
-void go_to_phrase ()
+xmlTextReaderPtr go_to_phrase (xmlTextReaderPtr reader, xmlDocPtr doc)
 {
    char pn[15];
 
@@ -1134,53 +1272,52 @@ void go_to_phrase ()
    wgetnstr (titlewin, pn, 8);
    noecho ();
    view_screen ();
-   if (! *pn || atoi (pn) > daisy[current].n_phrases || ! atoi (pn))
+   if (! *pn || atoi (pn) > daisy[current].n_phrases + 1)
    {
       beep ();
-      skip_left ();
+      reader = skip_left (reader, doc);
       skip_right ();
-      return;
+      return reader;  
    } // if
-   xmlTextReaderClose (reader);
-   xmlDocPtr doc = xmlRecoverFile (daisy[current].smil_file);
-   if (! (reader = xmlReaderWalker (doc)))
-   {
-      endwin ();
-      printf (gettext ("\nCannot read %s\n"), daisy[current].smil_file);
-      beep ();
-      fflush (stdout);
-      _exit (1);
-   } // if
+   reader = open_text_file (reader, doc, daisy[current].smil_file,
+                            daisy[current].anchor);
    phrase_nr = 0;
-   while (1)
+   if (atoi (pn) > 1)
    {
-      if (! get_tag_or_label (reader))
-         return;
-      if (*label)
+      while (1)
       {
-         if (phrase_nr == atoi (pn) - 1)
+         if (! get_tag_or_label (reader))
             break;
-         phrase_nr++;
-      } // if
-   } // while
+         if (! *label)
+            continue;
+         (phrase_nr)++;
+         if (phrase_nr + 1 == atoi (pn))
+            break;
+      } // while
+   } // if
    playing = displaying = current;
    view_screen ();
+   mvwprintw (screenwin, daisy[current].y, 69, "%5d %5d",
+              phrase_nr + 1, daisy[current].n_phrases - phrase_nr - 1);
+   wrefresh (screenwin);
    wmove (screenwin, daisy[current].y, daisy[current].x);
    just_this_item = -1;
    remove ("eBook-speaker.wav");
    remove ("old.wav");
-   open_text_file (daisy[current].smil_file,
-                   daisy[current].anchor);
-} // go_to_phrase 
+   return reader;
+} // go_to_phrase
 
 void browse ()
 {
    int old;
+   xmlTextReaderPtr reader;
+   xmlDocPtr doc;
 
    current = displaying = playing = 0;
    just_this_item = playing = -1;
    reader = NULL;
-   get_bookmark ();
+   doc = NULL;
+   reader = get_bookmark (reader, doc);
    if (depth <= 0)
       depth = 1;
    view_screen ();
@@ -1199,16 +1336,21 @@ void browse ()
          just_this_item = -1;
          view_screen ();
          kill_player ();
-         open_text_file (daisy[current].smil_file,
-                         daisy[current].anchor);
+         reader = open_text_file (reader, doc, daisy[current].smil_file,
+                                  daisy[current].anchor);
          break;
       case '/':
-         search (current + 1, '/');
+         search (reader, doc, current + 1, '/');
          break;
       case ' ':
       case KEY_IC:
       case '0':
-         pause_resume ();
+         pause_resume (reader, doc);
+         break;
+      case 'B':
+         displaying = current = total_items - 1;
+         phrase_nr = daisy[current].n_phrases - 1;
+         view_screen ();
          break;
       case 'f':
          if (playing == -1)
@@ -1220,7 +1362,7 @@ void browse ()
          view_screen ();
          break;
       case 'g':
-         go_to_phrase ();
+         reader = go_to_phrase (reader, doc);
          break;
       case 'h':
       case '?':
@@ -1228,7 +1370,10 @@ void browse ()
          help ();
          kill_player ();
          if (playing != -1)
-            read_text (playing, phrase_nr - 1);
+         {
+            phrase_nr--;
+            get_next_phrase (reader, doc, playing);
+         } // if
          break;
       case 'j':
       case '5':
@@ -1238,7 +1383,11 @@ void browse ()
          else
          {
             if (playing == -1)
+            {
                phrase_nr = 0;
+               reader = open_text_file (reader, doc, daisy[current].smil_file,
+                                        daisy[current].anchor);
+            } // if
             playing = just_this_item = current;
          } // if
          mvwprintw (screenwin, daisy[current].y, 0, " ");
@@ -1247,7 +1396,7 @@ void browse ()
             just_this_item = displaying = playing = current;
             phrase_nr = 0;
             kill_player ();
-            open_text_file (daisy[current].smil_file,
+            reader = open_text_file (reader, doc, daisy[current].smil_file,
                             daisy[current].anchor);
          } // if
          if (just_this_item != -1 &&
@@ -1264,10 +1413,10 @@ void browse ()
          change_level ('L');
          break;
       case 'n':
-         search (current + 1, 'n');
+         search (reader, doc, current + 1, 'n');
          break;
       case 'N':
-         search (current - 1, 'N');
+         search (reader, doc, current - 1, 'N');
          break;
       case 'o':
          if (playing == -1)
@@ -1275,19 +1424,21 @@ void browse ()
             beep ();
             break;
          } // if
-         pause_resume ();
+         pause_resume (reader, doc);
          select_next_output_device ();
          playing = displaying;
          kill_player ();
          if (playing != -1)
-            read_text (playing, phrase_nr - 1);
+         {
+            phrase_nr--;
+            get_next_phrase (reader, doc, playing);
+         } // if
          break;
       case 'p':
          put_bookmark ();
          break;
       case 'q':
          quit_eBook_speaker ();
-         _exit (0);
       case 's':
          playing = just_this_item = -1;
          view_screen ();
@@ -1296,12 +1447,20 @@ void browse ()
       case 't':
 
          if (playing != -1)
-            pause_resume ();
+            pause_resume (reader, doc);
          select_tts ();
          playing = displaying;
          kill_player ();
          if (playing != -1)
-            read_text (playing, phrase_nr - 1);
+         {
+            phrase_nr--;
+            get_next_phrase (reader, doc, playing);
+         } // if
+         break;
+      case 'T':
+         displaying = current = 0;
+         phrase_nr = daisy[current].n_phrases - 1;
+         view_screen ();
          break;
       case KEY_DOWN:
       case '2':
@@ -1317,7 +1476,7 @@ void browse ()
          break;
       case KEY_LEFT:
       case '4':
-         skip_left ();
+         reader = skip_left (reader, doc);
          break;
       case KEY_NPAGE:
       case '3':
@@ -1357,7 +1516,8 @@ void browse ()
          if (playing == -1)
             break;
          kill_player ();
-         read_text (playing, phrase_nr - 1);
+         phrase_nr--;
+         get_next_phrase (reader, doc, playing);
          break;
       case 'D':
       case '-':
@@ -1370,7 +1530,8 @@ void browse ()
          if (playing == -1)
             break;
          kill_player ();
-         read_text (playing, phrase_nr - 1);
+         phrase_nr--;
+         get_next_phrase (reader, doc, playing);
          break;
       case KEY_HOME:
       case '*':
@@ -1379,15 +1540,17 @@ void browse ()
          if (playing == -1)
             break;
          kill_player ();
-         read_text (playing, phrase_nr - 1);
+         phrase_nr--;
+         get_next_phrase (reader, doc, playing);
          break;
       default:
          beep ();
          break;
       } // switch
+
       if (playing != -1)
       {
-         if (read_text (playing, phrase_nr) == -1)
+         if (get_next_phrase (reader, doc, playing) == -1)
          {
             phrase_nr = 0;
             playing++;
@@ -1395,6 +1558,10 @@ void browse ()
                current = displaying = playing;
             if (just_this_item != -1 && daisy[playing].level <= level)
                playing = just_this_item = -1;
+            remove ("eBook-speaker.wav");
+            remove ("old.wav");
+            reader = open_text_file (reader, doc, daisy[current].smil_file,
+                                     daisy[current].anchor);
             view_screen ();
          } // if
       } // if
@@ -1551,7 +1718,8 @@ void check_phrases ()
    {
       daisy[item].n_phrases =
          count_phrases (daisy[item].smil_file, daisy[item].anchor,
-                       daisy[item + 1].smil_file, daisy[item + 1].anchor) - 2;
+                        daisy[item + 1].smil_file,
+                        daisy[item + 1].anchor) - 1;
       total_phrases += daisy[item].n_phrases;
    } // for
 } // check_phrases
@@ -1559,14 +1727,14 @@ void check_phrases ()
 int main (int argc, char *argv[])
 {
    int opt, scan_flag = 0;
-   char file[MAX_STR], cmd[MAX_CMD];
+   char file[MAX_STR];
 
    fclose (stderr);
    setbuf (stdout, NULL);
    setlocale (LC_ALL, getenv ("LANG"));
    setlocale (LC_NUMERIC, "C");
    textdomain ("eBook-speaker");
-   bindtextdomain ("eBook-speaker", PREFIX"share/locale");
+   bindtextdomain ("eBook-speaker", LOCALEDIR"/");
    textdomain ("eBook-speaker");
    strncpy (prog_name, basename (argv[0]), MAX_STR - 1);
    initscr ();
@@ -1594,7 +1762,7 @@ int main (int argc, char *argv[])
       _exit (1);
    } // if
    speed = 1.0;
-   atexit (quit_eBook_speaker);
+   atexit (quit_eBook_speaker);   
    strncpy (sound_dev, "default", MAX_STR - 1);
    read_xml ();
    tmp_dir = strdup ("/tmp/eBook-speaker.XXXXXX");
@@ -1700,15 +1868,20 @@ int main (int argc, char *argv[])
    wmove (titlewin, 0, 67);
    wrefresh (titlewin);
    if (strcasestr (magic_file (myt, file), "directory"))
-   {                 
+   {
       switch (chdir (file))
       {
       default:
          break;
       } // switch
-      strncpy (daisy_mp, file, MAX_STR - 1);
+      snprintf (file, MAX_STR - 1, "%s",
+                get_input_file (".", copyright, titlewin,
+                                screenwin));
+      argv[1] = file;
+      main (1, argv);
+      _exit (0);
    } // if directory
-   else                                         
+   else
    if (strcasestr (magic_file (myt, file), "EPUB") ||
        (strcasestr (magic_file (myt, file), "Zip archive data") &&
         ! strcasestr (magic_file (myt, file), "Microsoft Word 2007+")))
@@ -1716,10 +1889,12 @@ int main (int argc, char *argv[])
       read_epub (file);
    } // if epub
    else
-   if (strcasestr (magic_file (myt, file), "ASCII text"))
+   if (strcasestr (magic_file (myt, file), "HTML document"))
    {
+      char cmd[MAX_CMD];
+
       snprintf (cmd, MAX_CMD - 1,
-                "cat \"%s\" | html2 | 2html > out.html", file);
+                "html2text -ascii -o out.txt \"%s\"", file);
       switch (system (cmd))
       {
       case 0:
@@ -1731,26 +1906,14 @@ int main (int argc, char *argv[])
          fflush (stdout);
          _exit (1);
       } // switch
-      pandoc_to_epub ("out.html");
+      pandoc_to_epub ("out.txt");
    } // if
    else
 // use pandoc
-   if (strcasestr (magic_file (myt, file), "HTML document"))
+   if (strcasestr (magic_file (myt, file), "C source text") ||
+       strcasestr (magic_file (myt, file), "ASCII text"))
    {
-      snprintf (cmd, MAX_CMD - 1,
-                "cat \"%s\" | html2 | 2html > out.html", file);
-      switch (system (cmd))
-      {
-      case 0:
-         break;
-      default:
-         endwin ();
-         beep ();
-         puts (gettext ("eBook-speaker needs the xml2 package."));
-         fflush (stdout);
-         _exit (1);
-      } // switch
-      pandoc_to_epub ("out.html");
+      pandoc_to_epub (file);
    } // if
    else
    if (strcasestr (magic_file (myt, file), "PDF document"))
@@ -1807,6 +1970,8 @@ int main (int argc, char *argv[])
        strcasestr (magic_file (myt, file), "PNG image")  ||
        strcasestr (magic_file (myt, file), "Netpbm"))
    {
+      char cmd[MAX_CMD];
+
       snprintf (cmd, MAX_CMD - 1,
                 "tesseract \"%s\" out 2> /dev/null", file);
       switch (system (cmd))
@@ -1843,10 +2008,10 @@ int main (int argc, char *argv[])
    mvwaddstr (titlewin, 1, 0, "----------------------------------------");
    waddstr (titlewin, "----------------------------------------");
    mvwprintw (titlewin, 1, 0, gettext ("Press 'h' for help "));
-
    wrefresh (titlewin);
    level = 1;
    *search_str = 0;
    browse ();
    return 0;
 } // main
+

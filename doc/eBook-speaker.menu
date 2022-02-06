@@ -1,1 +1,1 @@
-?package(ebook-speaker):needs="text" section="Applications/Accessibility" title="eBook-speaker" command="eBook-speaker"
+?package(eBook-speaker):needs="text" section="Applications/Accessibility" title="eBook-speaker" command="eBook-speaker"

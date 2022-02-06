@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([eBook-speaker],[2.4],[jos@jlemmens.nl])
+AC_INIT([eBook-speaker],[2.5],[jos@jlemmens.nl])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
@@ -36,10 +36,10 @@ AC_FUNC_MALLOC
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([atexit isascii mkdir select setlocale strcasecmp strchr strdup strerror strrchr])
 
-AC_CONFIG_FILES([Makefile 
-                 doc/Makefile
+AC_CONFIG_FILES([Makefile
                  m4/Makefile
                  man/Makefile
+                 doc/Makefile
                  src/Makefile
                  po/Makefile.in])
 AM_GNU_GETTEXT([external])

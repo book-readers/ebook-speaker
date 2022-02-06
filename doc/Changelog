@@ -33,6 +33,14 @@
 2.3.3	The function realname() is not needed anymore
 2.4	ocrfeeder is replaced by tesseract
 	error.wav is not longer used.
-        An argument now is optional.
-        When no argument is given on the command-line, a file-manager
-        will appear..
+	An argument now is optional.
+	When no argument is given on the command-line, a file-manager
+	will appear..
+2.4.1	Control-key B in file-manager to move cursor to last file/item.
+	Control-key T in file-manager to move cursor to first file/item.
+	The file-manager will first fill an array with filenames and
+	their magic info, so that it reacts smoother.
+2.5	Memory bug solved - eBook speaker took increasingly more memory.
+	View total phrases on the status-line.
+	Bookmarks written when killed with "killall". (SIGTERM)
+	Switch hidden files displaying on/off in directory listing.
