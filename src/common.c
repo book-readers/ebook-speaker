@@ -1,6 +1,6 @@
 /* common.c - common functions used by daisy-player and eBook-speaker.
  *
- * Copyright (C)2018 J. Lemmens
+ * Copyright (C)2020 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -24,7 +24,7 @@ char sink_info[10][100];
 void open_xml_file (misc_t *misc, my_attribute_t *my_attribute,
                     daisy_t *daisy, char *xml_file, char *anchor)
 {
-   if (access (xml_file, R_OK))
+   if (access (xml_file, R_OK) == -1)
    {
       int e;
 
@@ -58,7 +58,7 @@ void open_xml_file (misc_t *misc, my_attribute_t *my_attribute,
    if (! *anchor)
       return;
 
-// skip to anchor
+// skip to anchor           
    while (1)
    {
       if (! get_tag_or_label (misc, my_attribute, misc->reader))
@@ -116,7 +116,7 @@ void player_ended ()
    while ((kidpid = waitpid (-1, &status, WNOHANG)) > 0);
 } // player_ended
 
-void get_realpath_name (char *dir, char *search_str, char *found)
+void get_real_pathname (char *dir, char *search_str, char *found)
 {
    int total, n;
    struct dirent **namelist;char *basec;
@@ -158,12 +158,12 @@ void get_realpath_name (char *dir, char *search_str, char *found)
             sprintf (new_dir, "%s/%s", dir, namelist[n]->d_name);
          else
             sprintf (new_dir, "%s/%s", dir, namelist[n]->d_name);
-         get_realpath_name (new_dir, search_str, found);
+         get_real_pathname (new_dir, search_str, found);
          free (new_dir);
       } // if
    } // for
    free (namelist);
-} // get_realpath_name               
+} // get_real_pathname
 
 char *get_dir_content (misc_t *misc, char *dir_name, char *search_str)
 {
@@ -216,7 +216,7 @@ void find_index_names (misc_t *misc)
 {
    char *dirc;
 
-   get_realpath_name (misc->daisy_mp, "ncc.html", misc->ncc_html);
+   get_real_pathname (misc->daisy_mp, "ncc.html", misc->ncc_html);
    *misc->ncx_name = 0;
    strcpy (misc->ncx_name,
             get_dir_content (misc, misc->daisy_mp, ".ncx"));
@@ -442,21 +442,36 @@ daisy_t *create_daisy_struct (misc_t *misc,
       printf ("\r\n\ncount items in OPF... ");
       fflush (stdout);
    } // if
-   misc->items_in_opf = 0;
+   misc->items_in_opf = misc->no_smil_items = 0;
    doc = htmlParseFile (misc->opf_name, "UTF-8");
    ptr = xmlReaderWalker (doc);
    while (1)
    {
       if (! get_tag_or_label (misc, my_attribute, ptr))
          break;
-      if (strcasestr (my_attribute->media_type, "application/smil") ||
-          strcasestr (my_attribute->media_type, "application/xhtml+xml"))
-      {
+      if (strcasestr (my_attribute->media_type, "smil"))
          misc->items_in_opf++;
-      } // if   
    } // while
    xmlTextReaderClose (ptr);
    xmlFreeDoc (doc);
+
+   if (misc->items_in_opf == 0)
+   {
+      doc = htmlParseFile (misc->opf_name, "UTF-8");
+      ptr = xmlReaderWalker (doc);
+
+      misc->no_smil_items = 1;
+      while (1)              
+      {
+         if (! get_tag_or_label (misc, my_attribute, ptr))
+            break;
+         if (strcasestr (my_attribute->media_type, "xhtml+xml"))
+            misc->items_in_opf++;
+     } // while
+      xmlTextReaderClose (ptr);
+      xmlFreeDoc (doc);
+   } // if
+
    if (misc->verbose)
       printf ("%d\n", misc->items_in_opf);
 
@@ -664,7 +679,7 @@ void get_attributes (misc_t *misc, my_attribute_t *my_attribute,
            xmlTextReaderGetAttribute (ptr,
                                       (const xmlChar *) "pulseaudio_device"));
    if (strcmp (attr, "(null)"))
-      misc->pulseaudio_device = strdup (attr);
+      misc->pulseaudio_device = atoi (attr);
    snprintf (attr, MAX_STR - 1, "%s", (char *)
         xmlTextReaderGetAttribute (ptr, (const xmlChar *) "ocr_language"));
    if (strcmp (attr, "(null)"))
@@ -915,7 +930,7 @@ void check_pulseaudio_device (misc_t *misc, daisy_t *daisy)
       _exit (EXIT_FAILURE);
    } // if
 
-   if (strlen (misc->pulseaudio_device) == 0)
+   if (misc->pulseaudio_device < 0)
    {
       select_next_output_device (misc, daisy);
       return;
@@ -940,7 +955,7 @@ void check_pulseaudio_device (misc_t *misc, daisy_t *daisy)
       if (strncasecmp (str, "Sink #", 6) != 0)
          continue;
       str += 6;
-      if (atoi (str) == atoi (misc->pulseaudio_device))
+      if (atoi (str) == misc->pulseaudio_device)
       {
          pclose (p);
          return;
@@ -952,57 +967,72 @@ void check_pulseaudio_device (misc_t *misc, daisy_t *daisy)
 
 void select_next_output_device (misc_t *misc, daisy_t *daisy)
 {
-   int current_sink, n;
+   int current_sink, n, found;
+   struct group *grp;
+
+   grp = getgrnam ("audio");
+   found = 0;
+   for (n = 0; grp->gr_mem[n]; n++)
+   {
+      if (strcmp (grp->gr_mem[n], cuserid (NULL)) == 0)
+      {
+         found = 1;
+         break;
+      } // if
+   } // for
+   if (found == 0)
+   {
+      beep ();
+      endwin ();
+      printf ("You need to be a member of the group \"audio\".\n");
+      printf ("Please give the following command:\n");
+      printf ("\n   sudo gpasswd -a <login-name> audio\n\n");
+      printf ("Logout and login again and you can use daisy-player.\n");
+      remove_tmp_dir (misc);
+      _exit (EXIT_FAILURE);
+   } // if
 
    wclear (misc->screenwin);
    wprintw (misc->screenwin, "\n%s\n\n", gettext ("Select a soundcard:"));
 
-   current_sink = -1;
-
    nodelay (misc->screenwin, FALSE);
+   current_sink = -1;
    while (! misc->term_signaled)
    {
       char *str;
       size_t len = 0;
       int total;
       FILE *p;
-      char *sink_nr, *alsa_card_name, *mute, *volume;
 
-      sink_nr = alsa_card_name = mute = volume = NULL;
-
-      if ((p = popen ("LANG=C /usr/bin/pactl list sinks", "r")) == NULL)
+      if ((p = popen ("LANGUAGE=C /usr/bin/pactl list sinks", "r")) == NULL)
       {
          beep ();
          endwin ();
          printf ("%s\n",
       "Be sure the package pulseaudio-utils is installed onto your system.");
+         remove_tmp_dir (misc);
          _exit (EXIT_FAILURE);
       } // if
 
       n = -1;
-      str = NULL;
-      len = 0;
       while (! misc->term_signaled)
       {
+         str = NULL;
+         len = 0;
          if (getline (&str, &len, p) == -1)
             break;
-         *strchr (str, '\n') = 0; // remove new_line
          if (strncasecmp (str, "Sink #", 6) == 0)
          {
-            if (n >= 0)
-            {
-               sprintf (sink_info[n], "%s %s %*s %s", sink_nr, alsa_card_name,
-                  64 - (int) strlen (alsa_card_name) - (int) strlen (sink_nr),
-                        mute, volume);
-            } // if
-            n++;
-            sink_nr = strdup (strchr (str, '#') + 1);
-            if (current_sink == -1)
-            {
-               if (strcmp (sink_nr, misc->pulseaudio_device) == 0)
-                  current_sink = n;
-            } // if
-         } // if Sink #
+            memset (sink_info[++n], ' ', 70);
+            len = strlen (str) - 6 - 1;
+// allow only up to 3 digits
+            if (len > 3)
+               len = 3;
+            strncpy (sink_info[n], &str[6], len);
+            if (current_sink < 0 &&
+                atoi (sink_info[n]) == misc->pulseaudio_device)
+               current_sink = n;
+         } // if
 
 /* disabled.
    Requested by Didier Spaier <didier@slint.fr>
@@ -1010,36 +1040,45 @@ void select_next_output_device (misc_t *misc, daisy_t *daisy)
          {
             int x;
 
-            strcpy (sink_info[n] + 2, str + 14);
+            strcpy (sink_info[n] + 4, str + 14);
             for (x = strlen (sink_info[n]) - 1; x < 70; x++)
                sink_info[n][x] = ' ';
             sink_info[n][x] = 0 ;
          } // if
 */
-
          if (strcasestr (str, "alsa.card_name"))
          {
-            alsa_card_name = strdup (strcasestr (str, "alsa.card_name") + 17);
-         } // if alsa_card_name
+             if (strlen (str) > 19)
+               str += 19;
+            len = strlen (str) + 3;
+            memcpy (sink_info[n] + 4, str, len);
+            memset (sink_info[n] + len, ' ', 53 - len);
+         } // if
          if (strcasestr (str, "Mute:"))
          {
-            mute = strdup (strcasestr (str, "Mute:"));
-            if (strcasestr (mute, "no"))
-               strcat (mute, " ");
-         } // if mute
+            strcpy (sink_info[n] + 53, strcasestr (str, "Mute:"));
+            sink_info[n][52] = ' ';
+         } // if
          if (strcasestr (str, "Volume:"))
          {
+            int x;
+
             if (strcasestr (str, "Base"))
                continue;
-            volume = strdup (strcasestr (str, "Volume:"));
-            *(strchr (volume, ' ') + 1) = 0;
-            *(strchr (str, '%') + 1) = 0;
-            strcat (volume, strchr (str, '/') + 3);
-         } // if volume
+            sink_info[n][strlen (sink_info[n]) - 1] = ' ';
+            sink_info[n][strlen (sink_info[n])] = ' ';
+            strcpy (sink_info[n] + 63, strstr (str, "Volume:"));
+            sink_info[n][70] = 0;
+            for (x = strlen (str); x >= 0; x--)
+               if (str[x] == '%')
+                  break;
+            str[x + 1] = 0;
+            for (x = strlen (str); x >= 0; x--)
+               if (str[x] == ' ')
+                  break;
+            strcat (sink_info[n], str + x);
+         } // if
       } // while
-      sprintf (sink_info[n], "%s %s %*s %s", sink_nr, alsa_card_name,
-               64 - (int) strlen (alsa_card_name) - (int) strlen (sink_nr),
-               mute, volume);
       if (current_sink == -1)
          current_sink = 0;
       total = n + 1;
@@ -1052,20 +1091,17 @@ void select_next_output_device (misc_t *misc, daisy_t *daisy)
       memcpy (sink_info, pactl ("list", "0", "0"), 1000);
 */
       for (n = 0; n < total; n++)
-         mvwprintw (misc->screenwin, n + 3, 1, "%s ", sink_info[n]);
-      wmove (misc->screenwin, current_sink + 3, 0);
+         mvwprintw (misc->screenwin, n + 3, 3, "%s ", sink_info[n]);
+      wmove (misc->screenwin, current_sink + 3, 2);
       wrefresh (misc->screenwin);
 
       switch (wgetch (misc->screenwin))
       {
       case 13:
-      {
-         misc->pulseaudio_device = strdup (sink_info[current_sink]);
-         *strchr (misc->pulseaudio_device, ' ') = 0;
+         misc->pulseaudio_device = atoi (sink_info[current_sink]);
          view_screen (misc, daisy);
          nodelay (misc->screenwin, TRUE);
          return;
-      }
       case KEY_DOWN:
          if (++current_sink >= total)
             current_sink = 0;
@@ -1077,28 +1113,28 @@ void select_next_output_device (misc_t *misc, daisy_t *daisy)
       case 'm':
          if (fork () == 0)
          {
-            char *pa;
+            char dev[5];
 
-            pa = strdup (sink_info[current_sink]);
-            *strchr (pa, ' ') = 0;
-            pactl ("set-sink-mute", pa, "toggle");
-            free (pa);
+            reset_term_signal_handlers_after_fork ();
+            sprintf (dev, "%d", atoi (sink_info[current_sink]));
+            (void) pactl ("set-sink-mute", dev, "toggle");
             _exit (EXIT_SUCCESS);
          } // if
          break;
       case 'q':
          view_screen (misc, daisy);
+         if (misc->pulseaudio_device < 0)
+            misc->pulseaudio_device = 0;
          return;
       case 'v':
       case '1':
          if (fork () == 0)
          {
-            char *pa;
+            char dev[5];
 
-            pa = strdup (sink_info[current_sink]);
-            *strchr (pa, ' ') = 0;
-            pactl ("set-sink-volume", pa, "-5%");
-            free (pa);
+            reset_term_signal_handlers_after_fork ();
+            sprintf (dev, "%d", atoi (sink_info[current_sink]));
+            (void) pactl ("set-sink-volume", dev, "-5%");
             _exit (EXIT_SUCCESS);
          } // if
          break;
@@ -1106,12 +1142,11 @@ void select_next_output_device (misc_t *misc, daisy_t *daisy)
       case '7':
          if (fork () == 0)
          {
-            char *pa;
-                      
-            pa = strdup (sink_info[current_sink]);
-            *strchr (pa, ' ') = 0;
-            pactl ("set-sink-volume", pa, "+5%");
-            free (pa);
+            char dev[5];
+
+            reset_term_signal_handlers_after_fork ();
+            sprintf (dev, "%d", atoi (sink_info[current_sink]));
+            (void) pactl ("set-sink-volume", dev, "+5%");
             _exit (EXIT_SUCCESS);
          } // if
          break;
@@ -1131,7 +1166,7 @@ void select_next_output_device (misc_t *misc, daisy_t *daisy)
       select (1, &rfds, NULL, NULL, &tv);
    } // while
 } // select_next_output_device
-
+          
 // Useful to reset handlers in fork()ed children
 void reset_term_signal_handlers_after_fork (void)
 {

@@ -1,6 +1,6 @@
 /* daisy3.c - functions to insert daisy3 info into a struct. (ncx)
  *
- * Copyright (C) 2019 J. Lemmens
+ * Copyright (C) 2020 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -37,6 +37,7 @@ void fill_xml_anchor_ncx (misc_t *misc, my_attribute_t *my_attribute,
       misc->ncx_failed = 1;
       return;
    } // if
+
    misc->depth = 0;
    misc->current = 0;
    if (misc->verbose)
@@ -83,32 +84,32 @@ void fill_xml_anchor_ncx (misc_t *misc, my_attribute_t *my_attribute,
                break;
             if (strcasecmp (misc->tag, "content") == 0)
             {
+               htmlDocPtr doc;
+               xmlTextReaderPtr content;
+               char *src;
+
                if (misc->verbose)
                {
                   printf ("\rContent ");
                   fflush (stdout);
                } // if
-               htmlDocPtr doc;
-               xmlTextReaderPtr content;
-               char *src;
-
                src = strdup (my_attribute->src);
+               daisy[misc->current].xml_anchor = strdup ("");
+               if (strchr (src, '#'))
+               {
+                  daisy[misc->current].xml_anchor =
+                               strdup (strchr (src, '#') + 1);
+                  *strchr (src, '#') = 0;
+               } // if
                daisy[misc->current].xml_file = realloc (
                   daisy[misc->current].xml_file, strlen (misc->daisy_mp) +
                   strlen (src) + 5);
-               sprintf (daisy[misc->current].xml_file, "%s/%s",
-                        misc->daisy_mp, src);
-               daisy[misc->current].xml_anchor = strdup ("");
-               if (strchr (daisy[misc->current].xml_file, '#'))
-               {
-                  daisy[misc->current].xml_anchor = strdup
-                       (strchr (daisy[misc->current].xml_file, '#') + 1);
-                  *strchr (daisy[misc->current].xml_file, '#') = 0;
-               } // if
-               daisy[misc->current].xml_file = strdup
-                    (convert_URL_name (misc, daisy[misc->current].xml_file));
-               daisy[misc->current].orig_xml_file =
-                               strdup (daisy[misc->current].xml_file);
+               *daisy[misc->current].xml_file = 0;
+               get_real_pathname (misc->daisy_mp,
+                      convert_URL_name (misc, src),
+                      daisy[misc->current].xml_file);
+               daisy[misc->current].orig_xml_file = strdup
+                                       (daisy[misc->current].xml_file);
                doc = htmlParseFile (daisy[misc->current].xml_file, "UTF-8");
                if (! (content = xmlReaderWalker (doc)))
                {
@@ -154,7 +155,8 @@ void fill_xml_anchor_ncx (misc_t *misc, my_attribute_t *my_attribute,
                      daisy[misc->current].xml_file = realloc
                         (daisy[misc->current].xml_file, strlen
                         (misc->daisy_mp) + strlen (my_attribute->src) + 5);
-                     get_realpath_name (misc->daisy_mp,
+                     *daisy[misc->current].xml_file = 0;
+                     get_real_pathname (misc->daisy_mp,
                                   convert_URL_name (misc, my_attribute->src),
                                   daisy[misc->current].xml_file);
                      daisy[misc->current].orig_xml_file =
@@ -163,12 +165,11 @@ void fill_xml_anchor_ncx (misc_t *misc, my_attribute_t *my_attribute,
                      {
                         printf (". ");
                         fflush (stdout);
-                     } // if           
+                     } // if
                      break;
                   } // if
                } // while
                xmlTextReaderClose (content);
-               xmlFreeDoc (doc);
                if (misc->verbose)
                {
                   printf (". ");
@@ -191,6 +192,9 @@ void parse_content_ncx (misc_t *misc, my_attribute_t *my_attribute,
    htmlDocPtr doc;
    xmlTextReaderPtr content;
 
+   get_real_pathname (misc->tmp_dir,
+                      convert_URL_name (misc, my_attribute->src),
+                      daisy[misc->current].xml_file);
    if (! (doc = htmlParseFile (daisy[misc->current].xml_file, "UTF-8")))
    {
       misc->ncx_failed = 1;
@@ -247,7 +251,6 @@ void parse_content_ncx (misc_t *misc, my_attribute_t *my_attribute,
       } // if
    } // while
    xmlTextReaderClose (content);
-   xmlFreeDoc (doc);
 } // parse_content_ncx
 
 void parse_ncx (misc_t *misc, my_attribute_t *my_attribute,
@@ -255,7 +258,7 @@ void parse_ncx (misc_t *misc, my_attribute_t *my_attribute,
 {
    htmlDocPtr doc;
    xmlTextReaderPtr ncx;
-   int i;                                       
+   int i;
 
    if (misc->items_in_ncx == 0)
       failure (misc, gettext ("No items found. Try option \"-O\"."), errno);
@@ -357,7 +360,6 @@ void parse_ncx (misc_t *misc, my_attribute_t *my_attribute,
    if (misc->verbose)
       printf ("\n\n");
    xmlTextReaderClose (ncx);
-   xmlFreeDoc (doc);
    misc->total_items = misc->current;
 
    for (i = 0; i < misc->items_in_ncx; i++)
@@ -368,5 +370,5 @@ void parse_ncx (misc_t *misc, my_attribute_t *my_attribute,
          printf ("\r\norig %d %s ", i, daisy[i].orig_xml_file);
          fflush (stdout);
       } // if
-   } //for
+   } // for
 } // parse_ncx

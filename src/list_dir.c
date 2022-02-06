@@ -226,7 +226,7 @@ char *get_input_file (misc_t *misc, my_attribute_t *my_attribute,
    else
    {
       char *basec, *dirc;
-                              
+
       basec = strdup (file);
       file = strdup (basename (basec));
       free (misc->src_dir);
@@ -418,6 +418,8 @@ char *get_input_file (misc_t *misc, my_attribute_t *my_attribute,
       {
          char *str;
          struct stat sb;
+         struct passwd *pw;
+         struct group *grp;
 
          wclear (misc->screenwin);
          str = malloc (strlen (misc->src_dir) +
@@ -436,14 +438,18 @@ char *get_input_file (misc_t *misc, my_attribute_t *my_attribute,
                   sb.st_size, sb.st_size / 1024);
          wprintw (misc->screenwin, "File mode: %lo (octal)\n",
                   (unsigned long) sb.st_mode);
-         wprintw (misc->screenwin, "Ownership: UID=%ld GID=%ld\n",
-                  sb.st_uid, sb.st_gid);
+         pw = getpwuid (sb.st_uid);
+         grp = getgrgid (sb.st_gid);
+         wprintw (misc->screenwin, "Ownership: UID=%ld, %s, %s\n",
+                  sb.st_uid, pw->pw_name, pw->pw_gecos);
+         wprintw (misc->screenwin, "           GID=%ld, %s\n",
+                  sb.st_gid, grp->gr_name);
          wprintw (misc->screenwin, "Last status change: %s",
                   ctime (&sb.st_ctime));
          wprintw (misc->screenwin, "Last file access: %s",
-                  ctime(&sb.st_atime));
+                  ctime (&sb.st_atime));
          wprintw (misc->screenwin, "Last file modification: %s",
-                  ctime(&sb.st_mtime));
+                  ctime (&sb.st_mtime));
          wprintw (misc->screenwin, "\n%s", gettext
                   ("Press any key to leave help..."));
          wgetch (misc->screenwin);

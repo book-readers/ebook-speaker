@@ -294,10 +294,9 @@ AUTOMAKE_OPTIONS = foreign
 AM_CFLAGS = -D LOCALEDIR=\"$(prefix)/share/locale\" -D EBOOK_SPEAKER \
             -D PROGRAMNAME_LOCALEDIR=\"${PROGRAMNAME_LOCALEDIR}\" \
             -I /usr/include/libxml2/ -Ofast --param=ssp-buffer-size=4 \
-            -faggressive-loop-optimizations \
             -Wall -Wextra -g \
             -Wunused-function -Wuninitialized -Winit-self -fno-common \
-            -Wlogical-op -fsanitize=null -Wpedantic
+            -Wlogical-op -Wpedantic
 
 ebook_speaker_SOURCES = daisy.h pactl/src/core-util.c pactl/src/strbuf.c \
                         pactl/src/pactl.c list_dir.c playfile.c \

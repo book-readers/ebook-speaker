@@ -2,7 +2,7 @@ NAME
 eBook-speaker - read aloud eBooks and other text formats using a software speech-synthesizer
 
 SYNOPSIS
-ebook-speaker [eBook_file | URL | -s [-r resolution]] [-b n | y | position] [-c] [-d pulseaudio_sound_device] [-h] [-H] [-i] [-o language-code] [-t TTS_command] [-v]
+ebook-speaker [eBook_file | URL | -s [-r resolution]] [-b n | y | position] [-c] [-d pulseaudio_sound_device] [-h] [-H] [-i] [-o language-code] [-S] [-t TTS_command] [-v]
 
 DESCRIPTION
 eBook-speaker reads aloud eBooks and other text formats and even scanned documents using a software speech-synthesizer. By default the tool espeak is used for speech output.
@@ -58,7 +58,7 @@ eBook_file  Give an eBook_file as argument to eBook-speaker.  Many eBook formats
 
   When no input-file is supplied, eBook-speaker will bring up a file-manager. See KEYBOARD COMMANDS IN THE FILEMANAGER.
 
--b n | y | position  Set the initial break_on_EOL or position. After quiting eBook-speaker. this setting will be saved and used as default for future books. It can be overruled with the 'b'-command for each individual book. See the 'b' command.
+-b n | y | position  Set the initial break_on_EOL or position. After quiting eBook-speaker. This setting will be saved and used as default for future books. It can be overruled with the 'b'-command for each individual book. See the 'b' command.
 
 -c  eBook-speaker use tesseract for OCR by default. This option forces eBook-speaker to use cuneiform instead.
 
@@ -78,6 +78,8 @@ eBook_file  Give an eBook_file as argument to eBook-speaker.  Many eBook formats
 
 -s  Scan a document using a hardware scanner and OCR it with either tesseract or cuneiform.
 
+-S  Do not display the phrase-numbers passing during playback.
+
 -t TTS-command  Be sure that the TTS reads from the file eBook-speaker.txt and that it writes to the file eBook-speaker.wav. To add the TTS-command permantly one has to edit the ~/.eBook-speaker.xml file by hand.
 
 -v  Be more verbose, so one can se what's going on.
@@ -89,13 +91,13 @@ Examples:
 - ebook-speaker some.epub -t "flite eBook-speaker.txt eBook-speaker.wav"
 
 - ebook-speaker some.epub -t "text2wave eBook-speaker.txt -o eBook-speaker.wav"
-    
+
 SCREEN
 The name and version of this program and the name of the author is displayed left aligned at the top of the screen. The name of the current loaded book is displayed right aligned.
 
 The second row of the screen displays the number of pages of the current loaded book (if any), the current selected level and the total number of levels, the total number of phrases and the current displayed screen and the total number of screens.
 
-The next rows displays the title of the item, the first page of the item within brackets (if there are pages) and the total number of phrases in this item. Items in higher levels are indented. (Three spaces each level.) When "just reading this item" is active, a "J" is viewed at the first column of that item.
+The next rows displays the title of the item, the first page of that item within brackets (if there are pages) and the total number of phrases in this item. Items in higher levels are indented. (Three spaces each level.) When "just reading this item" is active, a "J" is viewed at the first column of that item.
 
 The spoken phrase will be displayed on the bottom-line of the screen, so one can follow along on a braille-terminal what he/she hears.
 
@@ -131,11 +133,12 @@ p               Place a bookmark.
 q               Quit eBook-speaker. The reading-point is saved as bookmark.
 r               Rotate the scanned document. If the document is accidentally placed upside-down on the scanner, it can not be OCR'ed correctly. This command will rotate the scanned document 90 degrees.
 s               Stop reading.
+S               Toggle show progress on/off.
 t               Select a TTS.
 T               Move cursor to the first item.
 U,+             Increase reading speed.
+v,1             Decraese playback volume.
 V,7             Increase playback volume. (beware of Clipping)
-v,1             Decrease playback volume.
 x               Go to the file-manager.
 
 KEYBOARD COMMANDS IN THE FILEMANAGER
@@ -146,7 +149,7 @@ cursor up,8               Move cursor to the previous file.
 page-down,3               View next page.
 page-up,9                 View previous page.
 /                         Search for a file.
-end,B                     Move cursor to the last file.  
+end,B                     Move cursor to the last file.
 h,?                       Give this help.
 H,0                       Toggle hidden files displaying on or off.
 i                         Give some information about current file.
@@ -192,13 +195,16 @@ FILES
 ~/.eBook-speaker.xml  This file, in XML-format, contains the desired OCR language and the TTS's to use. (See TTS EXAMPLES)
 /tmp/eBook-speaker.XXXXXX  eBook-speaker makes use of a temporary directory. It is removed after quiting.
 
+NOTES
+An EPUB-book has two index-files for navigation, a NCX and an OPF file. eBook-speaker tries to detemine which of these two files give the best result. But sometimes eBook-speaker is not able to make the best choice. When in doubt use option "--N" to force the use of NCX or "-O" to force the OPF.
+
 SEE ALSO
-ebook-convert(1), pandoc(1), calibre(1), iconv(1), lowriter(1), tesseract(1), cuneiform(1), espeak(1), flite(1), text2wave(1), mbrola(1), pico2wave(1), scanimage(1), pnmflip(1), gif2png(1), man2html(1), unar(1), swift(1), unrtf(1), wget(1), pulseaudio(1), magic(5), locale(7), usermod(8)
+ebook-convert(1), pandoc(1), calibre(1), iconv(1), lowriter(1), tesseract(1), cuneiform(1), espeak(1), flite(1), text2wave(1), mbrola(1), pico2wave(1), scanimage(1), pnmflip(1), gif2png(1), man2html(1), unar(1), swift(1), unrtf(1), wget(1), pulseaudio(1), pactl(1), magic(5), locale(7), usermod(8)
 
 AUTHOR
 Jos Lemmens <jos@jlemmens.nl>
 
 COPYRIGHT
-Copyright (C)2011-2019 Jos Lemmens <jos@jlemmens.nl>
+Copyright (C)2011-2020 Jos Lemmens <jos@jlemmens.nl>
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program (see the file COPYING); if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA

@@ -23,11 +23,12 @@ int get_page_number_2 (misc_t *misc, my_attribute_t *my_attribute,
                        daisy_t *daisy, char *attr)
 {
 // function for daisy 2.02
+   char *src, *anchor;
+   htmlDocPtr doc;
+   xmlTextReaderPtr page;
+
    if (daisy[misc->playing].page_number == 0)
       return 0;
-   char *src, *anchor;
-   xmlTextReaderPtr page;
-   htmlDocPtr doc;
 
    src = malloc (strlen (misc->daisy_mp) + strlen (attr) + 3);
    anchor = strdup ("");
@@ -37,7 +38,7 @@ int get_page_number_2 (misc_t *misc, my_attribute_t *my_attribute,
       anchor = strdup (strchr (attr, '#') + 1);
       *strchr (attr, '#') = 0;
    } // if
-   get_realpath_name (misc->daisy_mp, attr, src);
+   get_real_pathname (misc->daisy_mp, attr, src);
    doc = htmlParseFile (src, "UTF-8");
    if (! (page = xmlReaderWalker (doc)))
    {
@@ -57,7 +58,6 @@ int get_page_number_2 (misc_t *misc, my_attribute_t *my_attribute,
          if (! get_tag_or_label (misc, my_attribute, page))
          {
             xmlTextReaderClose (page);
-            xmlFreeDoc (doc);
             free (anchor);
             free (src);
             return 0;
@@ -69,7 +69,6 @@ int get_page_number_2 (misc_t *misc, my_attribute_t *my_attribute,
       if (! get_tag_or_label (misc, my_attribute, page))
       {
          xmlTextReaderClose (page);
-         xmlFreeDoc (doc);
          free (anchor);
          free (src);
          return 0;
@@ -77,7 +76,6 @@ int get_page_number_2 (misc_t *misc, my_attribute_t *my_attribute,
       if (*misc->label && atoi (misc->label) != 0)
       {
          xmlTextReaderClose (page);
-         xmlFreeDoc (doc);
          misc->current_page_number = atoi (misc->label);
          free (anchor);
          free (src);
@@ -155,7 +153,7 @@ void parse_smil_2 (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
                daisy[misc->current].xml_file = realloc
                    (daisy[misc->current].xml_file,
                     strlen (misc->daisy_mp) + strlen (my_attribute->src) + 5);
-               get_realpath_name (misc->daisy_mp,
+               get_real_pathname (misc->daisy_mp,
                                   convert_URL_name (misc, my_attribute->src),
                                   daisy[misc->current].xml_file);
                daisy[misc->current].orig_xml_file = strdup
@@ -183,7 +181,7 @@ void parse_smil_2 (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
             daisy[misc->current].xml_file = realloc
                    (daisy[misc->current].xml_file,
                     strlen (misc->daisy_mp) + strlen (my_attribute->src) + 5);
-            get_realpath_name (misc->daisy_mp, convert_URL_name (misc,
+            get_real_pathname (misc->daisy_mp, convert_URL_name (misc,
                            my_attribute->src), daisy[misc->current].xml_file);
             daisy[misc->current].orig_xml_file = strdup
                                              (daisy[misc->current].xml_file);
@@ -197,7 +195,6 @@ void parse_smil_2 (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
          } // if
       } // while
       xmlTextReaderClose (parse);
-      xmlFreeDoc (doc);
       misc->current++;
       if (misc->current >= misc->total_items)
          return;
@@ -252,7 +249,7 @@ void fill_daisy_struct_2 (misc_t *misc, my_attribute_t *my_attribute,
          do
          {
             if (! get_tag_or_label (misc, my_attribute, ncc))
-               break;
+               break;   
          } while (*misc->label == 0);
          daisy[i].page_number = atoi (misc->label);
       } // if (strcasecmp (my_attribute->class, "page-normal")
@@ -289,7 +286,7 @@ void fill_daisy_struct_2 (misc_t *misc, my_attribute_t *my_attribute,
          daisy[i].smil_file = realloc
                   (daisy[i].smil_file,
                    strlen (misc->daisy_mp) + strlen (my_attribute->href) + 5);
-         get_realpath_name (misc->daisy_mp, convert_URL_name (misc,
+         get_real_pathname (misc->daisy_mp, convert_URL_name (misc,
                         my_attribute->href), daisy[i].smil_file);
          do
          {
@@ -310,5 +307,4 @@ void fill_daisy_struct_2 (misc_t *misc, my_attribute_t *my_attribute,
    misc->current = i;
    parse_smil_2 (misc, my_attribute, daisy);
    xmlTextReaderClose (ncc);
-   xmlFreeDoc (doc);
 } // fill_daisy_struct_2

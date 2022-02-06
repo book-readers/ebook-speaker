@@ -3,10 +3,9 @@ AUTOMAKE_OPTIONS = foreign
 AM_CFLAGS = -D LOCALEDIR=\"$(prefix)/share/locale\" -D EBOOK_SPEAKER \
             -D PROGRAMNAME_LOCALEDIR=\"${PROGRAMNAME_LOCALEDIR}\" \
             -I /usr/include/libxml2/ -Ofast --param=ssp-buffer-size=4 \
-            -faggressive-loop-optimizations \
             -Wall -Wextra -g \
             -Wunused-function -Wuninitialized -Winit-self -fno-common \
-            -Wlogical-op -fsanitize=null -Wpedantic
+            -Wlogical-op -Wpedantic
 
 bin_PROGRAMS = ebook-speaker
 
