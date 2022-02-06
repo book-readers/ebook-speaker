@@ -12,7 +12,7 @@
 GETTEXT_MACRO_VERSION = 0.18
 
 PACKAGE = eBook-speaker
-VERSION = 2.4
+VERSION = 2.5.1
 PACKAGE_BUGREPORT = jos@jlemmens.nl
 
 SHELL = /bin/sh

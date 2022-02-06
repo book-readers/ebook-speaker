@@ -1,14 +1,15 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = man doc src po
+SUBDIRS = doc man src po
 
 ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = config.rpath m4/Makefile.in doc/COMPILE \
              doc/COPYING doc/Changelog doc/License doc/Readme doc/TODO \
-             doc/eBook-speaker.* doc/icons_copyright.txt doc/screenshot.html \
-             man/eBook-speaker.1
+             doc/eBook-speaker.* doc/ebook-speaker.* \
+             doc/icons_copyright.txt doc/screenshot.html \
+             man/eBook-speaker.1 man/ebook-speaker.1
 
-check-gettext:
+check-gettext:                         
 	@if test x$(USE_NLS) != "xyes" ; then \
 	  echo "Missing gettext. Rerun configure and check for" \"'checking whether to use NLS... yes'!" ; exit 1; fi
 

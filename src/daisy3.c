@@ -621,13 +621,17 @@ void parse_xml (char *name)
 void parse_manifest (char *name, char *id_ptr)
 {
    xmlTextReaderPtr manifest;
+   xmlDocPtr doc;
    char *id, *toc;
 
    id = strdup (id_ptr);
    if (! *id)
+   {
+      free (id);
       return;
+   } // if   
    toc = strdup (my_attribute.toc);
-   xmlDocPtr doc = xmlRecoverFile (name);
+   doc = xmlRecoverFile (name);
    if (! (manifest = xmlReaderWalker (doc)))
    {
       endwin ();

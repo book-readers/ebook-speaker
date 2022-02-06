@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Name=eBook speaker
+Comment=Speaking e-reader
+MimeType=application/epub+zip;
+Exec=eBook-speaker %f
+Icon=eBook-speaker
+Terminal=true
+Type=Application
+Categories=AudioVideo;Audio;Accessibility;ConsoleOnly;
+GenericName=Speaking e-reader
+GenericName[en]=Speaking e-reader
+GenericName[de]=Sprechendes E-Reader
+GenericName[nl]=Sprekende e-reader

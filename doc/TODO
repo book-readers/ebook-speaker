@@ -1,3 +1,2 @@
 - convert trema's
-- write_wav ()
-- Sometimes *** stack smashing detected *** in file manager
+- *** stack smashing detected ***) sometimes in list manager.

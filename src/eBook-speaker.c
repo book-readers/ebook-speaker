@@ -17,10 +17,10 @@
 */
 
 #define _GNU_SOURCE
-
+     
 #include "src/daisy.h"
 
-#define MY_VERSION "2.5"
+#define MY_VERSION "2.5.1"
 
 WINDOW *screenwin, *titlewin;
 daisy_t daisy[2000];
@@ -57,7 +57,6 @@ void save_rc ();
 void kill_player ();
 void go_to_page_number ();
 void select_next_output_device ();
-void browse ();
 char *sort_by_playorder ();
 void read_out_eBook (const char *);
 const char *read_eBook (char *);
@@ -77,6 +76,7 @@ xmlTextReaderPtr open_text_file (xmlTextReaderPtr, xmlDocPtr, char *, char *);
 extern char *get_input_file (char *, char *, WINDOW *, WINDOW *);
 void put_bookmark ();
 xmlTextReaderPtr skip_left (xmlTextReaderPtr, xmlDocPtr);
+void store_to_disk (xmlTextReaderPtr, xmlDocPtr);
 
 void quit_eBook_speaker ()
 {
@@ -805,26 +805,80 @@ void pause_resume (xmlTextReaderPtr reader, xmlDocPtr doc)
    } // if
 } // pause_resume
 
-/* not implemented yet
-void write_wav (char *infile, char *outfile)
+void write_wav (int current, char *outfile)
 {
-  sox_format_t *out = NULL;
-  sox_format_t *in;
-  sox_sample_t samples[2048];
-  size_t number_read;
-  char str[MAX_STR];
-  struct passwd *pw;;
+   FILE *w;
+   xmlTextReaderPtr local_reader;
+   xmlDocPtr local_doc;
+   sox_format_t *first, *output;
+   #define MAX_SAMPLES (size_t)2048
+   sox_sample_t samples[MAX_SAMPLES];
+   size_t number_read;
 
-  pw = getpwuid (geteuid ());
-  in = sox_open_read (infile, NULL, NULL, NULL);
-  snprintf (str, MAX_STR - 1, "%s/%s", pw->pw_dir, outfile);
-  out = sox_open_write (str, &in->signal, NULL, NULL, NULL, NULL);
-  while ((number_read = sox_read (in, samples, 2048)))
-    sox_write (out, samples, number_read);
-  sox_close (in);
-  sox_close (out);
+   if ((w = fopen ("eBook-speaker.txt", "w")) == NULL)
+   {
+      endwin ();
+      beep ();
+      printf ("Can't make a temp file %s\n", "eBook-speaker.txt");
+      fflush (stdout);
+      _exit (0);
+   } // if
+   if (fwrite ("init", 4, 1, w) == 0)
+   {
+      endwin ();
+      beep ();
+      printf ("write (\"%s\"): failed.\n", label);
+      fflush (stdout);
+      _exit (0);
+   } // if
+   fclose (w);
+   if (! *tts[tts_no])
+   {
+      tts_no = 0;
+      select_tts ();
+   } // if
+   switch (system (tts[tts_no]))
+   {
+   default:
+      break;
+   } // switch
+   sox_init ();
+   rename ("eBook-speaker.wav", "first-eBook-speaker.wav");
+   first = sox_open_read ("first-eBook-speaker.wav", NULL, NULL, NULL);
+   output = sox_open_write (outfile, &first->signal, &first->encoding,
+                            NULL, NULL, NULL);
+   local_doc = NULL;
+   local_reader = NULL;
+   local_reader = open_text_file (local_reader, local_doc,
+                  daisy[current].smil_file, daisy[current].anchor);
+   while (1)
+   {
+      sox_format_t *input;
+
+      if (! get_tag_or_label (local_reader))
+         break;
+      if (*daisy[current + 1].anchor &&
+          strcasecmp (my_attribute.id, daisy[current + 1].anchor) == 0)
+         break;
+      if (! *label)
+         continue;;
+      w = fopen ("eBook-speaker.txt", "w");
+      fwrite (label, strlen (label), 1, w);
+      fclose (w);
+      switch (system (tts[tts_no]))
+      {
+      default:
+         break;
+      } // switch
+      input = sox_open_read ("eBook-speaker.wav", NULL, NULL, NULL);
+      while ((number_read = sox_read (input, samples, MAX_SAMPLES)))
+         sox_write (output, samples, number_read);
+      sox_close (input);
+   } // while
+   sox_close (output);
+   sox_close (first);
+   sox_quit ();
 } // write_wav
-*/
 
 void help ()
 {
@@ -852,6 +906,8 @@ void help ()
    wclear (screenwin);
    waddstr (screenwin, gettext ("\n/               - search for a label\n"));
    waddstr (screenwin, gettext ("B               - move cursor to the last item\n"));
+   waddstr (screenwin, gettext ("d               - store current item to disk in WAV-format\n"));
+
    waddstr (screenwin, gettext ("D               - decrease playing speed\n"));
    waddstr (screenwin, gettext ("f               - find the currently playing item and place the cursor there\n"));
    waddstr (screenwin, gettext ("g               - go to phrase in current item\n"));
@@ -1307,7 +1363,7 @@ xmlTextReaderPtr go_to_phrase (xmlTextReaderPtr reader, xmlDocPtr doc)
    return reader;
 } // go_to_phrase
 
-void browse ()
+void browse (int scan_flag)
 {
    int old;
    xmlTextReaderPtr reader;
@@ -1317,7 +1373,8 @@ void browse ()
    just_this_item = playing = -1;
    reader = NULL;
    doc = NULL;
-   reader = get_bookmark (reader, doc);
+   if (! scan_flag)
+      reader = get_bookmark (reader, doc);
    if (depth <= 0)
       depth = 1;
    view_screen ();
@@ -1519,6 +1576,9 @@ void browse ()
          phrase_nr--;
          get_next_phrase (reader, doc, playing);
          break;
+      case 'd':
+         store_to_disk (reader, doc);
+         break;
       case 'D':
       case '-':
          if (speed <= 0.1)
@@ -1645,7 +1705,7 @@ char *lowriter_to (char *file, char *ext)
       if (strcasecmp (dirent->d_name +
           strlen (dirent->d_name) - 4, ".pdf") == 0)
          break;
-   } // while
+   } // while                             
    closedir (dir);
    if (access (dirent->d_name, R_OK) != 0)
    {
@@ -1724,6 +1784,36 @@ void check_phrases ()
    } // for
 } // check_phrases
 
+void store_to_disk (xmlTextReaderPtr reader, xmlDocPtr doc)
+{
+   char str[MAX_STR], s2[MAX_STR];
+   int i, pause_flag;
+   struct passwd *pw;;
+
+   pause_flag = playing;
+   wclear (screenwin);
+   snprintf (str, MAX_STR - 1, "%s.wav", daisy[current].label);
+   for (i = 0; str[i] != 0; i++)
+   {
+      if (str[i] == '/')
+         str[i] = '-';
+      if (isspace (str[i]))
+         str[i] = '_';
+   } // for
+   wprintw (screenwin,
+            "\nStoring \"%s\" as \"%s\" into your home-folder...",
+            daisy[current].label, str);
+   wrefresh (screenwin);
+   pw = getpwuid (geteuid ());
+   snprintf (s2, MAX_STR - 1, "%s/%s", pw->pw_dir, str);
+   if (pause_flag > -1)
+      pause_resume (reader, doc);
+   write_wav (current, s2);
+   if (pause_flag > -1)
+      pause_resume (reader, doc);
+   view_screen ();
+} // store_to_disk
+
 int main (int argc, char *argv[])
 {
    int opt, scan_flag = 0;
@@ -1762,8 +1852,8 @@ int main (int argc, char *argv[])
       _exit (1);
    } // if
    speed = 1.0;
-   atexit (quit_eBook_speaker);   
-   strncpy (sound_dev, "default", MAX_STR - 1);
+   atexit (quit_eBook_speaker);
+   strncpy (sound_dev, "hw:0", MAX_STR - 1);
    read_xml ();
    tmp_dir = strdup ("/tmp/eBook-speaker.XXXXXX");
    if (! mkdtemp (tmp_dir))
@@ -1992,6 +2082,7 @@ int main (int argc, char *argv[])
    {
       endwin ();
       beep ();
+      puts ("\n\n");
       printf (gettext ("Unknown format\n"));
       fflush (stdout);
       _exit (1);
@@ -2011,7 +2102,7 @@ int main (int argc, char *argv[])
    wrefresh (titlewin);
    level = 1;
    *search_str = 0;
-   browse ();
+   browse (scan_flag);
    return 0;
 } // main
 
