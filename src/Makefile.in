@@ -106,8 +106,8 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_eBook_speaker_OBJECTS = daisy3.$(OBJEXT) eBook-speaker.$(OBJEXT) \
-	list_dir.$(OBJEXT)
+am_eBook_speaker_OBJECTS = list_dir.$(OBJEXT) common.$(OBJEXT) \
+	daisy2.02.$(OBJEXT) daisy3.$(OBJEXT) eBook-speaker.$(OBJEXT)
 eBook_speaker_OBJECTS = $(am_eBook_speaker_OBJECTS)
 eBook_speaker_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -283,15 +283,16 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+AUTOMAKE_OPTIONS = foreign
 AM_CFLAGS = -D LOCALEDIR=\"$(prefix)/share/locale\" -D EBOOK_SPEAKER \
-             -Wall -Wextra -Wunused -Wlogical-op -g \
-             -I /usr/include/libxml2/ -O2 -fstack-protector-all \
-             -Wstack-protector --param=ssp-buffer-size=4 \
-             -Wuninitialized -Winit-self -fno-common \
-             -D PROGRAMNAME_LOCALEDIR=\"${PROGRAMNAME_LOCALEDIR}\"
+            -Wall -Wextra -g \
+            -I /usr/include/libxml2/ -O3 --param=ssp-buffer-size=4 \
+            -Wunused-function -Wuninitialized -Winit-self -fno-common \
+            -D PROGRAMNAME_LOCALEDIR=\"${PROGRAMNAME_LOCALEDIR}\"
 
-AM_LDFLAGS = -l ncursesw -l sox -l xml2 -l magic
-eBook_speaker_SOURCES = daisy.h daisy3.c eBook-speaker.c list_dir.c 
+eBook_speaker_SOURCES = daisy.h list_dir.c \
+                        common.c daisy2.02.c daisy3.c eBook-speaker.c
+
 all: all-am
 
 .SUFFIXES:
@@ -378,6 +379,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/common.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/daisy2.02.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/daisy3.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eBook-speaker.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/list_dir.Po@am__quote@

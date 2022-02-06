@@ -2,7 +2,7 @@
 <HTML><HEAD><TITLE>Man page of eBook-speaker</TITLE>
 </HEAD><BODY>
 <H1>eBook-speaker</H1>
-Section: Linux Reference Manual (1)<BR>Updated: 04 augustus 2016<BR><A HREF="#index">Index</A>
+Section: Linux Reference Manual (1)<BR>Updated: 20 February 2018<BR><A HREF="#index">Index</A>
 <A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
 
 <A NAME="lbAB">&nbsp;</A>
@@ -14,7 +14,7 @@ Section: Linux Reference Manual (1)<BR>Updated: 04 augustus 2016<BR><A HREF="#in
 <H2>SYNOPSIS</H2>
 
 <PRE>
-<B>eBook-speaker</B> [<I>eBook_file</I> | <B>-s</B> [<B>-r</B> <I>resolution</I>]] [<B>-o</B> <I>language-code</I>] [<B>-h</B>] [<B>-i</B>] [<B>-d</B> <I>ALSA_sound_device</I>] [<B>-t</B> <I>TTS_command</I>] [<B>-b</B> <I>n</I> | <I>y</I>] [<B>-c</B>]
+<B>eBook-speaker</B> [<I>eBook_file</I> | <I>URL</I> | <B>-s</B> [<B>-r</B> <I>resolution</I>]] [<B>-o</B> <I>language-code</I>] [<B>-h</B>] [<B>-i</B>] [<B>-d</B> <I>pulseaudio_sound_device</I>] [<B>-t</B> <I>TTS_command</I>] [<B>-b</B> <I>n</I> | <I>y</I>] [<B>-c</B>]
 
 </PRE>
 
@@ -24,6 +24,7 @@ Section: Linux Reference Manual (1)<BR>Updated: 04 augustus 2016<BR><A HREF="#in
 <H2>DESCRIPTION</H2>
 
 <B>eBook-speaker</B> reads aloud eBooks and other text formats and even scanned documents using a software speech-synthesizer. By default the tool espeak is used for speech output.
+<B>eBook-speaker</B> can read from <A HREF="http://,">http://,</A> https:// and ftp:// URLs using the tool wget.
 <B>eBook-speaker</B> also can scan a documant by itself using the scanimage application.
 <P>
 
@@ -97,10 +98,17 @@ Set the initial break_on_EOL. After quiting <B>eBook-speaker</B>. this setting w
 
 <DD>
 <B>eBook-speaker</B> use tesseract for OCR by default. This option forces <B>eBook-speaker</B> to use cuneiform instead.
-<DT><B>-d</B> <I>ALSA_sound_device</I>
+<DT><B>-d</B> <I>pulseaudio_sound_device</I>
 
 <DD>
-<B>eBook-speaker</B> will play on this sound device. Default is &quot;hw:0&quot;. This option overrules the value in the ~/.eBook-speaker.xml config file.
+<B>eBook-speaker</B> will play on this sound device. Default is &quot;0&quot;. (The first soundcard) This option overrules the value in the ~/.eBook-speaker.xml config file. Be sure the user is a member of the group audio.
+
+</DL>
+<P>
+
+<P>
+<DL COMPACT><DT><DD>
+<DL COMPACT>
 <DT><B>-h</B>
 
 <DD>
@@ -116,7 +124,7 @@ Deprecated. <B>eBook-speaker</B> now determines the file-type using the libmagic
 <DT><B>-o</B> <I>language-code</I>
 
 <DD>
-The language code for OCR to use. (typically an ISO 639-1 two-letter code. See &lt;<A HREF="https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes</A>&gt;). If this option not is specified. the language is determined according to the current locale.
+The language code for OCR to use. (typically an ISO 639-1 two-letter code. See &lt;<A HREF="https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes</A>&gt;). If this option not is specified, the language is determined according to the current locale.
 <DT><B>-r</B> <I>resolution</I>
 
 <DD>
@@ -140,6 +148,7 @@ Examples:
 <B>eBook-speaker</B> some.epub <B>-t</B> &quot;flite eBook-speaker.txt eBook-speaker.wav&quot;
 <DT>&bull;<DD>
 <B>eBook-speaker</B> some.epub <B>-t</B> &quot;text2wave eBook-speaker.txt <B>-o</B> eBook-speaker.wav&quot;
+</DL>
 </DL>
 <A NAME="lbAF">&nbsp;</A>
 <H2>SCREEN</H2>
@@ -400,6 +409,26 @@ Here are some examples to insert into the TTS-selector:
 </PRE>
 
 <A NAME="lbAK">&nbsp;</A>
+<H2>NOTES</H2>
+
+On some soundcards (especially onboard cards) the alsa driver only can play one file at a time. <B>eBook-speaker</B> crashes sometimes on these cards. From this version on the pulseaudio sound-driver will be used instead. The pulseaudio sound system has no problems with these cards.
+<P>
+
+I don't know how to play with pulseaudio in the C function sox_open_write (). For now, the external command sox will be used instead.
+<A NAME="lbAL">&nbsp;</A>
+<H2>THANKS TO</H2>
+
+<DL COMPACT>
+<DT><B>Daniel Veillard &lt;<A HREF="mailto:daniel@veillard.com">daniel@veillard.com</A>&gt;</B>
+
+<DD>
+for the XML2 library.
+<DT><B>Chris Bagwell &lt;<A HREF="mailto:cbagwell@users.sourceforge.net">cbagwell@users.sourceforge.net</A>&gt;</B>
+
+<DD>
+for sox.
+</DL>
+<A NAME="lbAM">&nbsp;</A>
 <H2>FILES</H2>
 
 <DL COMPACT>
@@ -416,18 +445,18 @@ This file, in XML-format,  contains the name of the desired audio device, the de
 <DD>
 <B>eBook-speaker</B> makes use of a temporary directory. It is removed after quiting.
 </DL>
-<A NAME="lbAL">&nbsp;</A>
+<A NAME="lbAN">&nbsp;</A>
 <H2>SEE ALSO</H2>
 
-<B><A HREF="/cgi-bin/man/man2html?1+ebook-convert">ebook-convert</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pandoc">pandoc</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+calibre">calibre</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+iconv">iconv</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+lowriter">lowriter</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+tesseract">tesseract</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+cuneiform">cuneiform</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+espeak">espeak</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+flite">flite</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+text2wave">text2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+mbrola">mbrola</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pico2wave">pico2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+scanimage">scanimage</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pnmflip">pnmflip</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+gif2png">gif2png</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?5+magic">magic</A></B>(5), <B><A HREF="/cgi-bin/man/man2html?1+man2html">man2html</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unar">unar</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+swift">swift</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unrtf">unrtf</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?7+locale">locale</A></B>(7)
-<A NAME="lbAM">&nbsp;</A>
+<B><A HREF="/cgi-bin/man/man2html?1+ebook-convert">ebook-convert</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pandoc">pandoc</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+calibre">calibre</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+iconv">iconv</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+lowriter">lowriter</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+tesseract">tesseract</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+cuneiform">cuneiform</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+espeak">espeak</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+flite">flite</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+text2wave">text2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+mbrola">mbrola</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pico2wave">pico2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+scanimage">scanimage</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pnmflip">pnmflip</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+gif2png">gif2png</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+man2html">man2html</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unar">unar</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+swift">swift</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unrtf">unrtf</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+wget">wget</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+sox">sox</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?5+magic">magic</A></B>(5), <B><A HREF="/cgi-bin/man/man2html?7+locale">locale</A></B>(7)
+<A NAME="lbAO">&nbsp;</A>
 <H2>AUTHOR</H2>
 
 Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
-<A NAME="lbAN">&nbsp;</A>
+<A NAME="lbAP">&nbsp;</A>
 <H2>COPYRIGHT</H2>
 
-Copyright (C)2016 Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
+Copyright (C)2011-2018 Jos Lemmens &lt;<A HREF="mailto:jos@jlemmens.nl">jos@jlemmens.nl</A>&gt;
 <P>
 
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2, or (at your option) any later version. This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with this program (see the file COPYING); if not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
@@ -445,15 +474,17 @@ This program is free software; you can redistribute it and/or modify it under th
 <DT><A HREF="#lbAH">KEYBOARD COMMANDS IN THE FILEMANAGER</A><DD>
 <DT><A HREF="#lbAI">TTS</A><DD>
 <DT><A HREF="#lbAJ">TTS EXAMPLES</A><DD>
-<DT><A HREF="#lbAK">FILES</A><DD>
-<DT><A HREF="#lbAL">SEE ALSO</A><DD>
-<DT><A HREF="#lbAM">AUTHOR</A><DD>
-<DT><A HREF="#lbAN">COPYRIGHT</A><DD>
+<DT><A HREF="#lbAK">NOTES</A><DD>
+<DT><A HREF="#lbAL">THANKS TO</A><DD>
+<DT><A HREF="#lbAM">FILES</A><DD>
+<DT><A HREF="#lbAN">SEE ALSO</A><DD>
+<DT><A HREF="#lbAO">AUTHOR</A><DD>
+<DT><A HREF="#lbAP">COPYRIGHT</A><DD>
 </DL>
 <HR>
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 15:13:43 GMT, August 04, 2016
+Time: 10:20:05 GMT, February 20, 2018
 </BODY>
 </HTML>

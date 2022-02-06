@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([eBook-speaker], [4.1], [jos@jlemmens.nl], [], [www.jlemmens.nl])
+AC_INIT([eBook-speaker],[5.0],[jos@jlemmens.nl],[],[www.jlemmens.nl])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
@@ -21,9 +21,12 @@ AC_CHECK_LIB([ncursesw], [main])
 AC_CHECK_LIB([sox], [main])
 # FIXME: Replace `main' with a function in `-lxml2':
 AC_CHECK_LIB([xml2], [main])
+# FIXME: Replace `main' with a function in `-lasound':
+AC_CHECK_LIB([asound], [main])
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h libintl.h locale.h stdlib.h string.h strings.h sys/ioctl.h sys/mount.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h libintl.h locale.h stdlib.h string.h strings.h \
+                  sys/ioctl.h sys/mount.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_INLINE

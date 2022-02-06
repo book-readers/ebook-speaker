@@ -1,6 +1,7 @@
 # List of source files which contain translatable strings.
 
+src/common.c
+src/daisy2.02.c
 src/daisy3.c
 src/eBook-speaker.c
-src/daisy.h   
 src/list_dir.c
