@@ -157,3 +157,5 @@
 	Added support for AppleSingle encoded Macintosh files.
 	GIF_image_data now works.
 4.0	For OCR one now can choose between tesseract or cuneiform.
+4.1	Updated the French translation.
+	Updated the Spanish translation.

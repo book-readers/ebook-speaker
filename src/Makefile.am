@@ -6,4 +6,5 @@ AM_CFLAGS  = -D LOCALEDIR=\"$(prefix)/share/locale\" -D EBOOK_SPEAKER \
              -D PROGRAMNAME_LOCALEDIR=\"${PROGRAMNAME_LOCALEDIR}\"
 AM_LDFLAGS = -l ncursesw -l sox -l xml2 -l magic
 bin_PROGRAMS = eBook-speaker
-eBook_speaker_SOURCES = daisy.h daisy3.c eBook-speaker.c list_dir.c
+eBook_speaker_SOURCES = daisy.h daisy3.c eBook-speaker.c list_dir.c 
+localedir = $(datadir)/locale
