@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gettext 0.11.2\n"
 "Report-Msgid-Bugs-To: <jos@jlemmens.nl>\n"
-"POT-Creation-Date: 2020-09-07 15:16+0200\n"
+"POT-Creation-Date: 2020-09-12 14:50+0200\n"
 "PO-Revision-Date: 2018-02-22 16:06+0200\n"
 "Last-Translator: Ненад Рајковић <a.nenad.if.9@gmail.com>\n"
 "Language-Team: Ненад Рајковић <a.nenad.if.9@gmail.com>\n"
@@ -30,7 +30,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/common.c:35 src/common.c:289 src/common.c:503 src/ebook-speaker.c:2085
+#: src/common.c:35 src/common.c:289 src/common.c:503 src/ebook-speaker.c:2084
 msgid "Please try to play this book with daisy-player"
 msgstr "Molimo pokušajte otvoriti ovu knjigu pomoću daisy-plejera"
 
@@ -43,8 +43,8 @@ msgstr "Ne mogu pročitati napisano: %d"
 msgid "Go to page number:"
 msgstr "Idi na stranu broj:"
 
-#: src/common.c:853 src/ebook-speaker.c:1677 src/ebook-speaker.c:2463
-#: src/ebook-speaker.c:2760
+#: src/common.c:853 src/ebook-speaker.c:1677 src/ebook-speaker.c:2462
+#: src/ebook-speaker.c:2758
 msgid "Please wait..."
 msgstr "Molimo sačekajte..."
 
@@ -53,7 +53,7 @@ msgid "Select a soundcard:"
 msgstr "Izaberite zvučnu kartu:"
 
 #: src/daisy2.02.c:49 src/daisy2.02.c:130 src/daisy2.02.c:236
-#: src/ebook-speaker.c:2351
+#: src/ebook-speaker.c:2350
 #, c-format
 msgid "Cannot read %s"
 msgstr "Ne mogu pročitati %s"
@@ -261,21 +261,19 @@ msgstr "Šta pretražuješ?"
 msgid "Break phrases at EOL or at a specific position (y/n/position)"
 msgstr ""
 
+#: src/ebook-speaker.c:1419
+msgid "Be sure the package \"tesseract-ocr\" is installed onto your system."
+msgstr "Obezbedi da paket \"tesseract-ocr-%s\" bude instaliran na tvoj sistem."
+
 #: src/ebook-speaker.c:1421
 #, c-format
 msgid "Language code \"%s\" is not a valid tesseract code."
 msgstr "Jezički kod \"%s\" nije validan tesseract kod."
 
 #: src/ebook-speaker.c:1423
+#, c-format
 msgid "See the tesseract manual for valid codes."
 msgstr "Vidi tesseract uputstvo za validne kodove."
-
-#: src/ebook-speaker.c:1425
-#, c-format
-msgid ""
-"Be sure the package \"tesseract-ocr-%s\" is installed onto your system.\n"
-msgstr ""
-"Obezbedi da paket \"tesseract-ocr-%s\" bude instaliran na tvoj sistem.\n"
 
 #: src/ebook-speaker.c:1434
 #, c-format
@@ -290,26 +288,26 @@ msgstr "Vidi uputstvo za validne kodove klinastog pisma."
 msgid "Go to phrase in current item:"
 msgstr "Idi na frazu u trenutnoj stavci:"
 
-#: src/ebook-speaker.c:1691 src/ebook-speaker.c:1930 src/ebook-speaker.c:1949
-#: src/ebook-speaker.c:1974 src/ebook-speaker.c:2005 src/ebook-speaker.c:2284
-#: src/ebook-speaker.c:2502 src/ebook-speaker.c:2546 src/ebook-speaker.c:2901
-#: src/ebook-speaker.c:2952
+#: src/ebook-speaker.c:1691 src/ebook-speaker.c:1929 src/ebook-speaker.c:1948
+#: src/ebook-speaker.c:1973 src/ebook-speaker.c:2004 src/ebook-speaker.c:2283
+#: src/ebook-speaker.c:2501 src/ebook-speaker.c:2545 src/ebook-speaker.c:2900
+#: src/ebook-speaker.c:2950
 msgid "eBook-speaker cannot handle this file."
 msgstr "eBook-speaker ne može reprodukovati ovaj fajl."
 
-#: src/ebook-speaker.c:1728 src/ebook-speaker.c:2420
+#: src/ebook-speaker.c:1727 src/ebook-speaker.c:2419
 msgid "Press 'h' for help"
 msgstr "Pritisni 'h' za pomoć"
 
-#: src/ebook-speaker.c:1983
+#: src/ebook-speaker.c:1982
 msgid "Unknown format"
 msgstr "Nepoznat format"
 
-#: src/ebook-speaker.c:2256 src/ebook-speaker.c:2757
+#: src/ebook-speaker.c:2255 src/ebook-speaker.c:2755
 msgid "eBook-speaker - Version"
 msgstr "eBook-speaker - Verzija"
 
-#: src/ebook-speaker.c:2260
+#: src/ebook-speaker.c:2259
 #, c-format
 msgid ""
 "Usage: %s [eBook_file | URL | -s [-r resolution]] [-b n | y | position] [-c] "

@@ -234,7 +234,7 @@ void parse_spine (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
                       daisy[misc->current].xml_file);
                daisy[misc->current].orig_xml_file = strdup
                                (daisy[misc->current].xml_file);
-
+               daisy[misc->current].xml_anchor = strdup ("");
                misc->current++;
             } // if
          } // while

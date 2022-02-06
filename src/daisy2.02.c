@@ -1,6 +1,6 @@
 /* daisy2.02.c - functions to insert daisy2.02 info into a struct.
  *
- * Copyright (C)2003-2019 J. Lemmens
+ * Copyright (C)2011-2020 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the

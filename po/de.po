@@ -1,6 +1,6 @@
-# message catalog file for eBook-speaker - german version
+# message catalog file for eBook-speaker - German version
 #
-# Copyright (C)2015 J. Lemmens
+# Copyright (C) 2003-2020 J. Lemmens
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -16,35 +16,35 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# translated by Klaus Knopper <knopper@knopper.net>
+# translated by DarkTrick <notebook22312@gmail.com>
 msgid ""
 msgstr ""
 "Project-Id-Version: gettext 0.11.2\n"
 "Report-Msgid-Bugs-To: <jos@jlemmens.nl>\n"
-"POT-Creation-Date: 2020-09-07 15:16+0200\n"
-"PO-Revision-Date: 2014-01-29 15:06+0200\n"
-"Last-Translator: Klaus Knopper <knopper@knopper.net>\n"
-"Language-Team: Klaus Knopper <knopper@knopper.net>\n"
+"POT-Creation-Date: 2020-09-12 14:50+0200\n"
+"PO-Revision-Date: 2020-09-08 10:09+0200\n"
+"Last-Translator: DarkTrick <notebook22312@gmail.com>\n"
+"Language-Team: DarkTrick <notebook22312@gmail.com>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/common.c:35 src/common.c:289 src/common.c:503 src/ebook-speaker.c:2085
+#: src/common.c:35 src/common.c:289 src/common.c:503 src/ebook-speaker.c:2084
 msgid "Please try to play this book with daisy-player"
-msgstr ""
+msgstr "Bitte versuchen Sie dieses Buch mit dem Daisy-Player zu öffnen."
 
 #: src/common.c:770
 #, c-format
 msgid "Cannot read type: %d"
-msgstr "Kann type %d nicht lesen"
+msgstr "Kann Typ %d nicht lesen."
 
 #: src/common.c:835
 msgid "Go to page number:"
-msgstr "Gehe zur Seitenzahl:"
+msgstr "Gehe zu Seite:"
 
-#: src/common.c:853 src/ebook-speaker.c:1677 src/ebook-speaker.c:2463
-#: src/ebook-speaker.c:2760
+#: src/common.c:853 src/ebook-speaker.c:1677 src/ebook-speaker.c:2462
+#: src/ebook-speaker.c:2758
 msgid "Please wait..."
 msgstr "Warten bitte..."
 
@@ -53,18 +53,18 @@ msgid "Select a soundcard:"
 msgstr "Wählen Sie eine Soundkarte:"
 
 #: src/daisy2.02.c:49 src/daisy2.02.c:130 src/daisy2.02.c:236
-#: src/ebook-speaker.c:2351
+#: src/ebook-speaker.c:2350
 #, c-format
 msgid "Cannot read %s"
 msgstr "Kann %s nicht lesen"
 
 #: src/ebook-speaker.c:301
 msgid "Select a Text-To-Speech application"
-msgstr "Wählen Sie ein Text-To-Speech-Anwendung"
+msgstr "Bitte wählen Sie eine Text-To-Speech-Anwendung"
 
 #: src/ebook-speaker.c:318
 msgid "Maximum number of TTS's is reached."
-msgstr ""
+msgstr "Maximale Anzahl an TTSs erreicht."
 
 #: src/ebook-speaker.c:674 src/list_dir.c:55 src/list_dir.c:251
 msgid "'h' for help"
@@ -83,12 +83,12 @@ msgstr "Level: %d von %d"
 #: src/ebook-speaker.c:688
 #, c-format
 msgid "total phrases: %d"
-msgstr "Insgesamt Phrasen: %d"
+msgstr "Anzahl Ausdrücke: %d"
 
 #: src/ebook-speaker.c:816
 #, c-format
 msgid "Be sure that the used TTS is installed:"
-msgstr ""
+msgstr "Bitte stellen Sie sicher, dass das genutzte TTS installiert ist:"
 
 #: src/ebook-speaker.c:874 src/list_dir.c:165
 msgid "These commands are available in this version:"
@@ -136,121 +136,117 @@ msgstr "Taste drücken für nächste Seite..."
 
 #: src/ebook-speaker.c:903 src/list_dir.c:183
 msgid "/               - search for a label"
-msgstr "/              - suche nach einem Begriff"
+msgstr "/     - suche nach einem Begriff"
 
 #: src/ebook-speaker.c:905
 msgid "A               - store current item to disk in ASCII-format"
-msgstr ""
-"A              - aktuelle Element speichern auf der Festplatte im ASCII-"
-"Format"
+msgstr "A     - aktuelle Element speichern auf der Festplatte im ASCII-Format"
 
 #: src/ebook-speaker.c:907
 msgid "b               - consider the end of an input line as a phrase-break"
-msgstr ""
+msgstr "b     - Zeilenende einer Eingabe als Ausdrucksumbruch behandeln"
 
 #: src/ebook-speaker.c:909
 msgid "B               - move cursor to the last item"
-msgstr "B              - Cursor auf das letzte Element"
+msgstr "B     - Cursor auf das letzte Element"
 
 #: src/ebook-speaker.c:911
 msgid "d               - store current item to disk in WAV-format"
-msgstr ""
-"d              - aktuelle Element speichern auf der Festplatte im WAV-Format"
+msgstr "d     - aktuelle Element speichern auf der Festplatte im WAV-Format"
 
 #: src/ebook-speaker.c:913
 msgid "D,-             - decrease playing speed"
-msgstr "D,-            - verringere Abspielgeschwindigkeit"
+msgstr "D,-   - verringere Abspielgeschwindigkeit"
 
 #: src/ebook-speaker.c:915
 msgid ""
 "f               - find the currently playing item and place the cursor there"
 msgstr ""
-"f              - aktuell spielendes Element finden und den Cursor dort "
-"platzieren"
+"f     - aktuell spielendes Element finden und den Cursor dort platzieren"
 
 #: src/ebook-speaker.c:917
 msgid "g               - go to phrase in current item"
-msgstr "g              - gehen Phrase in aktuellen Artikel"
+msgstr "g     - gehen Phrase in aktuellen Artikel"
 
 #: src/ebook-speaker.c:920
 msgid "G               - go to page number"
-msgstr "G              - zur Seitenzahl gehen (falls vorhanden)"
+msgstr "G     - zur Seitenzahl gehen (falls vorhanden)"
 
 #: src/ebook-speaker.c:922 src/list_dir.c:187
 msgid "h,?             - give this help"
-msgstr "h,?            - diese Hilfe anzeigen"
+msgstr "h,?   - diese Hilfe anzeigen"
 
 #: src/ebook-speaker.c:924
 msgid "j,5             - just play current item"
-msgstr "j,5            - nur das aktuelle Element abspielen"
+msgstr "j,5   - nur das aktuelle Element abspielen"
 
 #: src/ebook-speaker.c:926
 msgid "l               - switch to next level"
-msgstr "l              - zum nächsten Level wechseln"
+msgstr "l     - zum nächsten Level wechseln"
 
 #: src/ebook-speaker.c:928
 msgid "L               - switch to previous level"
-msgstr "L              - zum vorigen Level wechseln"
+msgstr "L     - zum vorigen Level wechseln"
 
 #: src/ebook-speaker.c:930
 msgid "m               - mute sound output on/off"
-msgstr ""
+msgstr "m     - Stummschalten ein/aus"
 
 #: src/ebook-speaker.c:932 src/list_dir.c:193
 msgid "n               - search forwards"
-msgstr "n              - Suche vorwärts"
+msgstr "n     - Suche vorwärts"
 
 #: src/ebook-speaker.c:934 src/list_dir.c:195
 msgid "N               - search backwards"
-msgstr "N              - Suche rückwärts"
+msgstr "N     - Suche rückwärts"
 
 #: src/ebook-speaker.c:936
 msgid "o               - select next output sound device"
-msgstr "o              - nächstes sound device für Ausgabe wählen"
+msgstr "o     - nächstes sound device für Ausgabe wählen"
 
 #: src/ebook-speaker.c:938
 msgid "p               - place a bookmark"
-msgstr "p              - Lesezeichen setzen"
+msgstr "p     - Lesezeichen setzen"
 
 #: src/ebook-speaker.c:947
 msgid "q               - quit eBook-speaker and place a bookmark"
-msgstr "q              - eBook-speaker verlassen und Lesezeichen setzen"
+msgstr "q     - eBook-speaker verlassen und Lesezeichen setzen"
 
 #: src/ebook-speaker.c:950
 msgid "r               - rotate scanned document"
-msgstr ""
+msgstr "r     - Gescanntes Dokument drehen"
 
 #: src/ebook-speaker.c:952
 msgid "s               - stop playing"
-msgstr "s              - Abspielen stoppen"
+msgstr "s     - Abspielen stoppen"
 
 #: src/ebook-speaker.c:954
 msgid "S               - show progress on/off"
-msgstr ""
+msgstr "S     - Fortschritt anzeigen ein/aus"
 
 #: src/ebook-speaker.c:956
 msgid "t               - select next TTS"
-msgstr "t              - Wählen nächsten TTS"
+msgstr "t     - Wählen nächsten TTS"
 
 #: src/ebook-speaker.c:958
 msgid "T               - move cursor to the first item"
-msgstr "T              - Cursor auf das erste Element"
+msgstr "T     - Cursor auf das erste Element"
 
 #: src/ebook-speaker.c:960
 msgid "U,+             - increase playing speed"
-msgstr "U,+            - erhöhe Abspielgeschwindigkeit"
+msgstr "U,+   - erhöhe Abspielgeschwindigkeit"
 
 #: src/ebook-speaker.c:962
 msgid "v,1             - decrease playback volume"
-msgstr ""
+msgstr "v,1   - Lautstärke verringern"
 
 #: src/ebook-speaker.c:964
 msgid "V,7             - increase playback volume (beware of Clipping)"
-msgstr ""
+msgstr "v,7   - Lautstärke erhöhen (es könnte Clipping auftreten)"
 
 #: src/ebook-speaker.c:966
 msgid "x               - go to the file-manager"
-msgstr ""
+msgstr "x     - Zum Dateimanager wechseln"
 
 #: src/ebook-speaker.c:968 src/list_dir.c:201 src/list_dir.c:454
 msgid "Press any key to leave help..."
@@ -263,66 +259,71 @@ msgstr "Suchen nach...?"
 #: src/ebook-speaker.c:1257
 msgid "Break phrases at EOL or at a specific position (y/n/position)"
 msgstr ""
+"Ausdrücke am Zeilenende oder an bestimmter position umbrechen (y/n/Position)"
+
+#: src/ebook-speaker.c:1419
+msgid "Be sure the package \"tesseract-ocr\" is installed onto your system."
+msgstr ""
+"Bitte stellen Sie sicher, dass das Packet \"tesseract-ocr-%s\" auf Ihren "
+"System installiert ist."
 
 #: src/ebook-speaker.c:1421
 #, c-format
 msgid "Language code \"%s\" is not a valid tesseract code."
-msgstr ""
+msgstr "Tesseract kann den Sprachcode \"%s\" nicht interpretieren."
 
 #: src/ebook-speaker.c:1423
-msgid "See the tesseract manual for valid codes."
-msgstr ""
-
-#: src/ebook-speaker.c:1425
 #, c-format
-msgid ""
-"Be sure the package \"tesseract-ocr-%s\" is installed onto your system.\n"
-msgstr ""
+msgid "See the tesseract manual for valid codes."
+msgstr "Bitte schauen Sie im Tesseract Handbuch nach benutzbaren Codes."
 
 #: src/ebook-speaker.c:1434
 #, c-format
 msgid "Language code \"%s\" is not a valid cuneiform code."
-msgstr ""
+msgstr "Cuneiform kann den Sprachcode \"%s\" nicht interpretieren."
 
 #: src/ebook-speaker.c:1436
 msgid "See the cuneiform manual for valid codes."
-msgstr ""
+msgstr "Bitte schauen Sie im Cuneiform Handbuch nach benutzbaren Codes."
 
 #: src/ebook-speaker.c:1557
 msgid "Go to phrase in current item:"
-msgstr "Gehe Phrase in aktuellen Artikel:"
+msgstr "Gehe zu Austruck in aktuellen Artikel:"
 
-#: src/ebook-speaker.c:1691 src/ebook-speaker.c:1930 src/ebook-speaker.c:1949
-#: src/ebook-speaker.c:1974 src/ebook-speaker.c:2005 src/ebook-speaker.c:2284
-#: src/ebook-speaker.c:2502 src/ebook-speaker.c:2546 src/ebook-speaker.c:2901
-#: src/ebook-speaker.c:2952
+#: src/ebook-speaker.c:1691 src/ebook-speaker.c:1929 src/ebook-speaker.c:1948
+#: src/ebook-speaker.c:1973 src/ebook-speaker.c:2004 src/ebook-speaker.c:2283
+#: src/ebook-speaker.c:2501 src/ebook-speaker.c:2545 src/ebook-speaker.c:2900
+#: src/ebook-speaker.c:2950
 msgid "eBook-speaker cannot handle this file."
-msgstr ""
+msgstr "eBook-speaker kann diese Datei nicht verarbeiten"
 
-#: src/ebook-speaker.c:1728 src/ebook-speaker.c:2420
+#: src/ebook-speaker.c:1727 src/ebook-speaker.c:2419
 msgid "Press 'h' for help"
 msgstr "'h' für Hilfe drücken"
 
-#: src/ebook-speaker.c:1983
+#: src/ebook-speaker.c:1982
 msgid "Unknown format"
-msgstr "Unknown Format"
+msgstr "Unbekanntest Format"
 
-#: src/ebook-speaker.c:2256 src/ebook-speaker.c:2757
+#: src/ebook-speaker.c:2255 src/ebook-speaker.c:2755
 msgid "eBook-speaker - Version"
 msgstr "eBook-speaker - Version"
 
-#: src/ebook-speaker.c:2260
+#: src/ebook-speaker.c:2259
 #, c-format
 msgid ""
 "Usage: %s [eBook_file | URL | -s [-r resolution]] [-b n | y | position] [-c] "
 "[-d pulseaudio_device] [-h] [-H] [-i] [-o language-code] [-S] [-t "
 "TTS_command] [-v]"
 msgstr ""
+"Benutzung : %s [eBook_Datei | URL | -s [-r Auflösung]] [-b n | y | Position] "
+"[-c] [-d Pulseaudio_Gerät] [-h] [-H] [-i] [-o Sprachcode] [-S] [-t "
+"TTS_Befehl] [-v]"
 
 #: src/list_dir.c:51 src/list_dir.c:248
 #, c-format
 msgid "%s - Choose an input-file"
-msgstr "%s - Wählen Sie eine Input-Datei"
+msgstr "%s - Wählen Sie eine zum Öffnen"
 
 #: src/list_dir.c:173
 msgid "cursor right,6  - open this directory or file"
@@ -342,11 +343,11 @@ msgstr "end,B          - Cursor auf das letzte Element"
 
 #: src/list_dir.c:189
 msgid "H,0             - display \"hidden\" files on/off"
-msgstr "H,0            - Anzeige \"hidden\" Dateien on/off"
+msgstr "H,0            - Anzeige \"versteckte\" Dateien ein/aus"
 
 #: src/list_dir.c:191
 msgid "i               - give some information about current file"
-msgstr ""
+msgstr "i              - Zeige Informationen zur aktuellen Datei"
 
 #: src/list_dir.c:197
 msgid "q               - quit eBook-speaker"
@@ -355,110 +356,3 @@ msgstr "q              - eBook-speaker verlassen"
 #: src/list_dir.c:199
 msgid "home,T          - move cursor to the first item"
 msgstr "home,T         - Cursor auf das erste Element"
-
-#~ msgid "This book has no audio. Play this book with eBook-speaker"
-#~ msgstr "Dieses Buch hat kein Audio. Spiel dieses Buch mit eBook-speaker"
-
-#~ msgid "No items found. Try option \"-N\"."
-#~ msgstr "Keine Elemente gefunden. Versuchen Sie die Option \"-N\"."
-
-#~ msgid "No items found. Try option \"-O\"."
-#~ msgstr "Keine Elemente gefunden. Versuchen Sie die Option \"-O\"."
-
-#~ msgid "Provide a new TTS."
-#~ msgstr "Geben Sie ein neues TTS an."
-
-#~ msgid "Cannot read /proc/asound/cards"
-#~ msgstr "Kann /proc/asound/cards nicht lesen"
-
-#~ msgid "Press 'h' for help "
-#~ msgstr "'h' für Hilfe drücken "
-
-#~ msgid "'h' for help "
-#~ msgstr "'h' für Hilfe "
-
-#~ msgid "What do you search? "
-#~ msgstr "Suchen nach...? "
-
-#~ msgid ""
-#~ "Provide a new TTS.\n"
-#~ "Be sure that the new TTS reads its information from the file\n"
-#~ "eBook-speaker.txt and that it writes to the file eBook-speaker.wav.\n"
-#~ "\n"
-#~ "Press DEL to delete a TTS"
-#~ msgstr ""
-#~ "Geben Sie einen neuen TTS.Achten Sie darauf, dass die neue TTS seine "
-#~ "Informationen liest aus derDatei eBook-speaker.txt und dass sie in die "
-#~ "Datei eBook-speaker.wav schreibt.Drücken Sie DEL, ein TTS löschen"
-
-#~ msgid "cursor down,2   - move cursor to the next item\n"
-#~ msgstr "Pfeil runter,2 - verschiebt den Cursor auf das nächste Element"
-
-#~ msgid "cursor up,8     - move cursor to the previous item\n"
-#~ msgstr ""
-#~ "Pfeil hoch,8   - verschiebt den Cursor auf das vorhergehende Element"
-
-#~ msgid "page-down,3     - view next page\n"
-#~ msgstr "Seite runter,3 - zur nächsten Seite"
-
-#~ msgid "page-up,9       - view previous page\n"
-#~ msgstr "Seite hoch,9   - zur vorigen Seite"
-
-#~ msgid "/               - search for a label\n"
-#~ msgstr "/              - suche nach einem Begriff"
-
-#~ msgid "B               - move cursor to the last item\n"
-#~ msgstr "B              - Cursor auf das letzte Element"
-
-#~ msgid "h,?             - give this help\n"
-#~ msgstr "h,?            - diese Hilfe anzeigen"
-
-#~ msgid "n               - search forwards\n"
-#~ msgstr "n              - Suche vorwärts"
-
-#~ msgid "N               - search backwards\n"
-#~ msgstr "N              - Suche rückwärts"
-
-#~ msgid "T               - move cursor to the first item\n"
-#~ msgstr "T              - Cursor auf das erste Element"
-
-#~ msgid ""
-#~ "\n"
-#~ "Press any key to leave help..."
-#~ msgstr "Taste drücken, um die Hilfe zu verlassen..."
-
-#~ msgid "eBook-speaker - Version %s - (C)2014 J. Lemmens"
-#~ msgstr "eBook-speaker - Version %s - (C)2014 J. Lemmens"
-
-#~ msgid "Unknown format: %s"
-#~ msgstr "Unknown Format: %s"
-
-#~ msgid "Please install it and try again.\n"
-#~ msgstr "Bringen Sie es bitte an und versuchen Sie noch einmal.\n"
-
-#~ msgid "eBook-speaker needs the poppler-utils package."
-#~ msgstr "eBook-speaker benödigt die poppler-utils Paket."
-
-#~ msgid "eBook-speaker needs the libreoffice-writer package."
-#~ msgstr "eBook-speaker benödigt die libreoffice-writer Paket."
-
-#~ msgid "eBook-speaker needs the pandoc package."
-#~ msgstr "eBook-speaker benödigt die pandoc Paket."
-
-#~ msgid "eBook-speaker needs the espeak package."
-#~ msgstr "eBook-speaker benödigt das espeak Paket."
-
-#~ msgid "eBook-speaker needs the unar package."
-#~ msgstr "eBook-speaker benödigt die unar Paket."
-
-#~ msgid "eBook-speaker needs the tesseract-ocr package."
-#~ msgstr "eBook-speaker benödigt die tesseract-ocr Paket."
-
-#~ msgid "eBook-speaker needs the man2html program."
-#~ msgstr "eBook-speaker benödigt die man2html Paket."
-
-#~ msgid "eBook-speaker needs the xml2 package."
-#~ msgstr "eBook-speaker benödigt die xml2 Paket."
-
-#~ msgid "eBook-speaker needs the calibre package."
-#~ msgstr "eBook-speaker benödigt die calibre Paket."

@@ -1415,16 +1415,16 @@ void start_OCR (misc_t *misc, char *file)
       puts (misc->copyright);
       if (misc->use_cuneiform == 0)
       {
-         printf
- ("Be sure the package \"tesseract-ocr\" is installed onto your system.\n\n");
+         printf ("%s\n", gettext (
+      "Be sure the package \"tesseract-ocr\" is installed onto your system."));
          printf (gettext
                ("Language code \"%s\" is not a valid tesseract code."),
                misc->ocr_language);
-         printf ("%s\n", gettext ("See the tesseract manual for valid codes."));
-         printf (gettext
-  ("Be sure the package \"tesseract-ocr-%s\" is installed onto your system.\n"),
-        misc->ocr_language);
-         printf ("\n");
+         printf (gettext ("See the tesseract manual for valid codes."));
+         sprintf (misc->str,
+    "Be sure the package \"tesseract-ocr-%s\" is installed onto your system.",
+                  misc->ocr_language);
+         printf ("%s\n", gettext (misc->str));
       }
       else
       {
@@ -1704,7 +1704,6 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          check_phrases (misc, my_attribute, daisy);
          strcpy (daisy[0].label, "1");
          strcpy (misc->daisy_title, "scanned image");
-         misc->total_items = 1;
          misc->level = misc->depth = 1;
          *misc->search_str = 0;
          misc->reader = NULL;
@@ -2056,18 +2055,18 @@ void check_phrases (misc_t *misc, my_attribute_t *my_attribute,
 {
    int i;
 
+   if (misc->total_items == 0)
+      return;
+
    for (i = 0; i < misc->total_items; i++)
    {
       if (access (daisy[i].xml_file, R_OK) == -1)
-      {
-         misc->total_items = i;
-         break;
-      } // if
+         continue;
       open_xml_file (misc, my_attribute, daisy, daisy[i].xml_file,
                      daisy[i].xml_anchor);
       if (misc->break_phrase == 'n' || misc->break_phrase == 'y' ||
           misc->break_phrase == 'j')
-      {       
+      {
          split_phrases (misc, my_attribute, daisy, i);
       }
       else
@@ -2078,7 +2077,7 @@ void check_phrases (misc_t *misc, my_attribute_t *my_attribute,
          daisy[i].label[57 - daisy[i].x] = 0;
    } // for
 
-   if (misc->total_items == 0)
+   if (misc->total_items == 0)           
    {
       endwin ();
       printf ("%s\n",
@@ -2694,7 +2693,6 @@ endwin ();
 
 int main (int argc, char *argv[])
 {
-
    int opt;
    char c_opt, *o_opt, *r_opt, *t_opt;
    misc_t misc;
@@ -2832,6 +2830,7 @@ int main (int argc, char *argv[])
          r_opt = optarg;
          break;
       case 's':
+         misc.use_NCX = 1;
          misc.scan_flag = 1;
          misc.start_arg_is_a_dir = 0;
          break;
@@ -2904,7 +2903,6 @@ int main (int argc, char *argv[])
          _exit (EXIT_FAILURE);
       } // switch
       load_xml (&misc, &my_attribute, daisy);
-      check_phrases (&misc, &my_attribute, daisy);
       create_epub (&misc, &my_attribute, daisy, misc.orig_input_file, 1);
       strcpy (misc.daisy_title, "scanned image");
       play_epub (&misc, &my_attribute, daisy, misc.orig_input_file);
