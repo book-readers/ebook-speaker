@@ -1,14 +1,13 @@
 To compile eBook-speaker, be sure the following extra packages are installed:
 
-   libncurses5-dev
    libncursesw5-dev
    libsox-dev
    libmagic-dev
    libxml2-dev
-   libidn11-dev
 
 Give the following command:
 
+   $ ./configure
    $ make
 
 Give, as user root, the following command to install eBook-speaker
