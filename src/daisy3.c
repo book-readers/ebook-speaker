@@ -308,7 +308,7 @@ int get_tag_or_label (xmlTextReaderPtr reader)
       for (x = strlen (label) - 1; x >= 0 && isspace (label[x]); x--)
          label[x] = 0;
       for (x = 0; label[x] > 0; x++)
-         if (! isascii (label[x]))
+         if (! isprint (label[x]))
             label[x] = ' ';
       return 1;
    }
