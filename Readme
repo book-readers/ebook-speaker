@@ -1,0 +1,82 @@
+eBook-speaker - read eBooks with Linux using a speech-synthesizer
+(C)2011 J. Lemmens
+
+DESCRIPTION
+eBook-speaker reads an eBook and uses the espeak speech synthisizer
+for output.
+Currently only the EPUB format is supported.
+(http://en.wikipedia.org/wiki/Comparison_of_e-book_formats#EPUB)
+
+REQUIREMENTS
+Be sure the following extra packages exist on your system:
+
+   libncursesw5
+   libidn11
+   libsox1b
+
+The following packages are needed to make the manual and the html document:
+
+   txt2man
+   man2html
+
+FILES
+Download and unpack the file 'eBook-speaker-<version>.tar.bz2'.
+In the created directory 'eBook-speaker-<version>' you'll find the
+following files:
+
+- Changelog: Changes made in the previous versions
+- COMPILE: Information about how to compile and install eBook-speaker
+- COPYING: copyright information.
+- eBook-speaker.1: formatted manual page
+- eBook-speaker.c: source code
+- eBook-speaker.de.po: translations for the german language
+- eBook-speaker.desktop: file for the graphical interface
+- eBook-speaker.h: source code
+- eBook-speaker.html: manual page in HTML format
+- eBook-speaker.nl.po: translations for the dutch language
+- eBook-speaker.txt: manual page in ASCII format
+- entities.h: source code
+- entities.txt: information about entities.h
+- error.txt: information about error.wav
+- error.wav: soundfile will be played when an error occured
+- icons: directory containing icons
+- install.sh script to install eBook-speaker
+- License: The text of the GPL version 3 license of eBook-speaker
+- Makefile: needed to compile from source
+- Readme: the text you are reading now.
+- TODO: things to do.
+- UCkd.h: source code
+- UCkd.txt: information about UCkd.h
+
+INSTALLATION
+As user 'root' on the command line, run the install.sh script to
+install the package:
+
+   # ./install.sh
+
+USAGE
+As a mortal user, give on the command line,:
+
+   $ eBook-speaker file.epub
+
+This starts reading the eBook and printing the content on
+the screen. After giving an [ENTER], the eBook will be read using the
+espeak speech synthisizer.
+
+A list of items on the eBook will appear. Press <ENTER>
+to start playing. When reading of an item has finished, eBook-speaker will
+play the next item and the cursor will automatically skip
+to that item, so that your braille-terminal will display the name
+of that item.
+
+For keyboard navigation, plese press 'h' or '?'.
+
+eBook-speaker is multilingual. The following languages are currently 
+supported:
+english, german, dutch.
+
+Enjoy
+
+Jos Lemmens
+jos@jlemmens.nl
+http://www.jlemmens.nl

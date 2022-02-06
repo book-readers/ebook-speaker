@@ -1,0 +1,205 @@
+# message catalog file for eBook-speaker - dutch version
+#
+# Copyright (C)2011 J. Lemmens
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+msgid "A parser to play Daisy CD's with Linux"
+msgstr "Een programma om Daisy CD's met Linux af te spelen"
+
+msgid "eBook-speaker - Version %s - (C)2011 J. Lemmens"
+msgstr "eBook-speaker - Versie %s - (C)2011 J. Lemmens"
+
+msgid "Cannot find a eBook structure"
+msgstr "Kan geen eBook structuur vinden"
+
+msgid "Cannot find a eBook structure in %s"
+msgstr "Kan geen eBook structuur in %s vinden"
+
+msgid "\nCannot read %s\n"
+msgstr "\nKan %s niet lezen\n"
+
+msgid "\nCannot read /proc/mounts."
+msgstr "\nKan /proc/mounts niet lezen."
+
+msgid "\nCannot use udisks command."
+msgstr "\nKan geen gebruik maken van het udisks commando."
+
+msgid "Corrupt eBook structure!"
+msgstr "Corrupte eBook structuur!"
+
+msgid "Corrupt eBook structure %s\n"
+msgstr "Corrupte eBook structuur %s\n"
+
+msgid "eBook-speaker - Version %s\n"
+msgstr "eBook-speaker - Versie %s\n"
+
+msgid "Go to page number:        "
+msgstr "Ga naar pagina nummer:    "
+
+msgid "'h' for help "
+msgstr "'h' voor hulp "
+
+msgid "\n%s: is not a sound device.\n"
+msgstr "\n%s: is geen sound device.\n"
+
+msgid " level: %d of %d "
+msgstr " niveau: %d van %d "
+
+msgid "Maybe a read-error occurred!"
+msgstr "Waarschijnlijk een leesfout opgetreden!"
+
+msgid "\nNo eBook-cd in drive."
+msgstr "\nGeen eBook-cd in speler."
+
+msgid "n length: %d\n"
+msgstr "n lengte: %d\n"
+
+msgid " (%2d of %2d)"
+msgstr " (%2d van %2d)"
+
+msgid " %d pages "
+msgstr " %d pagina's "
+
+msgid "Please wait..."
+msgstr "Even geduld a.u.b...."
+
+msgid "Please wait... -------------------------"
+msgstr "Even geduld a.u.b.... ------------------"
+
+msgid "Press 'h' for help "
+msgstr "Druk op 'h' voor hulp "
+
+msgid "Reading %s... "
+msgstr "%s wordt gelezen... "
+
+msgid "Reading eBook structure..."
+msgstr "eBook structuur wordt gelezen..."
+
+msgid "Something is wrong with %s\n"
+msgstr "er is iets niet goed met %s\n"
+
+msgid "Something is wrong with the %s file\n"
+msgstr "Er is iets niet goed met het %s bestand\n"
+
+msgid "start_playing(): %s"
+msgstr "start_playing(): %s"
+
+msgid "s length: %d\n"
+msgstr "s lengte: %d\n"
+
+msgid " total length: %s "
+msgstr " totale lengte: %s "
+
+msgid "\nUsage: %s [-l language] [directory with a Daisy-structure]\n"
+msgstr "\nGebruik: %s [-l taal] [map met een Daisy-structuur]\n"
+
+msgid "What do you search?                           "
+msgstr "Wat zoekt u?                                  "
+
+msgid "\nThese commands are available in this version:\n"
+msgstr "\nDeze commando's zijn beschikbaar in deze versie:\n"
+
+msgid "cursor down     - move cursor to the next item\n"
+msgstr "cursor omlaag   - verplaats de cursor naar het volgende item\n"
+
+msgid "cursor up       - move cursor to the previous item\n"
+msgstr "cursor omhoog   - verplaats de cursor naar het vorige item\n"
+
+msgid "cursor right    - skip to next phrase\n"
+msgstr "cursor rechts   - spring naar de volgende frase\n"
+
+msgid "cursor left     - skip to previous phrase\n"
+msgstr "cursor links    - spring naar de vorige frase\n"
+
+msgid "page-down       - view next page\n"
+msgstr "page-down       - toon de volgende pagina\n"
+
+msgid "page-up         - view previous page\n"
+msgstr "page-up         - toon de vorige pagina\n"
+
+msgid "enter           - start playing\n"
+msgstr "enter           - start afspelen\n"
+
+msgid "space           - pause/resume playing\n"
+msgstr "spatie          - pauze/vervolg het afspelen\n"
+
+msgid "Press any key for next page..."
+msgstr "Druk op een toets voor de volgende pagina..."
+
+msgid "\n/               - search for a label\n"
+msgstr "\n/               - zoek label\n"
+
+msgid "d               - store current item to disk\n"
+msgstr "d               - sla huidige item op op schijf\n"
+
+msgid "f               - find the currently playing item and place the cursor there\n"
+msgstr "f               - vindt het huidige spelende item en plaats de cursor daar\n"
+
+msgid "g               - go to page number (if any)\n"
+msgstr "g               - ga naar pagina nummer\n"
+
+msgid "h or ?          - give this help\n"
+msgstr "h of ?          - toon deze help-pagina\n"
+
+msgid "j               - just play current item\n"
+msgstr "j               - speel alleen dit item af\n"
+
+msgid "l               - switch to next level\n"
+msgstr "l               - schakel naar het volgende niveau\n"
+
+msgid "L               - switch to previous level\n"
+msgstr "L               - schakel naar het vorige niveau\n"
+
+msgid "n               - search forwards\n"
+msgstr "n               - zoek voorwaarts\n"
+
+msgid "N               - search backwards\n"
+msgstr "N               - zoek achteruit\n"
+
+msgid "o               - select next output sound device\n"
+msgstr "o               - selecteer de volgende geluidskaart\n"
+
+msgid "q               - quit eBook-speaker and place a bookmark\n"
+msgstr "q               - stop eBook-speaker en plaats een boekenlegger\n"
+
+msgid "s               - stop playing\n"
+msgstr "s               - stop het afspelen\n"
+
+msgid "\nPress any key to leave help..."
+msgstr "\nDruk op een toets om dit help-scherm te verlaten..."
+
+msgid "No such directory: %s\n"
+msgstr "Map %s bestaat niet\n"
+
+msgid "home            - play on normal speed\n"
+msgstr "home            - speel af op normale snelheid\n"
+
+msgid "D               - decrease playing speed\n"
+msgstr "D               - verlaag afspeel snelheid\n"
+
+msgid "U               - increase playing speed\n"
+msgstr "U               - verhoog afspeel snelheid\n"
+
+msgid "p               - place a bookmark\n"
+msgstr "p               - plaats een boekenlegger\n"
+
+msgid "clip_end (%f) is smaller than clip_begin (%f). \n\
+This is not possible!\n\
+eBook-speaker can't handle this DTB.\n"
+
+msgstr "clip_end (%f) is kleiner dan clip_begin (%f). \n\
+Dit is niet mogelijk!\n\
+eBook-speaker kan niet overweg met dit DTB.\n"
