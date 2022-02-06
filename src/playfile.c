@@ -1,6 +1,6 @@
 /* playfile.c - plays the audio using the sox library.
  *
- * Copyright (C)2003-2018 J. Lemmens
+ * Copyright (C)2003-2019 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -62,7 +62,7 @@ static sox_effect_handler_t const *output_effect_fn (void)
   return &handler;
 } // output_effect_fn
 
-void playfile (char *in_file, char *in_type,
+void playfile (misc_t *misc, char *in_file, char *in_type,
                char *out_file, char *out_type, char *tempo)
 {
   sox_format_t *in, *out; /* input and output files */
@@ -77,9 +77,11 @@ void playfile (char *in_file, char *in_type,
   in = sox_open_read (in_file, NULL, NULL, in_type);
   if (strcasecmp (in_type, "cdda") == 0)
     in->encoding.reverse_bytes = 0;
-  out = sox_open_write (out_file, &in->signal, NULL, out_type,
-                             NULL, NULL);
-
+  if (! (out = sox_open_write (out_file, &in->signal, NULL, out_type,
+                             NULL, NULL)))
+  {
+    failure (misc, out_file, errno);
+  } // if
   chain = sox_create_effects_chain(&in->encoding, &out->encoding);
   interm_signal = in->signal; /* NB: deep copy */
 

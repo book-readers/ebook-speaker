@@ -3,5 +3,5 @@
 src/common.c
 src/daisy2.02.c
 src/daisy3.c
-src/eBook-speaker.c
+src/ebook-speaker.c
 src/list_dir.c

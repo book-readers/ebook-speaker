@@ -2,19 +2,13 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([eBook-speaker], [5.2-beta-2], [jos@jlemmens.nl], [], [www.jlemmens.nl])
+AC_INIT([ebook-speaker], [5.3], [jos@jlemmens.nl], [], [www.jlemmens.nl])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
 
 # Checks for programs.
 AC_PROG_CC
-AC_PROG_CXX
-AC_PROG_OBJC
-AC_PROG_OBJCXX
-AC_PROG_RANLIB
-AC_PROG_INSTALL
- AC_PROG_MAKE_SET
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lmagic':
@@ -63,7 +57,7 @@ AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.18.3])
 AC_PROG_LN_S
 AC_CONFIG_SUBDIRS([src/pactl])
-AC_OUTPUT
+AC_OUTPUT                    
 
 dnl pulseaudio/pactl stuff
 

@@ -88,7 +88,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = eBook-speaker$(EXEEXT)
+bin_PROGRAMS = ebook-speaker$(EXEEXT)
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/gettext.m4 \
@@ -107,14 +107,15 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__dirstamp = $(am__leading_dot)dirstamp
-am_eBook_speaker_OBJECTS = pactl/src/core-util.$(OBJEXT) \
+am_ebook_speaker_OBJECTS = pactl/src/core-util.$(OBJEXT) \
 	pactl/src/strbuf.$(OBJEXT) pactl/src/pactl.$(OBJEXT) \
 	list_dir.$(OBJEXT) playfile.$(OBJEXT) common.$(OBJEXT) \
-	daisy2.02.$(OBJEXT) daisy3.$(OBJEXT) eBook-speaker.$(OBJEXT)
-eBook_speaker_OBJECTS = $(am_eBook_speaker_OBJECTS)
-eBook_speaker_LDADD = $(LDADD)
+	daisy2.02.$(OBJEXT) daisy3.$(OBJEXT) ebook-speaker.$(OBJEXT) \
+	ncx.$(OBJEXT) opf.$(OBJEXT)
+ebook_speaker_OBJECTS = $(am_ebook_speaker_OBJECTS)
+ebook_speaker_LDADD = $(LDADD)
 am__DEPENDENCIES_1 =
-eBook_speaker_DEPENDENCIES = $(am__DEPENDENCIES_1)
+ebook_speaker_DEPENDENCIES = $(am__DEPENDENCIES_1)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -143,8 +144,8 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(eBook_speaker_SOURCES)
-DIST_SOURCES = $(eBook_speaker_SOURCES)
+SOURCES = $(ebook_speaker_SOURCES)
+DIST_SOURCES = $(ebook_speaker_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -184,9 +185,6 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
-CXX = @CXX@
-CXXDEPMODE = @CXXDEPMODE@
-CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -220,12 +218,6 @@ MKDIR_P = @MKDIR_P@
 MSGFMT = @MSGFMT@
 MSGFMT_015 = @MSGFMT_015@
 MSGMERGE = @MSGMERGE@
-OBJC = @OBJC@
-OBJCDEPMODE = @OBJCDEPMODE@
-OBJCFLAGS = @OBJCFLAGS@
-OBJCXX = @OBJCXX@
-OBJCXXDEPMODE = @OBJCXXDEPMODE@
-OBJCXXFLAGS = @OBJCXXFLAGS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -237,7 +229,6 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 POSUB = @POSUB@
 POW_LIB = @POW_LIB@
-RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -252,9 +243,6 @@ abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_CC = @ac_ct_CC@
-ac_ct_CXX = @ac_ct_CXX@
-ac_ct_OBJC = @ac_ct_OBJC@
-ac_ct_OBJCXX = @ac_ct_OBJCXX@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
@@ -304,14 +292,17 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 AM_CFLAGS = -D LOCALEDIR=\"$(prefix)/share/locale\" -D EBOOK_SPEAKER \
+            -D PROGRAMNAME_LOCALEDIR=\"${PROGRAMNAME_LOCALEDIR}\" \
+            -I /usr/include/libxml2/ -Ofast --param=ssp-buffer-size=4 \
+            -faggressive-loop-optimizations \
             -Wall -Wextra -g \
-            -I /usr/include/libxml2/ -O3 --param=ssp-buffer-size=4 \
             -Wunused-function -Wuninitialized -Winit-self -fno-common \
-            -D PROGRAMNAME_LOCALEDIR=\"${PROGRAMNAME_LOCALEDIR}\"
+            -Wlogical-op -fsanitize=null -Wpedantic
 
-eBook_speaker_SOURCES = daisy.h pactl/src/core-util.c pactl/src/strbuf.c \
+ebook_speaker_SOURCES = daisy.h pactl/src/core-util.c pactl/src/strbuf.c \
                         pactl/src/pactl.c list_dir.c playfile.c \
-                        common.c daisy2.02.c daisy3.c eBook-speaker.c
+                        common.c daisy2.02.c daisy3.c ebook-speaker.c \
+                        ncx.c opf.c   
 
 ldadd = $(depend) @LTLIBINTL@
 DEPENDENCIES = $(depend)
@@ -405,9 +396,9 @@ pactl/src/strbuf.$(OBJEXT): pactl/src/$(am__dirstamp) \
 pactl/src/pactl.$(OBJEXT): pactl/src/$(am__dirstamp) \
 	pactl/src/$(DEPDIR)/$(am__dirstamp)
 
-eBook-speaker$(EXEEXT): $(eBook_speaker_OBJECTS) $(eBook_speaker_DEPENDENCIES) $(EXTRA_eBook_speaker_DEPENDENCIES) 
-	@rm -f eBook-speaker$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(eBook_speaker_OBJECTS) $(eBook_speaker_LDADD) $(LIBS)
+ebook-speaker$(EXEEXT): $(ebook_speaker_OBJECTS) $(ebook_speaker_DEPENDENCIES) $(EXTRA_ebook_speaker_DEPENDENCIES) 
+	@rm -f ebook-speaker$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(ebook_speaker_OBJECTS) $(ebook_speaker_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -419,8 +410,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/common.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/daisy2.02.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/daisy3.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eBook-speaker.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ebook-speaker.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/list_dir.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncx.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/opf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/playfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pactl/src/$(DEPDIR)/core-util.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@pactl/src/$(DEPDIR)/pactl.Po@am__quote@

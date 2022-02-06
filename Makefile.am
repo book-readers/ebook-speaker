@@ -1,13 +1,14 @@
 AUTOMAKE_OPTIONS = foreign
+
 SUBDIRS = man doc po src
 
 ACLOCAL_AMFLAGS = -I m4
 
 EXTRA_DIST = config.rpath m4/Makefile.in doc/COMPILE \
              doc/COPYING doc/Changelog doc/License doc/Readme doc/TODO \
-             doc/eBook-speaker.* \
+             doc/ebook-speaker.* \
              doc/icons_copyright.txt doc/screenshot.html \
-             man/eBook-speaker.1 \
+             man/ebook-speaker.1 \
              src/pactl/aclocal.m4 src/pactl/AGPL \
              src/pactl/compile src/pactl/config.guess \
              src/pactl/config.sub \
@@ -52,7 +53,7 @@ update-gmo: check-gettext
 force-update-gmo: check-gettext
 	touch po/*.po
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-gmo
-
+                          
 force-update-gmo-%: check-gettext
 	@language=`echo $@ | sed s/force-update-gmo-//` ; \
 	if test ! -f po/$$language.po ; then \
@@ -60,5 +61,16 @@ force-update-gmo-%: check-gettext
 	fi ; \
 	touch po/$$language.po ; \
 	cd po && $(MAKE) $(AM_MAKEFLAGS) update-gmo
+	
+checkinstall:
+	@echo
+	@echo "checkinstall..."
+	@echo
+	make distdir
+	cd $(PACKAGE)-$(VERSION)
+	checkinstall -D --fstrans enable --pkgname "$(PACKAGE)" \
+	--pkgversion $(VERSION) --pkggroup audio \
+	--maintainer "Jos Lemmens <jos@jlemmens.nl>" --strip --stripso \
+	--review-control
 
 .PHONY: check-gettext update-po update-gmo force-update-gmo

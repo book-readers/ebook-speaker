@@ -104,12 +104,12 @@ int pa_parse_volume (const char *v, pa_volume_t *volume)
     pa_assert(v);
     pa_assert(volume);
 
-    len = strlen(v);
+    len = (int) strlen(v);
 
     if (len >= 64)
         return -1;
 
-    memcpy(str, v, len + 1);
+    memcpy(str, v, (size_t) len + 1);
 
     if (str[len - 1] == '%') {
         str[len - 1] = '\0';
@@ -121,7 +121,7 @@ int pa_parse_volume (const char *v, pa_volume_t *volume)
         if (d < 0 || d > PA_VOLUME_MAX)
             return -1;
 
-        *volume = d;
+        *volume = (pa_volume_t) d;
         return 0;
     }
 

@@ -1,6 +1,8 @@
-# message catalog file for eBook-speaker - French version
+# name: Jani Kinnunen <janikinnunen340@gmail.com>
+# Language: Finnish
+# message catalog file for eBook-speaker - Finnish version
 #
-# Copyright (C) 2003-2016 J. Lemmens
+# Copyright (C) 2003-2019 J. Lemmens
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -16,298 +18,295 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
-# translated by Osvaldo La Rosa <yellowpenguin@telenet.be>
+# translated by Jani Kinnunen <janikinnunen340@gmail.com>
 msgid ""
 msgstr ""
 "Project-Id-Version: gettext 0.11.2\n"
 "Report-Msgid-Bugs-To: <jos@jlemmens.nl>\n"
 "POT-Creation-Date: 2019-08-02 14:07+0200\n"
-"PO-Revision-Date: 2016-07-21 15:06+0200\n"
-"Last-Translator: Osvaldo La Rosa <yellowpenguin@telenet.be>\n"
-"Language-Team: Osvaldo La Rosa <yellowpenguin@telenet.be>\n"
-"Language: fr\n"
+"PO-Revision-Date: 2019-01-01 11:06+0200\n"
+"Last-Translator: Jani Kinnunen <janikinnunen340@gmail.com>\n"
+"Language-Team: Jani Kinnunen <janikinnunen340@gmail.com>\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: src/common.c:31 src/common.c:285 src/common.c:484
 msgid "Please try to play this book with daisy-player"
-msgstr ""
+msgstr "Kokeile toistaa tm kirja daisy-playerilla"
 
 #: src/common.c:751
 #, c-format
 msgid "Cannot read type: %d"
-msgstr "Je ne sais pas lire le type: %d"
+msgstr "Ei voi lukea tyyppi: %d"
 
 #: src/common.c:816
 msgid "Go to page number:"
-msgstr "Allez à la page numéro:"
+msgstr "Siirry sivulle:"
 
 #: src/common.c:834 src/ebook-speaker.c:2026 src/ebook-speaker.c:2771
 #: src/ebook-speaker.c:3064
 msgid "Please wait..."
-msgstr "En cours..."
+msgstr "Odota..."
 
 #: src/common.c:912
 msgid "Select a soundcard:"
-msgstr "Sélectionnez une carte son:"
+msgstr "Valitse nikortti:"
 
 #: src/daisy2.02.c:48 src/daisy2.02.c:132 src/daisy2.02.c:239
 #: src/ebook-speaker.c:2662
 #, c-format
 msgid "Cannot read %s"
-msgstr "Je ne sais pas lire %s"
+msgstr "Ei voi lukea %s"
 
 #: src/ebook-speaker.c:648
 msgid "Select a Text-To-Speech application"
-msgstr "Sélectionnez une application de synthèse vocale"
+msgstr "Valitse teksti puheeksi -sovellus"
 
 #: src/ebook-speaker.c:665
 msgid "Maximum number of TTS's is reached."
-msgstr ""
+msgstr "Teksti puheeksi -sovellusten enimmismr saavutettu."
 
 #: src/ebook-speaker.c:1003 src/list_dir.c:55 src/list_dir.c:255
 msgid "'h' for help"
-msgstr "'h' pour l'aide"
+msgstr "Saat ohjeita painamalla 'h'"
 
 #: src/ebook-speaker.c:1008
 #, c-format
 msgid "%d pages"
-msgstr "%d pages"
+msgstr "%d sivua"
 
 #: src/ebook-speaker.c:1013
 #, c-format
 msgid "level: %d of %d"
-msgstr "niveau: %d sur %d"
+msgstr "taso: %d / %d"
 
 #: src/ebook-speaker.c:1017
 #, c-format
 msgid "total phrases: %d"
-msgstr "nombre de phrases: %d"
+msgstr "lauseita yhteens: %d"
 
 #: src/ebook-speaker.c:1115
 #, c-format
 msgid "Be sure that the used TTS is installed:"
-msgstr "Assurez-vous que le TTS soit bien installé:"
+msgstr "Varmista, ett kytettv teksti puheeksi -sovellus on asennettu:"
 
 #: src/ebook-speaker.c:1172 src/list_dir.c:171
 msgid "These commands are available in this version:"
-msgstr "Les commandes suivantes sont disponibles sous cette version:"
+msgstr "Seuraavat komennot ovat kytettviss tss versiossa:"
 
 #: src/ebook-speaker.c:1176 src/list_dir.c:175
 msgid "cursor down,2   - move cursor to the next item"
-msgstr "curseur bas,2    - déplacer le curseur vers l'élément suivant"
+msgstr "nuoli alas,2   - siirr kohdistin seuraavaan kohteeseen"
 
 #: src/ebook-speaker.c:1178 src/list_dir.c:177
 msgid "cursor up,8     - move cursor to the previous item"
-msgstr "curseur haut,8   - déplacer le curseur vers l'élément précédent"
+msgstr "nuoli yls,8     - siirr kohdistin edelliseen kohteeseen"
 
 #: src/ebook-speaker.c:1180
 msgid "cursor right,6  - skip to next phrase"
-msgstr "curseur droit,6  - sauter à la phrase suivante"
+msgstr "nuoli oikealle,6  - siirry seuraavaan lauseeseen"
 
 #: src/ebook-speaker.c:1182
 msgid "cursor left,4   - skip to previous phrase"
-msgstr "curseur gauche,4 - sauter à la phrase précédente"
+msgstr "nuoli vasemmalle,4   - siirry edelliseen lauseeseen"
 
 #: src/ebook-speaker.c:1184 src/list_dir.c:183
 msgid "page-down,3     - view next page"
-msgstr "page bas,3       - afficher la page suivante"
+msgstr "page down,3     - nyt seuraava sivu"
 
 #: src/ebook-speaker.c:1186 src/list_dir.c:185
 msgid "page-up,9       - view previous page"
-msgstr "page haut,9      - afficher la page précédente"
+msgstr "page up,9       - nyt edellinen sivu"
 
 #: src/ebook-speaker.c:1188
 msgid "enter           - start playing"
-msgstr "enter            - lancer l'écoute"
+msgstr "enter           - aloita toisto"
 
 #: src/ebook-speaker.c:1190
 msgid "space,0         - pause/resume playing"
-msgstr "espace,0         - pause/reprise de l'écoute"
+msgstr "vli,0         - pysyt/jatka toistoa"
 
 #: src/ebook-speaker.c:1192
 msgid "home,*          - play on normal speed"
-msgstr "home,*           - écouter à la vitesse normale"
+msgstr "home,*          - toista normaalinopeudella"
 
 #: src/ebook-speaker.c:1194 src/ebook-speaker.c:1238
 msgid "Press any key for next page..."
-msgstr "Appuyez sur une touche pour aller à la page suivante..."
+msgstr "Siirry seuraavalle sivulle painamalla mit tahansa nppint..."
 
 #: src/ebook-speaker.c:1201 src/list_dir.c:189
 msgid "/               - search for a label"
-msgstr "/                - rechercher un label"
+msgstr "/               - hae nimikett"
 
 #: src/ebook-speaker.c:1203
 msgid "A               - store current item to disk in ASCII-format"
-msgstr ""
-"A                - Sauvegarder l'élément actuel sur disque au format ASCII"
+msgstr "A               - tallenna nykyinen kohde levylle ASCII-muodossa"
 
 #: src/ebook-speaker.c:1205
 msgid "b               - consider the end of an input line as a phrase-break"
-msgstr ""
-"b                - considérer la fin d'une ligne comme une coupure de phrase"
+msgstr "b               - ksittele rivin loppua lausetaukona"
 
 #: src/ebook-speaker.c:1207
 msgid "B               - move cursor to the last item"
-msgstr "B                - déplacer le curseur sur le dernier élément"
+msgstr "B               - siirr kohdistin viimeiseen kohteeseen"
 
 #: src/ebook-speaker.c:1209
 msgid "d               - store current item to disk in WAV-format"
-msgstr ""
-"d                - sauvegarder l'élément actuel sur disque dans un fichier "
-"WAV"
+msgstr "d               - tallenna nykyinen kohde levylle WAV-muodossa"
 
 #: src/ebook-speaker.c:1211
 msgid "D,-             - decrease playing speed"
-msgstr "D,-              - ralentir la vitesse d'écoute"
+msgstr "D,-             - vhenn toistonopeutta"
 
 #: src/ebook-speaker.c:1213
 msgid ""
 "f               - find the currently playing item and place the cursor there"
 msgstr ""
-"f                - trouver l'élément actuel et y positionner le curseur"
+"f               - etsi tll hetkell toistettava kohde ja siirr kohdistin "
+"siihen"
 
 #: src/ebook-speaker.c:1215
 msgid "g               - go to phrase in current item"
-msgstr "g                - aller à la phrase dans l'élément actuel"
+msgstr "g               - siirry lauseeseen nykyisess kohteessa"
 
 #: src/ebook-speaker.c:1218
 msgid "G               - go to page number"
-msgstr "G                - aller à la page numéro"
+msgstr "G               - siirry sivulle"
 
 #: src/ebook-speaker.c:1220 src/list_dir.c:193
 msgid "h,?             - give this help"
-msgstr "h ou ?           - afficher ce menu d'aide"
+msgstr "h,?             - nyt tm ohje"
 
 #: src/ebook-speaker.c:1222
 msgid "j,5             - just play current item"
-msgstr "j,5              - uniquement faire entendre l'élément actuel"
+msgstr "j,5             - toista vain nykyinen kohde"
 
 #: src/ebook-speaker.c:1224
 msgid "l               - switch to next level"
-msgstr "l                - passer au niveau suivant"
+msgstr "l               - vaihda seuraavalle tasolle"
 
 #: src/ebook-speaker.c:1226
 msgid "L               - switch to previous level"
-msgstr "L                - revenir à l'élément précédent"
+msgstr "L               - vaihda edelliselle tasolle"
 
 #: src/ebook-speaker.c:1228
 msgid "m               - mute sound output on/off"
-msgstr ""
+msgstr "m               - nen mykistys plle/pois"
 
 #: src/ebook-speaker.c:1230 src/list_dir.c:197
 msgid "n               - search forwards"
-msgstr "n                - rechercher dans la suite"
+msgstr "n               - hae eteenpin"
 
 #: src/ebook-speaker.c:1232 src/list_dir.c:199
 msgid "N               - search backwards"
-msgstr "N                - recherche inverse"
+msgstr "N               - hae taaksepin"
 
 #: src/ebook-speaker.c:1234
 msgid "o               - select next output sound device"
-msgstr "o                - sélectionner la prochaine unité de sortie audio"
+msgstr "o               - valitse seuraava nen ulostulolaite"
 
 #: src/ebook-speaker.c:1236
 msgid "p               - place a bookmark"
-msgstr "p                - placer un signet"
+msgstr "p               - lis kirjanmerkki"
 
 #: src/ebook-speaker.c:1245
 msgid "q               - quit eBook-speaker and place a bookmark"
-msgstr "q                - quitter eBook-speaker et placer un signet"
+msgstr "q               - poistu eBook-speakerista ja lis kirjanmerkki"
 
 #: src/ebook-speaker.c:1248
 msgid "r               - rotate scanned document"
-msgstr "r                - retourner le document scanné"
+msgstr "r               - knn skannattua dokumenttia"
 
 #: src/ebook-speaker.c:1250
 msgid "s               - stop playing"
-msgstr "s                - arrêter l'écoute"
+msgstr "s               - lopeta toisto"
 
 #: src/ebook-speaker.c:1252
 msgid "t               - select next TTS"
-msgstr "t                - sélectionner le prochain TTS"
+msgstr "t               - valitse seuraava teksti puheeksi -sovellus"
 
 #: src/ebook-speaker.c:1254
 msgid "T               - move cursor to the first item"
-msgstr "T                - déplacer vers le premier élément"
+msgstr "T               - siirr kohdistin ensimmiseen kohteeseen"
 
 #: src/ebook-speaker.c:1256
 msgid "U,+             - increase playing speed"
-msgstr "U,+              - accélérer la vitesse d'écoute"
+msgstr "U,+             - kasvata toistonopeutta"
 
 #: src/ebook-speaker.c:1258
 msgid "v,1             - decrease playback volume"
-msgstr "v,1              - baisser le volume d'écoute"
+msgstr "v,1             - vhenn toiston nenvoimakkuutta"
 
 #: src/ebook-speaker.c:1260
 msgid "V,7             - increase playback volume (beware of Clipping)"
-msgstr "V,7              - augmenter le volume d'écoute"
+msgstr ""
+"V,7             - kasvata toiston nenvoimakkuutta (varo leikkautumista)"
 
 #: src/ebook-speaker.c:1262
 msgid "x               - go to the file-manager"
-msgstr "x                - aller au gestionnaire de fichier"
+msgstr "x               - siirry tiedostonhallintaan"
 
 #: src/ebook-speaker.c:1264 src/list_dir.c:205
 msgid "Press any key to leave help..."
-msgstr "Appuyer sur une touche pour refermer l'aide..."
+msgstr "Poistu ohjeesta painamalla mit tahansa nppint..."
 
 #: src/ebook-speaker.c:1532 src/list_dir.c:107
 msgid "What do you search?"
-msgstr "Que recherchez-vous?"
+msgstr "Mit haet?"
 
 #: src/ebook-speaker.c:1612
 msgid "Break phrases at EOL or at a specific position (y/n/position)"
 msgstr ""
+"Listnk lausetauko rivin loppuun vai johonkin muuhun sijaintiin (y/n/position)"
 
 #: src/ebook-speaker.c:1780
 #, c-format
 msgid "Language code \"%s\" is not a valid tesseract code."
-msgstr "Code linguistique \"%s\" n'est pas un code tesser-act valide"
+msgstr "\"%s\" ei ole kelvollinen tesseract-kielikoodi."
 
 #: src/ebook-speaker.c:1782
 msgid "See the tesseract manual for valid codes."
-msgstr "Voir le manuel tesser-act pour trouver les codes valides."
+msgstr "Katso kelvolliset koodit tesseractin ksikirjasta."
 
 #: src/ebook-speaker.c:1784
 #, c-format
 msgid ""
 "Be sure the package \"tesseract-ocr-%s\" is installed onto your system.\n"
-msgstr ""
-"Assures-vous que le paquet \"tesseract-ocr-%s\" soit bien installé sur votre "
-"système.\n"
+msgstr "Varmista, ett paketti \"tesseract-ocr-%s\" on asennettu jrjestelmsi.\n"
 
 #: src/ebook-speaker.c:1793
 #, c-format
 msgid "Language code \"%s\" is not a valid cuneiform code."
-msgstr "Code linguistique \"%s\" n'est pas un code cuneiform valide."
+msgstr "\"%s\" ei ole kelvollinen cuneiform-kielikoodi."
 
 #: src/ebook-speaker.c:1795
 msgid "See the cuneiform manual for valid codes."
-msgstr "Voir le manuel cuneiforme pour les codes valides."
+msgstr "Katso kelvolliset koodit cuneiformin ksikirjasta."
 
 #: src/ebook-speaker.c:1909
 msgid "Go to phrase in current item:"
-msgstr "Allez à la phrase dans l'élément actuel:"
+msgstr "Siirry lauseeseen nykyisess kohteessa:"
 
 #: src/ebook-speaker.c:2039 src/ebook-speaker.c:2257 src/ebook-speaker.c:2276
 #: src/ebook-speaker.c:2301 src/ebook-speaker.c:2332 src/ebook-speaker.c:2595
 #: src/ebook-speaker.c:2810 src/ebook-speaker.c:2854 src/ebook-speaker.c:3197
 #: src/ebook-speaker.c:3247
 msgid "eBook-speaker cannot handle this file."
-msgstr "eBook-speaker requiert le paquet sane-utils."
+msgstr "eBook-speaker ei voi ksitell tt tiedostoa."
 
 #: src/ebook-speaker.c:2075 src/ebook-speaker.c:2730
 msgid "Press 'h' for help"
-msgstr "Appuyez sur 'h' pour de l'aide"
+msgstr "Saat ohjeita painamalla 'h'"
 
 #: src/ebook-speaker.c:2310
 msgid "Unknown format"
-msgstr "Format inconnu"
+msgstr "Tuntematon muoto"
 
 #: src/ebook-speaker.c:2566 src/ebook-speaker.c:3061
 msgid "eBook-speaker - Version"
-msgstr "eBook-speaker - Version"
+msgstr "eBook-speaker - versio"
 
 #: src/ebook-speaker.c:2570
 #, c-format
@@ -316,71 +315,62 @@ msgid ""
 "[-d pulseaudio_device] [-h] [-H] [-i] [-o language-code] [-t TTS_command] [-"
 "v]"
 msgstr ""
-"Utilisation: %s [fichier eBook | URL | -s [-r résolution]] [-o code "
-"linguistique] [-d unité son pulseaudio] [-h] [-H] [-i] [-t commande TTS] [-b "
-"n | y | position] [-c] [-v]"
+"Kytt: %s [e-kirja-tiedosto | URL | -s [-r resolution]] [-o kielikoodi] [-d "
+"pulseaudio-laite] [-h] [-H] [-i] [-t TTS-komento] [-b n | y | sijainti] [-c] "
+"[-v]"
 
 #: src/list_dir.c:51 src/list_dir.c:252
 #, c-format
 msgid "%s - Choose an input-file"
-msgstr "%s - Choisissez un fichier d'entrée"
+msgstr "%s - Valitse sytetiedosto"
 
 #: src/list_dir.c:179
 msgid "cursor right,6  - open this directory or file"
-msgstr "curseur droit,6  - ouvrir ce répertoire ou un fichier"
+msgstr "nuoli oikealle,6  - avaa tm hakemisto tai tiedosto"
 
 #: src/list_dir.c:181
 msgid "cursor left,4   - open previous directory"
-msgstr "curseur gauche,4 - ouvrir le précédent répertoire"
+msgstr "nuoli vasemmalle,4   - avaa edellinen hakemisto"
 
 #: src/list_dir.c:187
 msgid "enter,6         - open this directory or file"
-msgstr "enter,6          - ouvrir ce répertoire ou un fichier"
+msgstr "enter,6         - avaa tm hakemisto tai tiedosto"
 
 #: src/list_dir.c:191
 msgid "end,B           - move cursor to the last item"
-msgstr "end,B            - déplacer le curseur vers le dernier élément"
+msgstr "end,B           - siirr kohdistin viimeiseen kohteeseen"
 
 #: src/list_dir.c:195
 msgid "H,0             - display \"hidden\" files on/off"
-msgstr "H,0              - afficher les fichiers \"hidden\" ON/OFF"
+msgstr "H,0             - nyt piilotiedostot plle/pois"
 
 #: src/list_dir.c:201
 msgid "q               - quit eBook-speaker"
-msgstr "q                - quitter eBook-speaker"
+msgstr "q               - poistu eBook-speakerista"
 
 #: src/list_dir.c:203
 msgid "home,T          - move cursor to the first item"
-msgstr "home,T           - déplacer le curseur vers le premier élément"
+msgstr "home,T          - siirr kohdistin ensimmiseen kohteeseen"
+
+#~ msgid "This book has no audio. Play this book with eBook-speaker"
+#~ msgstr "Tss kirjassa ei ole audiota. Kyt toistamiseen eBook-speakeria."
+
+#~ msgid "No items found. Try option \"-N\"."
+#~ msgstr "Kohteita ei lytynyt. Kokeile valitsinta \"-N\"."
+
+#~ msgid "No items found. Try option \"-O\"."
+#~ msgstr "Kohteita ei lytynyt. Kokeile valitsinta \"-O\"."
 
 #~ msgid "Provide a new TTS."
-#~ msgstr "Fournissez un nouveau TTS."
+#~ msgstr "Lis uusi teksti puheeksi -sovellus."
 
 #~ msgid "Be sure that the new TTS reads its information from the file"
-#~ msgstr "Assurez-vous que le nouveau TTS lise les informations du fichier"
+#~ msgstr ""
+#~ "Varmista, ett uusi teksti puheeksi -sovellus lukee sytteens tiedostosta"
 
 #~ msgid "eBook-speaker.txt and that it writes to the file eBook-speaker.wav."
-#~ msgstr "eBook-speaker.txt et écrive le résultat dans eBook-speaker.wav."
+#~ msgstr ""
+#~ "eBook-speaker.txt ja ett se kirjoittaa tiedostoon eBook-speaker.wav."
 
 #~ msgid "Press DEL to delete a TTS"
-#~ msgstr "Appuyez sur DEL pour effacer un TTS"
-
-#~ msgid "Be sure the package pulseaudio-utils is installed onto your system."
-#~ msgstr ""
-#~ "Assures-vous que le paquet \"tesseract-ocr-%s\" soit bien installé sur "
-#~ "votre système."
-
-#~ msgid "Consider the end of an input line as a phrase-break (y/n)"
-#~ msgstr "Considérer la fin d'une ligne comme une coupure de phrase (y/n)?"
-
-#~ msgid "Cannot read /proc/asound/cards"
-#~ msgstr "Je ne sais pas lire /proc/asound/cards"
-
-#~ msgid ""
-#~ "Be sure that the used TTS is installed:\n"
-#~ "\n"
-#~ "   \"%s\"\n"
-#~ msgstr ""
-#~ "Assurez-vous que le TTS soit bien installé:\n"
-#~ "\n"
-#~ " \"%s\"\n"
+#~ msgstr "Poista teksti puheeksi -sovellus painamalla DEL"

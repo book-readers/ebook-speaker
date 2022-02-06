@@ -202,3 +202,14 @@
 	Reset the terminal after eBook-speaker exits.
 5.2-beta-2
 	Set a phrase-break at the Nth position.
+	Thanks to Vagner Rener <vagnerrener@gmail.com> for the "fold" idea.
+5.3	Thanks to Didier Spaier <didier@slint.fr> for his patch to common.c:
+	- if ((p = popen ("/usr/bin/pactl list sinks", "r")) == NULL)
+	+ if ((p = popen ("LANG=C /usr/bin/pactl list sinks", "r")) == NULL)
+	pulseaudio device is "0" again.
+	Change variables bin_PROGRAMS ebook_speaker_SOURCES
+	Solved compiler warnings.
+	Added a new -v option for verbosity while readding a book,
+	so one can see what's going on.
+	Thanks to Colomban Wendling <cwendling@hypra.fr> for his
+	patch to gracefully quit daisy-player upon receiving a signal.
