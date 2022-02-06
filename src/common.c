@@ -166,7 +166,7 @@ void get_real_pathname (char *dir, char *search_str, char *found)
    free (namelist);
 } // get_real_pathname
 
-char *get_dir_content (misc_t *misc, char *dir_name, char *search_str)
+char *find_ncx_opf (misc_t *misc, char *dir_name, char *search_str)
 {
    char *found;
    DIR *dir;
@@ -180,10 +180,14 @@ char *get_dir_content (misc_t *misc, char *dir_name, char *search_str)
       failure (misc, "readdir ()", errno);
    do
    {
+      int offset;
+
       if (strcmp (entry->d_name, ".") == 0 ||
           strcmp (entry->d_name, "..") == 0)
          continue;
-      if (strcasestr (entry->d_name, search_str) && *search_str)
+      offset = (int) strlen (entry->d_name) - 4;
+      if (strcasecmp (entry->d_name + offset, search_str) == 0 &&
+          *search_str)
       {
          found = malloc (strlen (dir_name) + strlen (entry->d_name) + 5);
          sprintf (found, "%s/%s\n", dir_name, entry->d_name);
@@ -201,7 +205,7 @@ char *get_dir_content (misc_t *misc, char *dir_name, char *search_str)
          path = malloc (strlen (dir_name) + strlen (entry->d_name) + 10);
          sprintf (path, "%s/%s", dir_name, entry->d_name);
          found = malloc (MAX_STR);
-         strcpy (found, get_dir_content (misc, path, search_str));
+         strcpy (found, find_ncx_opf (misc, path, search_str));
          if (strcasestr (found, search_str) && *search_str)
          {
             free (path);
@@ -211,7 +215,7 @@ char *get_dir_content (misc_t *misc, char *dir_name, char *search_str)
       } // if
    } while ((entry = readdir (dir)));
    return "";
-} // get_dir_content
+} // find_ncx_opf
 
 void find_index_names (misc_t *misc)
 {
@@ -220,10 +224,10 @@ void find_index_names (misc_t *misc)
    get_real_pathname (misc->daisy_mp, "ncc.html", misc->ncc_html);
    *misc->ncx_name = 0;
    strcpy (misc->ncx_name,
-            get_dir_content (misc, misc->daisy_mp, ".ncx"));
+            find_ncx_opf (misc, misc->daisy_mp, ".ncx"));
    *misc->opf_name = 0;
    strcpy (misc->opf_name,
-            get_dir_content (misc, misc->daisy_mp, ".opf"));
+            find_ncx_opf (misc, misc->daisy_mp, ".opf"));
    dirc = strdup (misc->opf_name);
    free (misc->daisy_mp);
    misc->daisy_mp = strdup (dirname (dirc));
@@ -412,7 +416,7 @@ daisy_t *create_daisy_struct (misc_t *misc,
       misc->total_items = handle_ncc_html (misc, my_attribute, daisy);
       return (daisy_t *) calloc ((size_t) misc->total_items + 1,
                                  sizeof (daisy_t));
-   } // if ncc.html                   
+   } // if ncc.html
 
 // handle *.ncx
    if (*misc->ncx_name)

@@ -47,6 +47,7 @@
 #include <grp.h>
 #include <time.h>
 #include <alsa/asoundlib.h>
+#include <iconv.h>         
 
 #undef PACKAGE
 #undef PACKAGE_BUGREPORT

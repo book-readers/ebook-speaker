@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([ebook-speaker], [6.1], [jos@jlemmens.nl], [], [www.jlemmens.nl])
+AC_INIT([ebook-speaker], [6.2], [jos@jlemmens.nl], [], [www.jlemmens.nl])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
