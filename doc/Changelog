@@ -1,0 +1,38 @@
+1.0	This source is a modification of daisy-player.
+1.1	Display the number of phrases in an item.
+	When an item is playing, display the number of the currently
+	spoken phrase and the number of the phrases not read yet.
+1.2	Previous versions of eBook-speaker ran  too ropy.
+	While running, the eBook file was constantly reread.
+	From this version on, the eBook is first read into a struct
+	and the struct is read while running. this makes it react
+	much smoother on keyboard commands.
+	Remove bookmark when reading is finished.
+2.0	Added support for Microsoft Reader eBook (lit) books.
+2.1	I dropped the use of libzip. .epub will be unzipped using
+	the unzip utility.
+2.2	Removed my own xml parser in favour of libxml2.
+	XML toolkit from the GNOME project
+	Copyright (C) 1998-2002 Daniel Veillard.  All Rights Reserved.
+
+	The following files are not needed anymore:
+	   UCkd.h
+	   UCkd.txt
+	   entities.h
+	   entities.txt
+
+	eBook-speaker uses calibre, lowriter, pandoc, pdftohtml,
+	scanimage, html2, 2html and ocrfeeder internally
+	Added the 't' command to popup a TTS-selector.
+2.3	Re-organizes the texts. eBook-speaker puts a break after each
+	'.', ',', '!', '?', ':' or ';'. The result is, that there
+	will be much more phrases, so that reading is smoother.
+2.3.1
+	The file .eBook-speaker.rc is not needed anymore.
+	Little bugs fixed
+2.3.3	The function realname() is not needed anymore
+2.4	ocrfeeder is replaced by tesseract
+	error.wav is not longer used.
+        An argument now is optional.
+        When no argument is given on the command-line, a file-manager
+        will appear..

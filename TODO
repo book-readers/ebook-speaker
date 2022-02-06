@@ -1,5 +1,0 @@
-- .mo files in /usr/local/share/locale/nl/LC_MESSAGES/
-  The path /usr/local/share/locale/ is hardcoded in the source.
-  How to set the path from the command-line?
-- skip left
-- Mobipocket E-book
