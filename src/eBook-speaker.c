@@ -1,5 +1,5 @@
 /* eBook-speaker - read aloud an eBook using a speech synthesizer
- *  Copyright (C) 2015 J. Lemmens
+ *  Copyright (C) 2016 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -240,10 +240,16 @@ void select_tts (misc_t *misc, daisy_t *daisy)
          } // if
          break;
       case KEY_DC:
+         if (*misc->tts[1] == 0)
+         {
+            beep ();
+            continue;
+         } // if
          for (i = y - 3; i < 10; i++)
             strncpy (misc->tts[i], misc->tts[i + 1], MAX_STR - 1);
-         misc->tts_no = 0;
+         misc->tts_no = y - 3;
          view_screen (misc, daisy);
+         nodelay (misc->screenwin, TRUE);
          return;
       default:
          if (x == 2)
@@ -293,10 +299,11 @@ void count_phrases (misc_t *misc, my_attribute_t *my_attribute,
          if (*misc->label)
             daisy[item].n_phrases++;
          if (item == misc->total_items - 1)
-            if (strcasecmp (daisy[item].smil_file,
-                            daisy[item + 1].smil_file) != 0)
+            continue;
+         if (strcasecmp (daisy[item].smil_file,
+             daisy[item + 1].smil_file) != 0)
 // no need to search t_anchor
-               continue;
+            continue;
          if (*daisy[item + 1].anchor)
 // stop at "to" anchor
             if (strcasecmp (my_attribute->id, daisy[item + 1].anchor) == 0)
@@ -336,7 +343,7 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
    xmlTextWriterStartDocument
                 (writer, misc->xmlversion, misc->encoding, misc->standalone);
    xmlTextWriterSetIndent (writer, 1);
-   xmlTextWriterSetIndentString (writer, BAD_CAST "  ");
+   xmlTextWriterSetIndentString (writer, BAD_CAST "");
    xmlTextWriterStartElement (writer, BAD_CAST "html");
    xmlTextWriterWriteString (writer, BAD_CAST "\n");
    while (1)
@@ -345,47 +352,82 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
          break;
       if (strcasecmp (misc->tag, "head") == 0)
       {
+         xmlTextWriterStartElement (writer, (const xmlChar *) misc->tag);
          while (1)
          {
             if (! get_tag_or_label (misc, my_attribute, reader))
                break;
             if (strcasecmp (misc->tag, "/head") == 0)
+            {
+               xmlTextWriterEndElement (writer);
                break;
+            } // if /hed
+            if (strcasecmp (misc->tag, "title") == 0)
+            {
+               if (xmlTextReaderIsEmptyElement (reader))
+               {
+                  continue;
+               } // if
+               xmlTextWriterStartElement (writer,
+                                          (const xmlChar *) misc->tag);
+               while (1)
+               {
+                  if (! get_tag_or_label (misc, my_attribute, reader))
+                     break;
+                  if (*misc->label)
+                     xmlTextWriterWriteString (writer, BAD_CAST misc->label);
+                  if (strcasecmp (misc->tag, "/title") == 0)
+                  {
+                     xmlTextWriterEndElement (writer);
+                     break;
+                  } // if /title
+               } // while
+            } // if title
+            if (strcasecmp (misc->tag, "/head") == 0)
+            {
+               xmlTextWriterWriteString (writer, BAD_CAST "  ");
+               xmlTextWriterEndElement (writer);
+               break;
+            } // /head
          } // while
-      } // if
+      } // if head
       if (strcasecmp (misc->tag, "title") == 0)
       {
+         if (xmlTextReaderIsEmptyElement (reader))
+         {
+            get_tag_or_label (misc, my_attribute, reader);
+            continue;
+         } // if
          xmlTextWriterStartElement (writer, (const xmlChar *) misc->tag);
-         if (! get_tag_or_label (misc, my_attribute, reader))
-            break;
-         xmlTextWriterWriteString (writer, BAD_CAST misc->label);
-         xmlTextWriterEndElement (writer);
+         while (1)
+         {
+            if (! get_tag_or_label (misc, my_attribute, reader))
+               break;
+            if (*misc->label)
+               xmlTextWriterWriteString (writer, BAD_CAST misc->label);
+            if (strcasecmp (misc->tag, "/title") == 0)
+            {
+               xmlTextWriterEndElement (writer);
+               break;
+            } // if /title
+         } // while
       }  // if title
-      if (strcasecmp (misc->tag, "/head") == 0)
-      {
-         xmlTextWriterWriteString (writer, BAD_CAST "  ");
-         xmlTextWriterEndElement (writer);
-         continue;
-      } // if
       if (strcasecmp (misc->tag, "body") == 0)
       {
          xmlTextWriterStartElement (writer, BAD_CAST "body");
          xmlTextWriterWriteString (writer, BAD_CAST "\n");
          continue;
-      } // if
-      if (strcasecmp (misc->tag, "/body") == 0)
+      } // if 'body
+      if (*my_attribute->id)
       {
-         xmlTextWriterEndElement (writer);
-         continue;
-      } // if /body
-      if (strcasecmp (misc->tag, "par") == 0)
-      {
+         if (xmlTextReaderIsEmptyElement (reader))
+            continue;
          xmlTextWriterStartElement (writer, (const xmlChar *) misc->tag);
          xmlTextWriterWriteFormatAttribute
                     (writer, BAD_CAST "id", "%s", my_attribute->id);
          xmlTextWriterWriteString (writer, BAD_CAST "\n");
          continue;
-      } // if par
+      } // if my_attribute->id
       if (strcasecmp (misc->tag, "text") == 0)
       {
          xmlTextWriterStartElement (writer, (const xmlChar *) misc->tag);
@@ -395,40 +437,26 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
          xmlTextWriterEndElement (writer);
          continue;
       } // if text
-      if (strcasecmp (misc->tag, "/par") == 0)
-      {
-         xmlTextWriterEndElement (writer);
-         continue;
-      } // if /par
       if (strcasecmp (misc->tag, "h1") == 0 ||
           strcasecmp (misc->tag, "h2") == 0 ||
           strcasecmp (misc->tag, "h3") == 0 ||
           strcasecmp (misc->tag, "h4") == 0 ||
           strcasecmp (misc->tag, "h5") == 0 ||
-          strcasecmp (misc->tag, "h6") == 0 ||
-          strcasecmp (misc->tag, "p") == 0 ||
-          strcasecmp (misc->tag, "span") == 0)
+          strcasecmp (misc->tag, "h6") == 0)
       {
          if (xmlTextReaderIsEmptyElement (reader))
             continue;
          xmlTextWriterStartElement (writer, (const xmlChar *) misc->tag);
          xmlTextWriterWriteFormatAttribute
             (writer, BAD_CAST "id", "%s", my_attribute->id);
-         xmlTextWriterWriteString (writer, BAD_CAST "\n      ");
+         xmlTextWriterWriteString (writer, BAD_CAST "\n");
          continue;
       } // if "h1"
-      if (strcasecmp (misc->tag, "/h1") == 0 ||
-          strcasecmp (misc->tag, "/h2") == 0 ||
-          strcasecmp (misc->tag, "/h3") == 0 ||
-          strcasecmp (misc->tag, "/h4") == 0 ||
-          strcasecmp (misc->tag, "/h5") == 0 ||
-          strcasecmp (misc->tag, "/h6") == 0 ||
-          strcasecmp (misc->tag, "/p") == 0 ||
-          strcasecmp (misc->tag, "/span") == 0)
+      if (misc->tag[0] == '/')
       {
          xmlTextWriterEndElement (writer);
          continue;
-      } // if
+      } // if /h1
       if (strcasecmp (misc->tag, "pagenum") == 0)
       {
          xmlTextWriterStartElement (writer, (const xmlChar *) misc->tag);
@@ -443,7 +471,6 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
                break;
             if (*misc->label)
             {
-               xmlTextWriterWriteString (writer, BAD_CAST "      ");
                xmlTextWriterWriteString (writer, BAD_CAST misc->label);
                xmlTextWriterWriteString (writer, BAD_CAST "\n    ");
             } // if
@@ -459,7 +486,8 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
       start_of_new_phrase = 1;
       while (1)
       {
-         if (start_of_new_phrase == 1 && (*p == ' ' || *p == '\t'))
+         if (start_of_new_phrase == 1 &&
+             (*p == ' ' || *p == '\t'))
          {
 // remove first spaces
             p++;
@@ -469,7 +497,7 @@ void split_phrases (misc_t *misc, my_attribute_t *my_attribute,
          if ((*p == '.' || *p == ',' || *p == '!' || *p == '?' || *p == '/' ||
               *p == ':' || *p == ';' || *p == '-' || *p == '*') &&
              (*(p + 1) == ' ' || *(p + 1) == '\r' || *(p + 1) == '\n' ||
-              *(p + 1) == 0 ||
+              *(p + 1) == 0 || *(p + 1) == '\'' ||
 // ----
               *(p + 1) == -62))
               // I don't understand it, but it works
@@ -771,6 +799,11 @@ void open_text_file (misc_t *misc, my_attribute_t *my_attribute,
 
 void pause_resume (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
 {
+   if (*misc->tts[misc->tts_no] == 0)
+   {
+      misc->tts_no = 0;
+      select_tts (misc, daisy);
+   } // if
    if (misc->playing != -1)
       misc->playing = -1;
    else
@@ -786,7 +819,7 @@ void pause_resume (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
          kill (misc->player_pid, SIGKILL);
          wattron (misc->screenwin, A_BOLD);
          mvwprintw (misc->screenwin, daisy[misc->playing].y, 69, "%5d %5d",
-                    misc->phrase_nr, 
+                    misc->phrase_nr,
                     daisy[misc->playing].n_phrases - misc->phrase_nr);
          wattroff (misc->screenwin, A_BOLD);
          wmove (misc->screenwin, daisy[misc->displaying].y,
@@ -832,7 +865,7 @@ void pause_resume (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
             _exit (0);
          default:
             return;
-         } // switch
+         } // switch       
       }
       else
          kill_player (misc);
@@ -997,11 +1030,11 @@ void help (misc_t *misc, daisy_t *daisy)
    wprintw (misc->screenwin, "%s\n", gettext
             ("U,+             - increase playing speed"));
    wprintw (misc->screenwin, "%s\n", gettext
-      ("x               - go to the file-manager"));
+            ("v,1             - decrease playback volume"));
    wprintw (misc->screenwin, "%s\n", gettext
-      ("7               - increase playback volume (beware of Clipping)"));
+        ("V,7             - increase playback volume (beware of Clipping)"));
    wprintw (misc->screenwin, "%s\n", gettext
-            ("1               - decrease playback volume"));
+            ("x               - go to the file-manager"));
    wprintw (misc->screenwin, "\n%s", gettext
             ("Press any key to leave help..."));
    nodelay (misc->screenwin, FALSE);
@@ -1380,7 +1413,7 @@ void select_next_output_device (misc_t *misc, daisy_t *daisy)
       list[n] = (char *) malloc (1000);
       bytes = getline (&list[n], &bytes, r);
       if ((int) bytes == -1)
-         break;
+         break;              
       trash = (char *) malloc (1000);
       bytes = getline (&trash, &bytes, r);
       free (trash);
@@ -1568,7 +1601,7 @@ void go_to_page_number (misc_t *misc, my_attribute_t *my_attribute,
 
 void start_tesseract (misc_t *misc, char *file)
 {
-   char cmd[MAX_CMD], str[MAX_STR + 1];
+   char str[MAX_STR + 1];
 
    if (! *misc->ocr_language)
    {
@@ -1597,10 +1630,10 @@ void start_tesseract (misc_t *misc, char *file)
       if (strcmp (misc->locale, "sv") == 0)
          strncpy (misc->ocr_language, "swe", 5);
    } // if
-   snprintf (cmd, MAX_CMD - 1,
+   snprintf (misc->cmd, MAX_CMD - 1,
              "tesseract \"%s\" \"%s/out\" -l %s 2> /dev/null", file,
               misc->tmp_dir, misc->ocr_language);
-   switch (system (cmd))
+   switch (system (misc->cmd))
    {
    case 0:
       break;
@@ -1632,18 +1665,12 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
 
    misc->current = misc->phrase_nr = 0;
    misc->level = 1;
-   check_phrases (misc, my_attribute, daisy);
    if (misc->scan_flag == 0 && misc->ignore_bookmark == 0)
    {
       get_bookmark (misc, my_attribute, daisy);
       check_phrases (misc, my_attribute, daisy);
       go_to_phrase (misc, my_attribute, daisy, ++misc->phrase_nr);
    }
-   else
-   {
-      open_text_file (misc, my_attribute,
-                daisy[misc->current].smil_file, daisy[misc->current].anchor);
-   } // if
    view_screen (misc, daisy);
    nodelay (misc->screenwin, TRUE);
    wmove (misc->screenwin, daisy[misc->current].y,
@@ -1802,7 +1829,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          return;
       case 'r':
       {
-         char cmd[MAX_CMD + 1], str[MAX_STR];
+         char str[MAX_STR];
          int i;
 
          if (misc->scan_flag != 1)
@@ -1814,8 +1841,11 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          xmlTextReaderClose (misc->reader);
          misc->phrase_nr = 0;
          misc->total_phrases = misc->total_pages = *misc->daisy_title = 0;
-         snprintf (cmd, MAX_CMD - 1, "rm -rf \"%s/out*\"", misc->tmp_dir);
-         switch (system (cmd))
+         misc->playing = misc->just_this_item = -1;
+         misc->displaying = misc->current = 0;
+         snprintf (misc->cmd, MAX_CMD - 1,
+                   "rm -rf \"%s/out*\"", misc->tmp_dir);
+         switch (system (misc->cmd))
          {
          default:
             break;
@@ -1830,8 +1860,8 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          wattroff (misc->titlewin, A_BOLD);
          wrefresh (misc->titlewin);
          snprintf (str, MAX_STR - 1, "%s.rotated", file);
-         snprintf (cmd, MAX_CMD, "pnmflip -r90 %s > %s", file, str);
-         switch (system (cmd))
+         snprintf (misc->cmd, MAX_CMD, "pnmflip -r90 %s > %s", file, str);
+         switch (system (misc->cmd))
          {
          case 1:
             endwin ();
@@ -1858,8 +1888,6 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          check_phrases (misc, my_attribute, daisy);
          misc->level = misc->depth = 1;
          *misc->search_str = 0;
-         misc->current = misc->displaying = misc->playing = 0;
-         misc->just_this_item = misc->playing = -1;
          misc->reader = NULL;
          if (misc->depth <= 0)
             misc->depth = 1;
@@ -1879,7 +1907,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          wprintw (misc->titlewin, "----------------------------------------");
          mvwprintw (misc->titlewin, 1, 0, gettext ("Press 'h' for help "));
          wrefresh (misc->titlewin);
-         view_screen (misc, daisy);
+         previous_item (misc, daisy);
          break;
       } // 'r'
       case 's':
@@ -1888,16 +1916,8 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          kill_player (misc);
          break;
       case 't':
-         if (misc->playing != -1)
-            pause_resume (misc, my_attribute, daisy);
+         misc->playing = -1;
          select_tts (misc, daisy);
-         misc->playing = misc->displaying;
-         kill_player (misc);
-         if (misc->playing != -1)
-         {
-            misc->phrase_nr--;
-            get_next_phrase (misc, my_attribute, daisy);
-         } // if
          view_screen (misc, daisy);
          remove_double_tts_entries (misc);
          break;
@@ -1997,6 +2017,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          pause_resume (misc, my_attribute, daisy);
          pause_resume (misc, my_attribute, daisy);
          break;
+      case 'v':   
       case '1':
          if (misc->volume <= 0)
          {
@@ -2009,6 +2030,7 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          pause_resume (misc, my_attribute, daisy);
          pause_resume (misc, my_attribute, daisy);
          break;
+      case 'V':
       case '7':
          if (misc->volume >= 3)
          {
@@ -2025,16 +2047,21 @@ void browse (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy,
          kill_player (misc);
          put_bookmark (misc);
          misc->playing = misc->just_this_item = -1;
-         snprintf (misc->cmd, MAX_CMD - 1, "rm -rf %s/*", misc->tmp_dir);
-         switch (system (misc->cmd))
+         strncpy (file, get_input_file (misc, file), MAX_STR - 1);
+         switch (chdir (misc->tmp_dir))
          {
          case 0:
-            break;
+            snprintf (misc->cmd, MAX_CMD - 1, "rm -rf *");
+            switch (system (misc->cmd))
+            {
+            case 0:
+               break;
+            default:
+               failure (misc->tmp_dir, errno);
+            } // switch
          default:
-            failure (misc->tmp_dir, errno);
+            break;
          } // switch
-         strncpy (file, get_input_file (misc, misc->src_dir,
-                  basename (file)), MAX_STR - 1);
          create_epub (misc, my_attribute, daisy, file, 1);
          play_epub (misc, my_attribute, daisy, file);
          break;
@@ -2114,14 +2141,14 @@ void lowriter_to_txt (char *file)
 
 void pandoc_to_epub (misc_t *misc, char *from, char *file)
 {
-   char cmd[MAX_CMD], str[MAX_STR];
+   char str[MAX_STR + 1];
 
    strncpy (str, misc->tmp_dir, MAX_STR);
    strncat (str, "/out.epub", MAX_STR);
-   snprintf (cmd, MAX_CMD,
+   snprintf (misc->cmd, MAX_CMD,
              "pandoc -s \"%s\" -f %s -t epub -o %s 2> /dev/null",
              file, from, str);
-   switch (system (cmd))
+   switch (system (misc->cmd))
    {
    case 0:
       break;
@@ -2141,13 +2168,13 @@ void pandoc_to_epub (misc_t *misc, char *from, char *file)
       failure (str, e);
    } // if
    extract_epub (misc, str);
-} // pandoc_to_epub
+} // pandoc_to_epub            
 
 void pdf_to_txt (const char *file)
 {
    char cmd[MAX_CMD];
 
-   snprintf (cmd, MAX_CMD - 1, "pdftotext \"%s\" out.txt", file);
+   snprintf (cmd, MAX_CMD - 1, "pdftotext -q \"%s\" out.txt", file);
    switch (system (cmd))
    {
    case 0:
@@ -2231,7 +2258,7 @@ void store_as_WAV_file (misc_t *misc, my_attribute_t *my_attribute,
 {
    char str[MAX_STR], s2[MAX_STR];
    int i, pause_flag;
-   struct passwd *pw;;
+   struct passwd *pw;
 
    pause_flag = misc->playing;
    wclear (misc->screenwin);
@@ -2345,7 +2372,7 @@ void usage ()
 {
    endwin ();
    printf ("%s %s\n", gettext ("eBook-speaker - Version"), PACKAGE_VERSION);
-   puts ("(C)2003-2015 J. Lemmens");
+   puts ("(C)2003-2016 J. Lemmens");
    printf ("\n");
    printf (gettext
            ("Usage: %s [eBook_file | -s] [-o language-code] "
@@ -2489,6 +2516,7 @@ void play_epub (misc_t *misc, my_attribute_t *my_attribute,
    } // for
 
    read_daisy_3 (misc, my_attribute, daisy);
+   check_phrases (misc, my_attribute, daisy);
    misc->reader = NULL;
    misc->just_this_item = misc->playing = -1;
    if (! *misc->daisy_title)
@@ -2612,6 +2640,14 @@ void create_epub (misc_t *misc, my_attribute_t *my_attribute,
       return;
    }
    else
+   if (strcasecmp (magic_file (myt, file), "data") == 0)
+   {
+      char *str;                                       
+
+      str = ascii2html (misc, file);
+      pandoc_to_epub (misc, "html", str);
+   }
+   else
    if (strcasestr (magic_file (myt, file), "PostScript document"))
    {
       char cmd[MAX_CMD + 1];
@@ -2641,7 +2677,7 @@ void create_epub (misc_t *misc, my_attribute_t *my_attribute,
       char *str;
 
       str = ascii2html (misc, file);
-      pandoc_to_epub (misc, "html", str);
+      pandoc_to_epub (misc, "html", str);     
    }
    else
    if (strcasestr (magic_file (myt, file), "ISO-8859 text"))
@@ -2662,7 +2698,7 @@ void create_epub (misc_t *misc, my_attribute_t *my_attribute,
        strcasestr (magic_file (myt, file), "Composite Document File") ||
        strcasestr (magic_file (myt, file), "Microsoft Word 2007+") ||
        strcasestr (magic_file (myt, file), "Microsoft Office Document") ||
-       strcasestr (magic_file (myt, file), "OpenDocument")||
+       strcasestr (magic_file (myt, file), "OpenDocument") ||
        strcasestr (magic_file (myt, file), "Rich Text Format"))
    {
       lowriter_to_txt (file);
@@ -2704,7 +2740,21 @@ void create_epub (misc_t *misc, my_attribute_t *my_attribute,
    if (strcasestr (magic_file (myt, file), "directory"))
    {
       snprintf (file, MAX_STR - 1, "%s",
-                get_input_file (misc, file, NULL));
+                get_input_file (misc, file));
+      switch (chdir (misc->tmp_dir))
+      {
+      case 0:
+         snprintf (misc->cmd, MAX_CMD - 1, "rm -rf *");
+         switch (system (misc->cmd))
+         {
+         case 0:
+            break;
+         default:
+            failure (misc->tmp_dir, errno);
+         } // switch
+      default:
+         break;
+      } // switch
       create_epub (misc, my_attribute, daisy, file, 1);
       switch (chdir (misc->tmp_dir))
       {
@@ -2755,7 +2805,7 @@ int main (int argc, char *argv[])
    noecho ();
    misc.eBook_speaker_pid = getpid ();
    misc.player_pid = -2;
-   snprintf (misc.copyright, MAX_STR - 1, "%s %s - (C)2015 J. Lemmens",
+   snprintf (misc.copyright, MAX_STR - 1, "%s %s - (C)2016 J. Lemmens",
              gettext ("eBook-speaker - Version"), PACKAGE_VERSION);
    wattron (misc.titlewin, A_BOLD);
    wprintw (misc.titlewin, "%s - %s", misc.copyright,
@@ -2804,7 +2854,7 @@ int main (int argc, char *argv[])
          misc.scan_flag = 1;
          snprintf (misc.orig_file, MAX_STR, "%s/out.pgm", misc.tmp_dir);
          snprintf (misc.cmd, MAX_CMD,
-             "scanimage --resolution 400 --mode Gray > %s", misc.orig_file);
+             "scanimage --resolution 300 --mode Gray > %s", misc.orig_file);
          switch (system (misc.cmd))
          {
          case 0:
@@ -2842,7 +2892,21 @@ int main (int argc, char *argv[])
    {
 // if no arguments are given
       snprintf (misc.orig_file, MAX_STR - 1, "%s",
-                get_input_file (&misc, misc.src_dir, NULL));
+                get_input_file (&misc, misc.src_dir));
+      switch (chdir (misc.tmp_dir))
+      {
+      case 0:
+         snprintf (misc.cmd, MAX_CMD - 1, "rm -rf *");
+         switch (system (misc.cmd))
+         {
+         case 0:
+            break;
+         default:
+            failure (misc.tmp_dir, errno);
+         } // switch
+      default:
+         break;
+      } // switch         
       create_epub (&misc, &my_attribute, daisy, misc.orig_file, 1);
       play_epub (&misc, &my_attribute, daisy, misc.orig_file);
       quit_eBook_speaker (&misc);

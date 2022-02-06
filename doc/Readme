@@ -5,7 +5,7 @@ DESCRIPTION
 eBook-speaker reads an eBook and uses a speech synthisizer for output.
 eBook-speaker reads the EPUB format. If the given file is not an
 EPUB it will be converted using several tools like calibre, lowriter,
-pandoc, pdftohtml, scanimage, pnmflip, unrtf or tesseract.
+pandoc, pdftotext, scanimage, pnmflip, unrtf or tesseract.
 (http://en.wikipedia.org/wiki/Comparison_of_e-book_formats)
 eBook-speaker can use any TTS (Text-To_speech) tool, as long as the TTS
 can read the text from a file and writes the audio to a .wav file.
@@ -23,6 +23,7 @@ Be sure the following extra packages exist on your system:
    man2html-base
    html2text
    gettext
+   language-pack-bg
    language-pack-de
    language-pack-es
    language-pack-fr
@@ -68,7 +69,7 @@ For keyboard navigation, plese press 'h' or '?'.
 
 eBook-speaker is multilingual. The following languages are currently
 supported:
-dutch, english, french, german, portuguese, spanish.
+bulgarian, dutch, english, french, german, portuguese, spanish.
 
 Enjoy
 

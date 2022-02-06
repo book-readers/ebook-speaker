@@ -217,30 +217,44 @@ void help_list (misc_t *misc)
    nodelay (misc->screenwin, TRUE);
 } // help_list
 
-char *get_input_file (misc_t *misc, char *src_dir, char *src_file)
+char *get_input_file (misc_t *misc, char *src)
 {
    struct dirent **namelist;
    static char file[MAX_STR + 1];
    char *file_type = 0, search_str[MAX_STR], str[MAX_STR + 1];
    int n, page;
 
-   strncpy (misc->src_dir, src_dir, MAX_STR);
-   switch (chdir (misc->src_dir))
+   if (strcasecmp (get_file_type (src), "directory") == 0)
    {
-   default:
-      break;
-   } // switch
-   if (*(misc->src_dir + strlen (misc->src_dir) - 1) != '/')
-      strcat (misc->src_dir, "/");
+      strncpy (misc->src_dir, src, MAX_STR);
+      if (*(misc->src_dir + strlen (misc->src_dir) - 1) != '/')
+         strcat (misc->src_dir, "/");
+      switch (chdir (misc->src_dir))
+      {
+      default:
+         break;
+      } // switch
+   }
+   else
+   {
+      strncpy (file, basename (src), MAX_STR);
+      strncpy (misc->src_dir, dirname (src), MAX_STR);
+      if (*(misc->src_dir + strlen (misc->src_dir) - 1) != '/')
+         strcat (misc->src_dir, "/");
+      switch (chdir (misc->src_dir))
+      {
+      default:
+         break;
+      } // switch
+   } // if
    nodelay (misc->screenwin, FALSE);
    namelist = NULL;
    misc->list_total = 0;
    namelist = get_dir (misc, namelist);
    n = 0;
-   if (src_file)
-      for (n = misc->list_total - 1; n > 0; n--)
-         if (strcmp (namelist[n]->d_name, src_file) == 0)
-            break;
+   for (n = misc->list_total - 1; n > 0; n--)
+      if (strcmp (namelist[n]->d_name, file) == 0)
+         break;
    page = n / 23 + 1;
    mvwprintw (misc->titlewin, 0, 0,
               gettext ("%s - Choose an input-file"), misc->copyright);
@@ -307,11 +321,6 @@ char *get_input_file (misc_t *misc, char *src_dir, char *src_file)
             break;
          } // if "directory"
          snprintf (file, MAX_STR, "%s%s", misc->src_dir, namelist[n]->d_name);
-         switch (chdir (misc->tmp_dir))
-         {
-         default:
-            break;
-         } // switch
          return file;
       case KEY_LEFT:
       case '4':
