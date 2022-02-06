@@ -6,6 +6,5 @@ AM_CFLAGS  = -D LOCALEDIR=\"$(prefix)/share/locale\" -D EBOOK_SPEAKER \
              -D PROGRAMNAME_LOCALEDIR=\"${PROGRAMNAME_LOCALEDIR}\"
 AM_LDFLAGS = -l ncursesw -l sox -l xml2 -l magic # -l cdio -l cdio_cdda \
              -l cdio_paranoia
-bin_PROGRAMS = eBook-speaker ebook-speaker
+bin_PROGRAMS = eBook-speaker
 eBook_speaker_SOURCES = daisy3.c eBook-speaker.c daisy.h list_dir.c
-ebook_speaker_SOURCES = daisy3.c eBook-speaker.c daisy.h list_dir.c

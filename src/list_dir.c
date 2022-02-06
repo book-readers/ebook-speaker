@@ -143,10 +143,11 @@ void help_list (WINDOW *screenwin)
    waddstr (screenwin, gettext ("cursor down     - move cursor to the next item\n"));
    waddstr (screenwin, gettext ("cursor up       - move cursor to the previous item\n"));
    waddstr (screenwin, gettext ("cursor right    - open this directory or file\n"));
-   waddstr (screenwin, gettext ("enter           - open this directory or file\n"));
    waddstr (screenwin, gettext ("cursor left     - open previous directory\n"));
    waddstr (screenwin, gettext ("page-down       - view next page\n"));
    waddstr (screenwin, gettext ("page-up         - view previous page\n"));
+   waddstr (screenwin,
+            gettext ("enter           - open this directory or file\n"));
    waddstr (screenwin, gettext ("/               - search for a label\n"));
    waddstr (screenwin, gettext ("B               - move cursor to the last item\n"));
    waddstr (screenwin, gettext ("h or ?          - give this help\n"));
@@ -181,7 +182,7 @@ char *get_input_file (char *src_dir, char *copyright,
    fill_ls (tot, namelist, file_type);
    n = 0;
    *search_str = 0;
-   for (;;)
+   while (1)
    {
       int search_flag;
 
@@ -215,8 +216,6 @@ char *get_input_file (char *src_dir, char *copyright,
          } // if
          snprintf (name, MAX_STR - 1, "%s/%s",
                    get_current_dir_name (), namelist[n]->d_name);
-         for (n = 0; n <= tot; n++)
-            free (namelist[n]);
          free (namelist);
          return name;
       case KEY_LEFT:
@@ -298,15 +297,31 @@ char *get_input_file (char *src_dir, char *copyright,
          fill_ls (tot, namelist, file_type);
          break;
       case 'H':
+      {
+         char name[55];
+         int found;
+
          show_hidden_files = 1 - show_hidden_files;
+         strncpy (name, namelist[n]->d_name, 50);
          free (namelist);
          if (show_hidden_files)
             tot = scandir (src_dir, &namelist, NULL, alphasort) - 1;
          else
             tot = scandir (src_dir, &namelist, &hidden_files, alphasort) - 1;
          fill_ls (tot, namelist, file_type);
-         n = 0;
+         found = 0;
+         for (n = 0; n <= tot; n++)
+         {
+            if (strncmp (namelist[n]->d_name, name, MAX_STR) == 0)
+            {
+               found = 1;
+               break;
+            } // if
+         } // for
+         if (! found)
+            n = 0;
          break;
+      }
       case 'n':
          if ((search_flag = search_in_dir (n + 1, tot, 'n', titlewin,
                                            search_str, namelist)) != -1)

@@ -48,3 +48,5 @@
 	With the 'd' key, current item will be written to disk as a
 	WAV-file.
 	When option -s is used, the bookmark is  ignored.
+2.5.2	When in file manager viewing hidden files is switch on/off, cursor
+	will resides on same filename.
