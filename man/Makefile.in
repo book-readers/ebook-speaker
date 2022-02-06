@@ -167,6 +167,9 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CXX = @CXX@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -200,6 +203,12 @@ MKDIR_P = @MKDIR_P@
 MSGFMT = @MSGFMT@
 MSGFMT_015 = @MSGFMT_015@
 MSGMERGE = @MSGMERGE@
+OBJC = @OBJC@
+OBJCDEPMODE = @OBJCDEPMODE@
+OBJCFLAGS = @OBJCFLAGS@
+OBJCXX = @OBJCXX@
+OBJCXXDEPMODE = @OBJCXXDEPMODE@
+OBJCXXFLAGS = @OBJCXXFLAGS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -211,6 +220,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 POSUB = @POSUB@
 POW_LIB = @POW_LIB@
+RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -225,6 +235,9 @@ abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
+ac_ct_OBJC = @ac_ct_OBJC@
+ac_ct_OBJCXX = @ac_ct_OBJCXX@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
@@ -266,6 +279,7 @@ runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
+subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
@@ -509,17 +523,6 @@ uninstall-man: uninstall-man1
 all: eBook-speaker
 
 eBook-speaker:
-#	@which txt2man > /dev/null && txt2man -p ${srcdir}/../doc/$@.txt > \
-#	       ${srcdir}/$@.1
-#	@file ${srcdir}/$@.1 && \
-#	  man2html ${srcdir}/$@.1 | tail -n +3 > ${srcdir}/../doc/$@.html
-
-#Date: Sun, 13 Nov 2016 16:14:13 +0000
-#From: Daniel Shahaf <danielsh@apache.org>
-#Subject: Bug#844228: ebook-speaker: man page title is wrong if build directory
-#        isn't named ${package}-${version}
-#To: Debian Bug Tracking System <submit@bugs.debian.org>
-
 	@which txt2man > /dev/null && txt2man \
 	      -t 'eBook-speaker' -s 1 -v "Linux Reference Manual" \
 	      -r "ebook-speaker-$(VERSION)" \

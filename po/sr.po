@@ -1,0 +1,400 @@
+# message catalog file for eBook-speaker - Serbian version
+#
+# Copyright (C) 2003-2018 J. Lemmens
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2 of the License, or (at your
+# option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# translated by Ненад Рајковић <a.nenad.if.9@gmail.com>
+msgid ""
+msgstr ""
+"Project-Id-Version: gettext 0.11.2\n"
+"Report-Msgid-Bugs-To: <jos@jlemmens.nl>\n"
+"POT-Creation-Date: 2018-12-23 17:55+0100\n"
+"PO-Revision-Date: 2018-02-22 16:06+0200\n"
+"Last-Translator: Ненад Рајковић <a.nenad.if.9@gmail.com>\n"
+"Language-Team: Ненад Рајковић <a.nenad.if.9@gmail.com>\n"
+"Language: sr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: src/common.c:244 src/common.c:426
+msgid "Please try to play this book with daisy-player"
+msgstr "Molimo pokušajte otvoriti ovu knjigu pomoću daisy-plejera"
+
+#: src/common.c:758
+#, c-format
+msgid "Cannot read type: %d"
+msgstr "Ne mogu pročitati napisano: %d"
+
+#: src/common.c:838
+msgid "Go to page number:"
+msgstr "Idi na stranu broj:"
+
+#: src/common.c:856 src/eBook-speaker.c:2149 src/eBook-speaker.c:2888
+#: src/eBook-speaker.c:3164
+msgid "Please wait..."
+msgstr "Molimo sačekajte..."
+
+#: src/common.c:931
+msgid "Select a soundcard:"
+msgstr "Izaberite zvučnu kartu:"
+
+#: src/common.c:938
+msgid "Be sure the package pulseaudio-utils is installed onto your system."
+msgstr "Obezbedi da paket \"tesseract-ocr-%s\" bude instaliran na tvoj sistem."
+
+#: src/daisy2.02.c:49 src/daisy2.02.c:144 src/daisy2.02.c:305 src/daisy3.c:54
+#: src/daisy3.c:252 src/daisy3.c:322 src/daisy3.c:418 src/daisy3.c:499
+#: src/daisy3.c:821 src/daisy3.c:912 src/daisy3.c:991 src/daisy3.c:1231
+#: src/daisy3.c:1364 src/eBook-speaker.c:2786
+#, c-format
+msgid "Cannot read %s"
+msgstr "Ne mogu pročitati %s"
+
+#: src/daisy3.c:1181
+msgid "This book has no audio. Play this book with eBook-speaker"
+msgstr "Ova knjiga nema audio. Otvori ovu knjigu pomoću programa eBook-speaker"
+
+#: src/daisy3.c:1198
+msgid "No items found. Try option \"-N\"."
+msgstr "Nijedna stavka nije pronađena. Pokušajte opciju \"-N\"."
+
+#: src/daisy3.c:1343
+msgid "No items found. Try option \"-O\"."
+msgstr "Nijedna stavka nije pronađena. Pokušajte opciju \"-O\"."
+
+#: src/eBook-speaker.c:727
+msgid "Select a Text-To-Speech application"
+msgstr "Izaberi Text-To-Speach aplikaciju"
+
+#: src/eBook-speaker.c:743
+msgid "Provide a new TTS."
+msgstr "Obezbedi novi TTS."
+
+#: src/eBook-speaker.c:745
+msgid "Be sure that the new TTS reads its information from the file"
+msgstr "Obezbedi da novi TTS čita svoje informacije iz fajla"
+
+#: src/eBook-speaker.c:747
+msgid "eBook-speaker.txt and that it writes to the file eBook-speaker.wav."
+msgstr "eBook-speaker.txt i da upisuje u fajl eBook-speaker.waw."
+
+#: src/eBook-speaker.c:753
+msgid "Maximum number of TTS's is reached."
+msgstr "Maksimalni broj TTS-a je dostignut."
+
+#: src/eBook-speaker.c:756
+msgid "Press DEL to delete a TTS"
+msgstr "Pritisni DEL da izbrišeš TTS"
+
+#: src/eBook-speaker.c:1151 src/list_dir.c:56 src/list_dir.c:254
+msgid "'h' for help"
+msgstr "'h' za pomoć"
+
+#: src/eBook-speaker.c:1156
+#, c-format
+msgid "%d pages"
+msgstr "%d strane"
+
+#: src/eBook-speaker.c:1161
+#, c-format
+msgid "level: %d of %d"
+msgstr "nivo: %d od %d"
+
+#: src/eBook-speaker.c:1165
+#, c-format
+msgid "total phrases: %d"
+msgstr "ukupan broj fraza: %d"
+
+#: src/eBook-speaker.c:1264
+#, c-format
+msgid "Be sure that the used TTS is installed:"
+msgstr "Obezbedi da je korišćeni TTS instaliran:"
+
+#: src/eBook-speaker.c:1320 src/list_dir.c:173
+msgid "These commands are available in this version:"
+msgstr "Ove komande su dostupne u ovoj verziji:"
+
+#: src/eBook-speaker.c:1324 src/list_dir.c:177
+msgid "cursor down,2   - move cursor to the next item"
+msgstr "kursor dole,2  - pomeri kursor na sledeću stavku"
+
+#: src/eBook-speaker.c:1326 src/list_dir.c:179
+msgid "cursor up,8     - move cursor to the previous item"
+msgstr "kursor gore,8  - pomeri kursor na prethodnu stavku"
+
+#: src/eBook-speaker.c:1328
+msgid "cursor right,6  - skip to next phrase"
+msgstr "kursor desno,6 - skoči na sledeću frazu"
+
+#: src/eBook-speaker.c:1330
+msgid "cursor left,4   - skip to previous phrase"
+msgstr "kursor levo,4  - skoči na prethodnu frazu"
+
+#: src/eBook-speaker.c:1332 src/list_dir.c:185
+msgid "page-down,3     - view next page"
+msgstr "page-down,3    - vidi sledeću stranu"
+
+#: src/eBook-speaker.c:1334 src/list_dir.c:187
+msgid "page-up,9       - view previous page"
+msgstr "page-up,9      - vidi prethodnu stranu"
+
+#: src/eBook-speaker.c:1336
+msgid "enter           - start playing"
+msgstr "enter          - započni reprodukciju"
+
+#: src/eBook-speaker.c:1338
+msgid "space,0         - pause/resume playing"
+msgstr "space,0        - pauza/nastavi reprodukciju"
+
+#: src/eBook-speaker.c:1340
+msgid "home,*          - play on normal speed"
+msgstr "home,*         - reprodukuj u normalnoj brzini"
+
+#: src/eBook-speaker.c:1342 src/eBook-speaker.c:1386
+msgid "Press any key for next page..."
+msgstr "Pritisni bilo koji taster za sledeću stranu..."
+
+#: src/eBook-speaker.c:1349 src/list_dir.c:191
+msgid "/               - search for a label"
+msgstr "/              - pretraži markere"
+
+#: src/eBook-speaker.c:1351
+msgid "A               - store current item to disk in ASCII-format"
+msgstr "A              - sačuvaj trenutni sadržaj na disk u ASCII-formatu"
+
+#: src/eBook-speaker.c:1353
+msgid "b               - consider the end of an input line as a phrase-break"
+msgstr "b              - dodeli kraj ulaznog reda prelomu fraze"
+
+#: src/eBook-speaker.c:1355
+msgid "B               - move cursor to the last item"
+msgstr "B              - pomeri kursor na poslednju stavku"
+
+#: src/eBook-speaker.c:1357
+msgid "d               - store current item to disk in WAV-format"
+msgstr "d              - sačuvaj trenutni sadržaj na disk u WAW-formatu"
+
+#: src/eBook-speaker.c:1359
+msgid "D,-             - decrease playing speed"
+msgstr "D,-            - smanji brzinu reprodukcije"
+
+#: src/eBook-speaker.c:1361
+msgid ""
+"f               - find the currently playing item and place the cursor there"
+msgstr ""
+"f              - pronađi trenutno reprodukovanu stavku i postavi kursor tu"
+
+#: src/eBook-speaker.c:1363
+msgid "g               - go to phrase in current item"
+msgstr "g              - idi na frazu u trenutnoj stavci"
+
+#: src/eBook-speaker.c:1366
+msgid "G               - go to page number"
+msgstr "G              - idi na stranu broj"
+
+#: src/eBook-speaker.c:1368 src/list_dir.c:195
+msgid "h,?             - give this help"
+msgstr "h,?            - dodeli pomoć"
+
+#: src/eBook-speaker.c:1370
+msgid "j,5             - just play current item"
+msgstr "j,5            - samo reprodukuj trenutnu stavku"
+
+#: src/eBook-speaker.c:1372
+msgid "l               - switch to next level"
+msgstr "l              - prebaci na sledeći marker"
+
+#: src/eBook-speaker.c:1374
+msgid "L               - switch to previous level"
+msgstr "L              - prebaci na prethodni marker"
+
+#: src/eBook-speaker.c:1376
+msgid "m               - mute sound output on/off"
+msgstr ""
+
+#: src/eBook-speaker.c:1378 src/list_dir.c:199
+msgid "n               - search forwards"
+msgstr "n              - pretraži unapred"
+
+#: src/eBook-speaker.c:1380 src/list_dir.c:201
+msgid "N               - search backwards"
+msgstr "N              - pretraži unazad"
+
+#: src/eBook-speaker.c:1382
+msgid "o               - select next output sound device"
+msgstr "o              - izaberi sledeći izlazni uređaj"
+
+#: src/eBook-speaker.c:1384
+msgid "p               - place a bookmark"
+msgstr "p              - postavi marker"
+
+#: src/eBook-speaker.c:1393
+msgid "q               - quit eBook-speaker and place a bookmark"
+msgstr "q              - zatvori eBook-speaker i postavi marker"
+
+#: src/eBook-speaker.c:1396
+msgid "r               - rotate scanned document"
+msgstr "r              - rotiraj skenirani dokument"
+
+#: src/eBook-speaker.c:1398
+msgid "s               - stop playing"
+msgstr "s              - zaustavi reprodukciju"
+
+#: src/eBook-speaker.c:1400
+msgid "t               - select next TTS"
+msgstr "t              - izaberi sledeći TTS"
+
+#: src/eBook-speaker.c:1402
+msgid "T               - move cursor to the first item"
+msgstr "T              - postavi kursor na prvu stavku"
+
+#: src/eBook-speaker.c:1404
+msgid "U,+             - increase playing speed"
+msgstr "U,+            - povećaj brzinu reprodukcije"
+
+#: src/eBook-speaker.c:1406
+msgid "v,1             - decrease playback volume"
+msgstr "v,1            - smanji jačinu zvuka reprodukcije"
+
+#: src/eBook-speaker.c:1408
+msgid "V,7             - increase playback volume (beware of Clipping)"
+msgstr ""
+"V,7            - povećaj jačinu zvuka reprodukcije (pazi se Klipovanja)"
+
+#: src/eBook-speaker.c:1410
+msgid "x               - go to the file-manager"
+msgstr "x              - idi u fajl-menadzer"
+
+#: src/eBook-speaker.c:1412 src/list_dir.c:207
+msgid "Press any key to leave help..."
+msgstr "Pritisni bilo koji taster da napustiš pomoć..."
+
+#: src/eBook-speaker.c:1688 src/list_dir.c:109
+msgid "What do you search?"
+msgstr "Šta pretražuješ?"
+
+#: src/eBook-speaker.c:1771
+msgid "Break phrases at EOL or at a specific position (y/n/position)"
+msgstr ""
+
+#: src/eBook-speaker.c:1923
+#, c-format
+msgid "Language code \"%s\" is not a valid tesseract code."
+msgstr "Jezički kod \"%s\" nije validan tesseract kod."
+
+#: src/eBook-speaker.c:1925
+msgid "See the tesseract manual for valid codes."
+msgstr "Vidi tesseract uputstvo za validne kodove."
+
+#: src/eBook-speaker.c:1927
+#, c-format
+msgid ""
+"Be sure the package \"tesseract-ocr-%s\" is installed onto your system.\n"
+msgstr ""
+"Obezbedi da paket \"tesseract-ocr-%s\" bude instaliran na tvoj sistem.\n"
+
+#: src/eBook-speaker.c:1936
+#, c-format
+msgid "Language code \"%s\" is not a valid cuneiform code."
+msgstr "Jezički kod \"%s\" nije validan kod klinastog pisma."
+
+#: src/eBook-speaker.c:1938
+msgid "See the cuneiform manual for valid codes."
+msgstr "Vidi uputstvo za validne kodove klinastog pisma."
+
+#: src/eBook-speaker.c:2034
+msgid "Go to phrase in current item:"
+msgstr "Idi na frazu u trenutnoj stavci:"
+
+#: src/eBook-speaker.c:2162 src/eBook-speaker.c:2377 src/eBook-speaker.c:2396
+#: src/eBook-speaker.c:2421 src/eBook-speaker.c:2452 src/eBook-speaker.c:2716
+#: src/eBook-speaker.c:2927 src/eBook-speaker.c:2971 src/eBook-speaker.c:3287
+#: src/eBook-speaker.c:3332
+msgid "eBook-speaker cannot handle this file."
+msgstr "eBook-speaker ne može reprodukovati ovaj fajl."
+
+#: src/eBook-speaker.c:2198 src/eBook-speaker.c:2848
+msgid "Press 'h' for help"
+msgstr "Pritisni 'h' za pomoć"
+
+#: src/eBook-speaker.c:2430
+msgid "Unknown format"
+msgstr "Nepoznat format"
+
+#: src/eBook-speaker.c:2687 src/eBook-speaker.c:3161
+msgid "eBook-speaker - Version"
+msgstr "eBook-speaker - Verzija"
+
+#: src/eBook-speaker.c:2691
+#, fuzzy, c-format
+msgid ""
+"Usage: %s [eBook_file | URL | -s [-r resolution]] [-o language-code] [-d "
+"pulseaudio_device] [-h] [-i] [-t TTS_command] [-b n | y | position] [-c]"
+msgstr ""
+"Iskorišćenost: %s [eBook_fajl | URL | -s [-r rezolucija]] [-o jezički-kod] [-"
+"d pulseaudio_zvučni_uređaj] [-h] [-i] [-t TTS_komanda] [-b n | y] [-c]"
+
+#: src/list_dir.c:52 src/list_dir.c:251
+#, c-format
+msgid "%s - Choose an input-file"
+msgstr "%s - Izaberi ulazni-fajl"
+
+#: src/list_dir.c:181
+msgid "cursor right,6  - open this directory or file"
+msgstr "krsor desno,6  - otvori ovaj direktorijum ili fajl"
+
+#: src/list_dir.c:183
+msgid "cursor left,4   - open previous directory"
+msgstr "kursor levo,4  - otvori prethodni direktorijum"
+
+#: src/list_dir.c:189
+msgid "enter,6         - open this directory or file"
+msgstr "enter,6        - otvori ovaj direktorijum ili fajl"
+
+#: src/list_dir.c:193
+msgid "end,B           - move cursor to the last item"
+msgstr "end,B          - pomeri kursor na poslednju stavku"
+
+#: src/list_dir.c:197
+msgid "H,0             - display \"hidden\" files on/off"
+msgstr "H,0            - prikaži \"skrivene\" fajlove uključeno/isključeno"
+
+#: src/list_dir.c:203
+msgid "q               - quit eBook-speaker"
+msgstr "q              - izađi iz programa eBook-speaker"
+
+#: src/list_dir.c:205
+msgid "home,T          - move cursor to the first item"
+msgstr "home,T         - pomeri kursor na prvu stavku"
+
+#~ msgid "Identifying language."
+#~ msgstr "Identifikovanje jezika."
+
+#~ msgid "This may take some time"
+#~ msgstr "Ovo može potrajati"
+
+#~ msgid "translating item"
+#~ msgstr "prevođenje stavke"
+
+#~ msgid "'s' to stop"
+#~ msgstr "'s' da bi zaustavili"
+
+#~ msgid "Consider the end of an input line as a phrase-break (y/n)"
+#~ msgstr "Dodeli kraj ulazne stavke kraju preloma-fraze (y/n)"
+
+#~ msgid "Cannot read /proc/asound/cards"
+#~ msgstr "Ne mogu pročitati /proc/asound/cards"

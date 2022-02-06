@@ -19,8 +19,9 @@
 #define _GNU_SOURCE
 
 #include "daisy.h"
+extern void quit_eBook_speaker (misc_t *, my_attribute_t *, daisy_t *);
 
-struct dirent **get_dir (misc_t *misc, struct dirent **namelist)
+struct dirent **get_dir (misc_t *misc, struct dirent **namelist)     
 {
    if (misc->show_hidden_files)
       misc->list_total = scandir (misc->src_dir, &namelist, NULL, alphasort);
@@ -209,7 +210,8 @@ void help_list (misc_t *misc)
    nodelay (misc->screenwin, TRUE);
 } // help_list                                 
 
-char *get_input_file (misc_t *misc, char *src)
+char *get_input_file (misc_t *misc, my_attribute_t *my_attribute,
+                      daisy_t *daisy, char *src)
 {
    struct dirent **namelist;
    char *file, search_str[MAX_STR], str[MAX_STR + 1];
@@ -222,6 +224,7 @@ char *get_input_file (misc_t *misc, char *src)
    file = strdup (src);
    if (strcasestr (magic_file (myt, file), "directory"))
    {
+      free (misc->src_dir);
       misc->src_dir = malloc (strlen (src) + 10);
       strcpy (misc->src_dir, src);
       if (misc->src_dir[strlen (misc->src_dir) - 1] != '/')
@@ -230,6 +233,7 @@ char *get_input_file (misc_t *misc, char *src)
    else
    {
       file = strdup (basename (file));
+      free (misc->src_dir);
       misc->src_dir = strdup (src);
       misc->src_dir = strdup (dirname (misc->src_dir));
    } // if
@@ -293,14 +297,16 @@ char *get_input_file (misc_t *misc, char *src)
          file_type = magic_file (myt, src);
          if (strstr (file_type, "directory"))
          {
+            free (misc->src_dir);
             misc->src_dir = malloc (strlen (src) + 5);
             strcpy (misc->src_dir, src);
             if (misc->src_dir[strlen (misc->src_dir) - 1] != '/')
                strcat (misc->src_dir, "/");
             n = 0;
             page = n / 23 + 1;
-            return get_input_file (misc, src);
+            return get_input_file (misc, my_attribute, daisy, src);
          } // if "directory"
+         free (file);
          file = malloc (strlen (misc->src_dir) +
                         strlen (namelist[n]->d_name) +  10);
          strcpy (file, misc->src_dir);
@@ -411,7 +417,7 @@ char *get_input_file (misc_t *misc, char *src)
       case 'q':
          free (namelist);
          magic_close (myt);
-         quit_eBook_speaker (misc);
+         quit_eBook_speaker (misc, my_attribute, daisy);
          _exit (0);
       case 'T':
       case KEY_HOME:

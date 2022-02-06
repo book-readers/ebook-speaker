@@ -103,7 +103,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = m4/Makefile
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -163,9 +163,10 @@ CTAGS = ctags
 CSCOPE = cscope
 DIST_SUBDIRS = $(SUBDIRS)
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	ABOUT-NLS COPYING ChangeLog INSTALL ar-lib compile \
-	config.guess config.rpath config.sub depcomp install-sh \
-	mdate-sh missing mkinstalldirs py-compile texinfo.tex ylwrap
+	$(top_srcdir)/m4/Makefile.in ABOUT-NLS COPYING INSTALL ar-lib \
+	compile config.guess config.rpath config.sub depcomp \
+	install-sh mdate-sh missing mkinstalldirs py-compile \
+	texinfo.tex ylwrap
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -220,6 +221,9 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CXX = @CXX@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -253,6 +257,12 @@ MKDIR_P = @MKDIR_P@
 MSGFMT = @MSGFMT@
 MSGFMT_015 = @MSGFMT_015@
 MSGMERGE = @MSGMERGE@
+OBJC = @OBJC@
+OBJCDEPMODE = @OBJCDEPMODE@
+OBJCFLAGS = @OBJCFLAGS@
+OBJCXX = @OBJCXX@
+OBJCXXDEPMODE = @OBJCXXDEPMODE@
+OBJCXXFLAGS = @OBJCXXFLAGS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -264,6 +274,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 POSUB = @POSUB@
 POW_LIB = @POW_LIB@
+RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -278,6 +289,9 @@ abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
+ac_ct_OBJC = @ac_ct_OBJC@
+ac_ct_OBJCXX = @ac_ct_OBJCXX@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
@@ -319,6 +333,7 @@ runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
+subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
@@ -331,7 +346,31 @@ EXTRA_DIST = config.rpath m4/Makefile.in doc/COMPILE \
              doc/COPYING doc/Changelog doc/License doc/Readme doc/TODO \
              doc/eBook-speaker.* \
              doc/icons_copyright.txt doc/screenshot.html \
-             man/eBook-speaker.1
+             man/eBook-speaker.1 \
+             src/pactl/aclocal.m4 src/pactl/AGPL \
+             src/pactl/compile src/pactl/config.guess \
+             src/pactl/config.sub \
+             src/pactl/config.h.in src/pactl/configure \
+             src/pactl/configure.ac src/pactl/depcomp \
+             src/pactl/GPL src/pactl/install-sh \
+             src/pactl/LGPL src/pactl/LICENSE \
+             src/pactl/m4 \
+             src/pactl/Makefile.am src/pactl/Makefile.in \
+             src/pactl/missing src/pactl/NEWS \
+             src/pactl/README \
+             src/pactl/src/core-error.h \
+             src/pactl/src/core-util.h \
+             src/pactl/src/i18n.h \
+             src/pactl/src/install.sh \
+             src/pactl/src/macro.h \
+             src/pactl/src/Makefile.am \
+             src/pactl/src/Makefile.in \
+             src/pactl/src/pactl.c \
+             src/pactl/src/pactl-set-cmd.c \
+             src/pactl/src/socket.h \
+             src/pactl/src/strbuf.h \
+             src/pactl/src/strlist.h \
+             src/pactl/todo
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -385,6 +424,8 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
+m4/Makefile: $(top_builddir)/config.status $(top_srcdir)/m4/Makefile.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.
@@ -805,7 +846,7 @@ uninstall-am:
 .PRECIOUS: Makefile
 
 
-check-gettext:                         
+check-gettext:
 	@if test x$(USE_NLS) != "xyes" ; then \
 	  echo "Missing gettext. Rerun configure and check for" \"'checking whether to use NLS... yes'!" ; exit 1; fi
 

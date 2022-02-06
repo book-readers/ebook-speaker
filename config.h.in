@@ -7,6 +7,9 @@
 /* Define to 1 if you have the `atexit' function. */
 #undef HAVE_ATEXIT
 
+/* Define to 1 if you have the `bzero' function. */
+#undef HAVE_BZERO
+
 /* Define to 1 if you have the Mac OS X function CFLocaleCopyCurrent in the
    CoreFoundation framework. */
 #undef HAVE_CFLOCALECOPYCURRENT
@@ -40,9 +43,6 @@
 /* Define to 1 if you have the `isascii' function. */
 #undef HAVE_ISASCII
 
-/* Define to 1 if you have the `asound' library (-lasound). */
-#undef HAVE_LIBASOUND
-
 /* Define to 1 if you have the <libintl.h> header file. */
 #undef HAVE_LIBINTL_H
 
@@ -51,6 +51,9 @@
 
 /* Define to 1 if you have the `ncursesw' library (-lncursesw). */
 #undef HAVE_LIBNCURSESW
+
+/* Define to 1 if you have the `pulse' library (-lpulse). */
+#undef HAVE_LIBPULSE
 
 /* Define to 1 if you have the `sox' library (-lsox). */
 #undef HAVE_LIBSOX
@@ -74,6 +77,9 @@
 /* Define to 1 if your system has a GNU libc compatible `realloc' function,
    and to 0 otherwise. */
 #undef HAVE_REALLOC
+
+/* Define to 1 if you have the `rmdir' function. */
+#undef HAVE_RMDIR
 
 /* Define to 1 if you have the `select' function. */
 #undef HAVE_SELECT
@@ -105,14 +111,14 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
+/* Define to 1 if you have the `strncasecmp' function. */
+#undef HAVE_STRNCASECMP
+
 /* Define to 1 if you have the `strrchr' function. */
 #undef HAVE_STRRCHR
 
 /* Define to 1 if you have the `strstr' function. */
 #undef HAVE_STRSTR
-
-/* Define to 1 if you have the <sys/ioctl.h> header file. */
-#undef HAVE_SYS_IOCTL_H
 
 /* Define to 1 if you have the <sys/mount.h> header file. */
 #undef HAVE_SYS_MOUNT_H
