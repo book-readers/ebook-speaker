@@ -62,7 +62,7 @@ eBook_file  Give an eBook_file as argument to eBook-speaker.  Many eBook formats
 
 -c  eBook-speaker use tesseract for OCR by default. This option forces eBook-speaker to use cuneiform instead.
 
--d pulseaudio_sound_device  eBook-speaker will play on this sound device. Default is "0". (The first soundcard) This option overrules the value in the ~/.eBook-speaker.xml config file. Be sure the user is a member of the group "audio".
+-d pulseaudio_sound_device  eBook-speaker will play on this sound device. Default is "0". (The first soundcard) This option overrules the value in the ~/.eBook-speaker/* config file. Be sure the user is a member of the group "audio".
 
 -h  Print this usage message.
 
@@ -78,7 +78,7 @@ eBook_file  Give an eBook_file as argument to eBook-speaker.  Many eBook formats
 
 -s  Scan a document using a hardware scanner and OCR it with either tesseract or cuneiform.
 
--t TTS-command  Be sure that the TTS reads from the file eBook-speaker.txt and that it writes to the file eBook-speaker.wav. To add the TTS-command permantly one has to edit the file ~/.eBook-speaker.xml by hand.
+-t TTS-command  Be sure that the TTS reads from the file eBook-speaker.txt and that it writes to the file eBook-speaker.wav. To add the TTS-command permantly one has to edit the ~/.eBook-speaker.xml file by hand.
 
 -v  Be more verbose, so one can se what's going on.
 
@@ -149,6 +149,7 @@ page-up,9                 View previous page.
 end,B                     Move cursor to the last file.  
 h,?                       Give this help.
 H,0                       Toggle hidden files displaying on or off.
+i                         Give some information about current file.
 n                         Search next.
 N                         Search previous.
 q                         Quit eBook-speaker.
@@ -187,8 +188,8 @@ Rob Sykes <aquegg@yahoo.co.uk>  for sox.
 Didier Spaier <didier@slint.fr>  for the TTS enhancements.
 
 FILES
-~/.eBook-speaker/  This directory contains the bookmarks in XML-format.  Each file has the name of the book and contains the name of the current item, the start-phrase of that item, the current level, the desired TTS and the desired reading speed.
-~/.eBook-speaker.xml  This file, in XML-format,  contains the name of the desired audio device, the desired OCR language and the TTS's to use. (See TTS EXAMPLES)
+~/.eBook-speaker/  This directory contains the bookmarks in XML-format.  Each file has the name of the book and contains the name of the current item, the start-phrase of that item, the current level, the desired TTS, the desired reading speed and the name of the desired pulseaudio device.
+~/.eBook-speaker.xml  This file, in XML-format, contains the desired OCR language and the TTS's to use. (See TTS EXAMPLES)
 /tmp/eBook-speaker.XXXXXX  eBook-speaker makes use of a temporary directory. It is removed after quiting.
 
 SEE ALSO

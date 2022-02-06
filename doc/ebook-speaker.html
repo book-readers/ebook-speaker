@@ -2,7 +2,7 @@
 <HTML><HEAD><TITLE>Man page of ebook-speaker</TITLE>
 </HEAD><BODY>
 <H1>ebook-speaker</H1>
-Section: Linux Reference Manual (1)<BR>Updated: 25 July 2019<BR><A HREF="#index">Index</A>
+Section: Linux Reference Manual (1)<BR>Updated: 02 February 2020<BR><A HREF="#index">Index</A>
 <A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
 
 <A NAME="lbAB">&nbsp;</A>
@@ -101,7 +101,7 @@ eBook-speaker use tesseract for OCR by default. This option forces eBook-speaker
 <DT><B>-d</B> <I>pulseaudio_sound_device</I>
 
 <DD>
-eBook-speaker will play on this sound device. Default is &quot;0&quot;. (The first soundcard) This option overrules the value in the ~/.eBook-speaker.xml config file. Be sure the user is a member of the group &quot;audio&quot;.
+eBook-speaker will play on this sound device. Default is &quot;0&quot;. (The first soundcard) This option overrules the value in the ~/.eBook-speaker/* config file. Be sure the user is a member of the group &quot;audio&quot;.
 <DT><B>-h</B>
 
 <DD>
@@ -133,7 +133,7 @@ Scan a document using a hardware scanner and OCR it with either tesseract or cun
 <DT><B>-t</B> TTS-command
 
 <DD>
-Be sure that the TTS reads from the file eBook-speaker.txt and that it writes to the file eBook-speaker.wav. To add the TTS-command permantly one has to edit the file ~/.eBook-speaker.xml by hand.
+Be sure that the TTS reads from the file eBook-speaker.txt and that it writes to the file eBook-speaker.wav. To add the TTS-command permantly one has to edit the ~/.eBook-speaker.xml file by hand.
 <DT><B>-v</B>
 
 <DD>
@@ -357,6 +357,10 @@ Give this help.
 
 <DD>
 Toggle hidden files displaying on or off.
+<DT><B>i</B>
+
+<DD>
+Give some information about current file.
 <DT><B></B><I>n</I>
 
 <DD>
@@ -444,11 +448,11 @@ for the TTS enhancements.
 <DT><B>~/.eBook-speaker/</B>
 
 <DD>
-This directory contains the bookmarks in XML-format.  Each file has the name of the book and contains the name of the current item, the start-phrase of that item, the current level, the desired TTS and the desired reading speed.
+This directory contains the bookmarks in XML-format.  Each file has the name of the book and contains the name of the current item, the start-phrase of that item, the current level, the desired TTS, the desired reading speed and the name of the desired pulseaudio device.
 <DT><B>~/.eBook-speaker.xml</B>
 
 <DD>
-This file, in XML-format,  contains the name of the desired audio device, the desired OCR language and the TTS's to use. (See TTS EXAMPLES)
+This file, in XML-format, contains the desired OCR language and the TTS's to use. (See TTS EXAMPLES)
 <DT><B>/tmp/eBook-speaker.XXXXXX</B>
 
 <DD>
@@ -493,6 +497,6 @@ This program is free software; you can redistribute it and/or modify it under th
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 11:33:40 GMT, July 25, 2019
+Time: 18:13:16 GMT, February 02, 2020
 </BODY>
 </HTML>

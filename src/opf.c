@@ -1,6 +1,6 @@
 /* daisy3.c - functions to insert daisy3 info into a struct. (opf)
  *
- * Copyright (C) 2019 J. Lemmens
+ * Copyright (C) 2020 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -68,16 +68,14 @@ void get_label_opf (misc_t *misc, my_attribute_t *my_attribute,
                   strcpy (misc->tag, "/head");
                   break;
 /* Don't use this
-                  sprintf (daisy[misc->current].label, "%d",
-                                                       misc->current + 1);
+                  sprintf (daisy[i].label, "%d", i + 1);
                   if (misc->verbose)
-                  {
-                     printf ("\n\r%d %s ", misc->current + 1,
-                                           daisy[misc->current].label);
+                  {                                
+                     printf ("\n\r%d %s ", i + 1, daisy[i].label);
                      fflush (stdout);
                   } // if
                   return;
-*/                  
+*/
                } // if IsEmpty
                while (1)
                {
@@ -85,11 +83,10 @@ void get_label_opf (misc_t *misc, my_attribute_t *my_attribute,
                      break;
                   if (*misc->label)
                   {
-                     strcpy (daisy[misc->current].label, misc->label);
+                     strcpy (daisy[i].label, misc->label);
                      if (misc->verbose)
                      {
-                        printf ("\n\r%d %s ", misc->current + 1,
-                                              daisy[misc->current].label);
+                        printf ("\n\r%d %s ", i + 1, daisy[i].label);
                         fflush (stdout);
                      } // if
                      return;
@@ -117,10 +114,10 @@ void get_label_opf (misc_t *misc, my_attribute_t *my_attribute,
       {
          if (misc->verbose)
          {
-            printf ("\n\r%d ", misc->current + 1);
+            printf ("\n\r%d ", i + 1);
             fflush (stdout);
          } // if
-         misc->current--;
+         i--;
          xmlTextReaderClose (xml);
          xmlFreeDoc (doc);
          return;
@@ -144,11 +141,10 @@ void get_label_opf (misc_t *misc, my_attribute_t *my_attribute,
          daisy[i].x = daisy[i].level * 3 - 1;
          if (xmlTextReaderIsEmptyElement (xml))
          {
-            sprintf (daisy[misc->current].label, "%d", misc->current + 1);
+            sprintf (daisy[i].label, "%d", i + 1);
             if (misc->verbose)
             {
-               printf ("\n\r%d %s ", misc->current + 1,
-                                   daisy[misc->current].label);
+               printf ("\n\r%d %s ", i + 1, daisy[i].label);
                fflush (stdout);
             } // if
             return;
@@ -166,8 +162,7 @@ void get_label_opf (misc_t *misc, my_attribute_t *my_attribute,
                   strcat (daisy[i].label, " ");
                   if (misc->verbose)
                   {
-                     printf ("\n\r%d %s ", misc->current + 1,
-                                         daisy[misc->current].label);
+                     printf ("\n\r%d %s ", i + 1, daisy[i].label);
                      fflush (stdout);
                   } // if
                } // if
@@ -276,6 +271,18 @@ void parse_spine (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
          xmlFreeDoc (doc);
          return;
       } // if
+      if (strcasecmp (misc->tag, "title") == 0)
+      {
+         do
+         {
+            if (! get_tag_or_label (misc, my_attribute, opf))
+               break;
+            if (! *misc->label)
+               continue;
+            strcpy (misc->daisy_title, misc->label);
+            break;
+         } while (strcasecmp (misc->tag, "/title"));
+      } // if dc:title
    } while (strcasecmp (misc->tag, "spine"));
    do
    {
@@ -283,14 +290,14 @@ void parse_spine (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
          break;
       if (strcasecmp (misc->tag, "itemref") == 0)
       {
-         xmlTextReaderPtr ptr;
+         xmlTextReaderPtr manifest;
          char *idref;
 
          idref = strdup (my_attribute->idref);
-         ptr = xmlNewTextReaderFilename (misc->opf_name);
+         manifest = xmlNewTextReaderFilename (misc->opf_name);
          while (1)
          {
-            if (! get_tag_or_label (misc, my_attribute, ptr))
+            if (! get_tag_or_label (misc, my_attribute, manifest))
                break;
             if (strcasecmp (misc->tag, "item") == 0 &&
                 strcasecmp (my_attribute->id, idref) == 0)
@@ -315,6 +322,7 @@ void parse_spine (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
                {
                   daisy[misc->current].xml_file = malloc (strlen
                          (misc->daisy_mp) + strlen (my_attribute->href) + 5);
+                  *daisy[misc->current].xml_file = 0;
                   get_realpath_name (misc->daisy_mp,
                       convert_URL_name (misc, my_attribute->href),
                       daisy[misc->current].xml_file);
@@ -369,9 +377,9 @@ void parse_spine (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
                if (daisy[misc->current].level > misc->depth)
                   misc->depth = daisy[misc->current].level;
                misc->current++;
-            } // if
+            } // if tag == item
          } // while
-         xmlTextReaderClose (ptr);
+         xmlTextReaderClose (manifest);
       } // if itemref
    } while (strcasecmp (misc->tag, "/spine"));
    misc->items_in_opf = misc->total_items = misc->current;
@@ -384,7 +392,7 @@ void fill_smil_anchor_opf (misc_t *misc, my_attribute_t *my_attribute,
 {
 // first of all fill daisy struct smil_file and anchor
    misc->depth = misc->current = 0;
-   if (misc->verbose)
+   if (misc->verbose)     
       printf ("\n\rParsing spine");
    parse_spine (misc, my_attribute, daisy);
    if (misc->verbose)
@@ -433,13 +441,11 @@ void fill_smil_anchor_opf (misc_t *misc, my_attribute_t *my_attribute,
       xmlTextReaderClose (opf);
       xmlFreeDoc (doc);
    } // if still no smil
+   misc->items_in_opf++;
 } // fill_smil_anchor_opf
 
 void parse_opf (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
 {
-   htmlDocPtr doc;
-   xmlTextReaderPtr opf;
-
    if (misc->use_OPF == 0 && misc->items_in_opf == 0)
    {
       misc->opf_failed = 1;
@@ -449,33 +455,6 @@ void parse_opf (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
    misc->total_items = misc->items_in_opf;
    if (misc->total_items == 0)
       misc->total_items = 1;
-   if (! (doc = htmlParseFile (misc->opf_name, "UTF-8")))
-   {
-      misc->opf_failed = 1;
-      return;
-   } // if
-   if ((opf = xmlReaderWalker (doc)) == NULL)
-   {
-      misc->opf_failed = 1;
-      return;
-   } // if
-
-   while (1)
-   {
-      if (! get_tag_or_label (misc, my_attribute, opf))
-         break;
-      if (misc->use_OPF == 0 &&
-          strcasestr (my_attribute->media_type, "application/x-dtbncx") &&
-          misc->items_in_ncx > 1)
-      {
-// first look if there is a reference to "application/x-dtbncx+xml"
-         xmlTextReaderClose (opf);
-         xmlFreeDoc (doc);
-         parse_ncx (misc, my_attribute, daisy);
-         return;
-      } // if
-   } // while
-   xmlTextReaderClose (opf);
 
    fill_smil_anchor_opf (misc, my_attribute, daisy);
 } // parse_opf

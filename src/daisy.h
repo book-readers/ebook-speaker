@@ -45,6 +45,7 @@
 #include <magic.h>
 #include <fnmatch.h>
 #include <grp.h>
+#include <time.h>
 
 #undef PACKAGE
 #undef PACKAGE_BUGREPORT
@@ -59,10 +60,6 @@
 #define MAX_CMD 2000
 #define MAX_STR 512
 #define MAX_TAG 1024
-
-#ifndef EBOOK_SPEAKER
-#   define EBOOK_SPEAKER
-#endif
 
 typedef struct My_attribute
 {
@@ -93,7 +90,7 @@ typedef struct My_attribute
 typedef struct Misc
 {
    int playing, just_this_item, current_page_number;
-   int current, max_y, max_x, total_items, level, displaying, ignore_bookmark;
+   int current, max_y, max_x, total_items, level, ignore_bookmark;
    int phrase_nr, attr_tts_no, tts_no, depth, total_phrases, total_pages;
    int option_b, tmp_wav_fd, scan_flag;
    int items_in_opf, items_in_ncx, show_hidden_files, list_total;
@@ -106,13 +103,14 @@ typedef struct Misc
    htmlDocPtr doc;
    xmlTextReaderPtr reader;
    pid_t player_pid, main_pid;
+   char *pulseaudio_device;
    char ncc_html[MAX_STR], ncc_totalTime[MAX_STR];
    char daisy_version[MAX_STR], daisy_title[MAX_STR], daisy_language[MAX_STR];
    char tag[MAX_TAG], *label, ocr_language[5];
    char bookmark_title[MAX_STR];
-   char cd_dev[MAX_STR], pulseaudio_device[5], tts[15][MAX_STR];
+   char cd_dev[MAX_STR], tts[15][MAX_STR];
    char option_t[MAX_STR];
-   char opf_name[MAX_STR], ncx_name[MAX_STR], copyright[MAX_STR], option_d[5];
+   char opf_name[MAX_STR], ncx_name[MAX_STR], copyright[MAX_STR], *option_d;
    char eBook_speaker_txt[MAX_STR + 1], tmp_wav[MAX_STR + 1];
    char cmd[MAX_CMD + 1], str[MAX_STR + 1];
    char *src_dir, *tmp_dir, *daisy_mp;
@@ -149,10 +147,11 @@ extern void get_path_name (char *, char *, char *);
 extern char *convert_URL_name (misc_t *, char *);
 extern void kill_player (misc_t *);
 extern int get_page_number_2 (misc_t *, my_attribute_t *, daisy_t *, char *);
-extern int get_page_number_3 (misc_t *, my_attribute_t *);
+extern int get_page_number_3 (misc_t *, my_attribute_t *);        
 extern void playfile (misc_t *, char *, char *, char *, char *, char *);
 extern void fill_page_numbers (misc_t *, daisy_t *, my_attribute_t *);
 extern void parse_page_number (misc_t *, my_attribute_t *, xmlTextReaderPtr);
+extern void check_pulseaudio_device (misc_t *, daisy_t *);
 extern void select_next_output_device (misc_t *, daisy_t *);
 extern void go_to_page_number (misc_t *, my_attribute_t *, daisy_t *);
 extern daisy_t *create_daisy_struct (misc_t *, my_attribute_t *, daisy_t *);

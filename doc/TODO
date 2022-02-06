@@ -5,3 +5,4 @@
 - Replace the external command iconv by the function iconv ()
 - translate current documant with trans
 - if started from a dir, return to that dir after finishing a book
+- getwc
