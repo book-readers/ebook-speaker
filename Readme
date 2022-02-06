@@ -4,8 +4,10 @@ eBook-speaker - read eBooks with Linux using a speech-synthesizer
 DESCRIPTION
 eBook-speaker reads an eBook and uses the espeak speech synthisizer
 for output.
-Currently only the EPUB format is supported.
+Currently the EPUB format and the Microsoft Reader eBook format (lit) are
+supported.
 (http://en.wikipedia.org/wiki/Comparison_of_e-book_formats#EPUB)
+(http://en.wikipedia.org/wiki/Comparison_of_e-book_formats#Microsoft_LIT)
 
 REQUIREMENTS
 Be sure the following extra packages exist on your system:
@@ -13,11 +15,17 @@ Be sure the following extra packages exist on your system:
    libncursesw5
    libidn11
    libsox1b
+   libmagic1
 
 The following packages are needed to make the manual and the html document:
 
    txt2man
    man2html
+
+The following packages are needed to read .lit files.
+
+   convlit
+   zip
 
 FILES
 Download and unpack the file 'eBook-speaker-<version>.tar.bz2'.
@@ -36,7 +44,7 @@ following files:
 - eBook-speaker.nl.po: translations for the dutch language
 - eBook-speaker.txt: manual page in ASCII format
 - entities.h: source code
-- entities.txt: information about entities.h
+- entities.txt: informatio
 - error.txt: information about error.wav
 - error.wav: soundfile will be played when an error occured
 - icons: directory containing icons
@@ -71,7 +79,7 @@ of that item.
 
 For keyboard navigation, plese press 'h' or '?'.
 
-eBook-speaker is multilingual. The following languages are currently 
+eBook-speaker is multilingual. The following languages are currently
 supported:
 english, german, dutch.
 

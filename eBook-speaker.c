@@ -20,67 +20,120 @@
 
 #include "eBook-speaker.h"
 
-#define VERSION "1.2"
+#define VERSION "2.0"
 
 WINDOW *screenwin, *titlewin;
 struct zip_file *text_file_fd;
 int discinfo_fp, discinfo = 00, multi = 0, displaying = 0;
 int playing, just_this_item, phrase_nr;
 int bytes_read, current_page_number, total_pages;
-int use_ncx, use_opf;
-char label[255], bookmark_title[100], path[255], dc_language[10];
-char tag[255], element[255], search_str[30], tmp_ncx[255], tmp_wav[255];
+char label[255], bookmark_title[255], dc_language[10], prefix[255];
+char item_title[255];
+char tag[1024], element[1024], search_str[30], tmp_ncx[255], tmp_wav[255];
 char daisy_version[25];
 pid_t player_pid;
 char eBook_title[255], prog_name[255];
 struct zip *eBook;
 struct
 {
-   int x, y, screen, n_phrases;
-   char text_file[255], anchor[255], label[255];
-   char class[100];
-   int level, page_number;
-} eBook_struct[2000];
-
-struct
-{
-   char a[100],
-        class[100],
-        content[100],
-        dc_title[100],
-        dtb_depth[100],
-        dtb_totalPageCount[100],
-        href[100],
-        id[100],
-        media_type[100],
-        name[100],
-        ncc_depth[100],
-        ncc_maxPageNormal[100],
-        ncc_totalTime[100],
-        playorder[100],
-        src[100];
+   char a[255],
+        class[255],
+        content[255],
+        dc_title[255],
+        dtb_depth[255],
+        dtb_totalPageCount[255],
+        href[255],
+        id[255],
+        idref[255],
+        media_type[255],
+        name[255],
+        ncc_depth[255],
+        ncc_maxPageNormal[255],
+        ncc_totalTime[255],
+        playorder[255],
+        src[255],
+        title[255],
+        toc[255],
+        type[255],
+        version[255];
 } attribute;
 
 int current, max_y, max_x, total_items, level, depth, speed, pich;
 double audio_total_length;
 char OPF[255], discinfo_html[255], ncc_totalTime[10], NCX[255];
-char sound_dev[16], eBook_mp[100];
+char sound_dev[16], eBook_mp[255];
 time_t start_time;
 DIR *dir;
 struct dirent *dirent;
+
+void html_entities_to_utf8 (char *s)
+{                     
+  int e_flag, x;
+  char entity[10], *e, new[255], *n, *orig, *s2;
+
+  orig = s;
+  n = new;
+  while (*s)
+  {
+    if (*s == '&')
+    {
+      e_flag = 0;
+      e = entity;
+      s2 = s;
+      s++;
+      while (*s != ';')
+      {
+        *e++ = *s++;
+        if (e - entity == 9)
+        {
+          s = s2 + 1;
+          *n++ = '&';
+          e_flag = 1;
+          break;
+        } // if
+      } // while
+      if (e_flag)
+        continue;
+      *e = 0;
+      *n = ' ';
+      for (x = 0;
+           x < sizeof (unicode_entities) / sizeof (UC_entity_info); x++)
+      {
+        if (strcmp (unicode_entities[x].name, entity) == 0)
+        {
+          char buf[10];
+          int num;
+
+          num = stringprep_unichar_to_utf8 (unicode_entities[x].code, buf);
+          strncpy (n, buf, num);
+          n += num;
+        } // if
+      } // for
+      if (! *(++s))
+        break;
+    } // if (*s == '&')
+    else
+      *n++ = *s++;
+  } // while
+  *n = 0;
+  strncpy (orig, new, 250);
+} // html_entities_to_utf8
 
 int read_text (int item, int phrase_nr)
 {
    char cmd[255], tmp_txt[255], str[255];
    int nr, w;
 
-   open_text_file (eBook_struct[item].text_file, eBook_struct[item].anchor);
+   open_text_file (eBook_struct[item].text_file,
+                   eBook_struct[item].anchor);
    nr = 1;
    while (1)
    {
-      if (get_element_tag_or_label (text_file_fd) == EOF ||
-         (*eBook_struct[item + 1].anchor &&
-             strcasestr (element, eBook_struct[item + 1].anchor)))
+      if (get_tag_or_label (text_file_fd) == EOF ||
+          (*eBook_struct[item + 1].anchor &&
+             strcasestr (element, eBook_struct[item + 1].anchor)) ||
+          (*eBook_struct[item + 1].anchor &&
+             strcasestr (label, eBook_struct[item + 1].anchor)))
       {
          if (item >= total_items - 1)
          {
@@ -93,8 +146,8 @@ int read_text (int item, int phrase_nr)
          return EOF;
       } // if
       if (*label)
-            if (nr++ == phrase_nr)
-               break;
+         if (nr++ == phrase_nr)
+            break;
    } // while
    switch (player_pid = fork ())
    {
@@ -141,7 +194,7 @@ int read_text (int item, int phrase_nr)
       kill (getppid (), SIGINT);
    } // if
    close (w);
-   sprintf (cmd, "espeak -s %d -f %s -v %s", speed, tmp_txt, dc_language);
+   snprintf (cmd, 250, "espeak -s %d -f %s -v %s", speed, tmp_txt, dc_language);
    system (cmd);
    unlink (tmp_txt);
    _exit (0);
@@ -152,7 +205,7 @@ void playfile (char *filename, char *tempo)
   sox_format_t *in, *out; /* input and output files */
   sox_effects_chain_t *chain;
   sox_effect_t *e;
-  char *args[100], str[100];
+  char *args[255], str[255];
 
   sox_globals.verbosity = 0;
   sox_init();
@@ -280,62 +333,9 @@ void get_bookmark ()
    just_this_item = -1;
 } // get_bookmark
 
-void html_entities_to_utf8 (char *s)
-{
-  int e_flag, x;
-  char entity[10], *e, new[255], *n, *orig, *s2;
-
-  orig = s;
-  n = new;
-  while (*s)
-  {
-    if (*s == '&')
-    {
-      e_flag = 0;
-      e = entity;
-      s2 = s;
-      s++;
-      while (*s != ';')
-      {
-        *e++ = *s++;
-        if (e - entity == 9)
-        {
-          s = s2 + 1;
-          *n++ = '&';
-          e_flag = 1;
-          break;
-        } // if
-      } // while
-      if (e_flag)
-        continue;
-      *e = 0;
-      *n = ' ';
-      for (x = 0;
-           x < sizeof (unicode_entities) / sizeof (UC_entity_info); x++)
-      {
-        if (strcmp (unicode_entities[x].name, entity) == 0)
-        {
-          char buf[10];
-          int num;
-
-          num = stringprep_unichar_to_utf8 (unicode_entities[x].code, buf);
-          strncpy (n, buf, num);
-          n += num;
-        } // if
-      } // for
-      if (! *(++s))
-        break;
-    } // if (*s == '&')
-    else
-      *n++ = *s++;
-  } // while
-  *n = 0;
-  strncpy (orig, new, 250);
-} // html_entities_to_utf8
-
 void get_attributes (char *p)
 {
-   char name[255], *value, *begin;
+   char name[1024], *value, *begin;
    int break2;
 
    *attribute.class = 0;
@@ -345,6 +345,7 @@ void get_attributes (char *p)
    *attribute.dtb_totalPageCount = 0;
    *attribute.href = 0;
    *attribute.id = 0;
+   *attribute.idref = 0;
    *attribute.media_type = 0;
    *attribute.name = 0;
    *attribute.ncc_depth = 0;
@@ -352,6 +353,9 @@ void get_attributes (char *p)
    *attribute.ncc_totalTime = 0;
    *attribute.playorder = 0;
    *attribute.src = 0;
+   *attribute.title = 0;
+   *attribute.toc = 0;
+   *attribute.type = 0;
    begin = p;
 
 // skip to first attribute
@@ -359,7 +363,7 @@ void get_attributes (char *p)
    {
       if (*p == '>' || *p == '?')
          return;
-      if (p - begin > 250)
+      if (p - begin > 1000)
       {
          *p = 0;
          return;
@@ -376,7 +380,7 @@ void get_attributes (char *p)
             break2 = 1;
             break;
          } // if
-         if (p - begin > 250)
+         if (p - begin > 1000)
          {
             *p = 0;
             break2 = 1;
@@ -385,7 +389,7 @@ void get_attributes (char *p)
       } // while
       if (break2)
         break;
-      strncpy (name, p, 250);
+      strncpy (name, p, 1000);
       p = name;
       while (! isspace (*p) && *p != '=')
       {
@@ -394,7 +398,7 @@ void get_attributes (char *p)
             break2 = 1;
             break;
          } // if
-         if (p - begin > 250)
+         if (p - begin > 1000)
          {
             *p = 0;
             break2 = 1;
@@ -410,13 +414,13 @@ void get_attributes (char *p)
          if (*p == '>' || *p == '?')
          {
             break2 = 1;
-            break; 
+            break;
          } // if
-         if (p - begin > 250)
+         if (p - begin > 1000)
          {
             *p = 0;
             break2 = 1;
-            break; // return;
+            return; 
          } // if
          p++;
       } // while
@@ -428,7 +432,7 @@ void get_attributes (char *p)
       p = value;
       while (*p != '"' && *p != '>' && *p != '?')
       {
-         if (p - begin > 250)
+         if (p - begin > 1000)
          {
             *p = 0;
             break2 = 1;
@@ -448,6 +452,8 @@ void get_attributes (char *p)
          strncpy (attribute.href, value, 90);
       if (strcasecmp (name, "id") == 0)
          strncpy (attribute.id, value, 90);
+      if (strcasecmp (name, "idref") == 0)
+         strncpy (attribute.idref, value, 90);
       if (strcasecmp (name, "media-type") == 0)
          strncpy (attribute.media_type, value, 90);
       if (strcasecmp (name, "name") == 0)
@@ -470,7 +476,15 @@ void get_attributes (char *p)
       if (strcasecmp (name, "playorder") == 0)
          strncpy (attribute.playorder, value, 90);
       if (strcasecmp (name, "src") == 0)
-         strncpy (attribute.src, value, 90);
+         strncpy (attribute.src, value, 250);
+      if (strcasecmp (name, "toc") == 0)
+         strncpy (attribute.toc, value, 90);
+      if (strcasecmp (name, "title") == 0)
+         strncpy (attribute.title, value, 90);
+      if (strcasecmp (name, "type") == 0)
+         strncpy (attribute.type, value, 90);
+      if (strcasecmp (name, "version") == 0)
+         strncpy (attribute.version, value, 90);
    } // while
    if (*attribute.dc_title)
       strncpy (attribute.dc_title, attribute.content, 90);
@@ -490,7 +504,7 @@ void get_attributes (char *p)
    } // if
 } // get_attributes
 
-int get_element_tag_or_label (struct zip_file *r)
+int get_tag_or_label (struct zip_file *r)
 {
    char *p, h;
    static char read_flag = 0;
@@ -536,7 +550,7 @@ int get_element_tag_or_label (struct zip_file *r)
          case -1:
             endwin ();
             playfile (PREFIX"share/eBook-speaker/error.wav", "1");
-            printf ("get_element_tag_or_label: %s\n", p);
+            printf ("get_tag_or_label: %s\n", p);
             fflush (stdout);
             _exit (1);
          case 0:
@@ -580,8 +594,11 @@ int get_element_tag_or_label (struct zip_file *r)
    } while (*p != '<');
    read_flag = 1;
    *p = 0;
+   strncpy (tag, element + 1, 250);
+   get_tag ();
+   get_attributes (element);
    return 0;
-} // get_element_tag_or_label
+} // get_tag_or_label
 
 void get_tag ()
 {
@@ -596,13 +613,13 @@ void get_tag ()
 void get_page_number ()
 {
    struct zip_file *fd;
-   char file[100], *anchor;
+   char file[255], *anchor;
 
    if (strstr (daisy_version, "2.02"))
    {
       if (! strcasestr (element, attribute.src))
          return;
-      strncpy (file, attribute.src, 90);
+      strncpy (file, attribute.src, 250);
       if (strchr (file, '#'))
       {
          anchor = strchr (file, '#') + 1;
@@ -618,7 +635,7 @@ void get_page_number ()
       } // if
       while (1)
       {
-         if (get_element_tag_or_label (fd) == EOF)
+         if (get_tag_or_label (fd) == EOF)
          {
             zip_fclose (fd);
             return;
@@ -628,7 +645,7 @@ void get_page_number ()
       } // while
       while (1)
       {
-         if (get_element_tag_or_label (fd) == EOF)
+         if (get_tag_or_label (fd) == EOF)
          {
             zip_fclose (fd);
             return;
@@ -643,7 +660,7 @@ void get_page_number ()
       } // while
       while (1)
       {
-         if (get_element_tag_or_label (fd) == EOF)
+         if (get_tag_or_label (fd) == EOF)
          {
             zip_fclose (fd);
             return;
@@ -663,12 +680,12 @@ void get_page_number ()
       fd = zip_fopen (eBook, OPF, ZIP_FL_UNCHANGED);
       do      
       {
-         if (get_element_tag_or_label (fd) == EOF)
+         if (get_tag_or_label (fd) == EOF)
             break;
       } while (atoi (attribute.playorder) != current);
       do
       {
-         if (get_element_tag_or_label (fd) == EOF)
+         if (get_tag_or_label (fd) == EOF)
             break;
       } while (! *label);
       current_page_number = atoi (label);
@@ -690,13 +707,13 @@ int count_phrases (char *f_file, char *f_anchor,
    {
       while (1)
       {
-         if (get_element_tag_or_label (r) == EOF)
+         if (get_tag_or_label (r) == EOF)
 // if the given anchor is not there reopen the file to read from the start
          {
             zip_fclose (r);
             r = zip_fopen (eBook, f_file, ZIP_FL_UNCHANGED);
             break;
-         } // if                                                          
+         } // if
          if (strcasecmp (attribute.id, f_anchor) == 0)
             break;
       } // while
@@ -704,7 +721,7 @@ int count_phrases (char *f_file, char *f_anchor,
 // start counting
    while (1)
    {
-      if (get_element_tag_or_label (r) == EOF)
+      if (get_tag_or_label (r) == EOF)
       {
          zip_fclose (r);
          return n_phrases;
@@ -787,15 +804,43 @@ void get_label (int item, int indent)
          eBook_struct[item].x = indent + 3;
 } // get_label
 
+static char *convert (char *s)
+{
+   int x = 0, n = 0;
+   static char new[255];
+
+   do
+   {
+      if (s[x] == '%')
+      {
+         char hex[10];
+
+         x++;
+         hex[0] = '0';
+         hex[1] = 'x';
+         hex[2] = s[x++];
+         hex[3] = s[x++];
+         hex[4] = 0;
+         new[n++] = strtod (hex, NULL);
+      }
+      else
+         new[n++] = s[x++];
+   } while (s[x - 1]);
+   return new;
+} // convert
+
 int fill_struct_from_ncx (struct zip_file *ncx, int item)
 {
    eBook_struct[item].level = 0;
    while (1)
    {
-      if (get_element_tag_or_label (ncx) == EOF)
+      if (get_tag_or_label (ncx) == EOF)
          return EOF;
       if (strcasecmp (tag, "navpoint") == 0)
+      {
          level++;
+         depth = level;
+      } // if
       if (strcasecmp (tag, "/navpoint") == 0)
          level--;
       if (strcasecmp (tag, "navlabel") == 0)
@@ -803,7 +848,7 @@ int fill_struct_from_ncx (struct zip_file *ncx, int item)
          eBook_struct[item].page_number = 0;
          do
          {
-            if (get_element_tag_or_label (ncx) == EOF)
+            if (get_tag_or_label (ncx) == EOF)
                return EOF;
          } while (*label == 0 && strcasecmp (tag, "/navlabel") != 0);
          eBook_struct[item].x = level * 3 - 1;
@@ -811,14 +856,15 @@ int fill_struct_from_ncx (struct zip_file *ncx, int item)
             get_label (item, eBook_struct[item].x);
          do
          {
-            if (get_element_tag_or_label (ncx) == EOF)
+            if (get_tag_or_label (ncx) == EOF)
                return EOF;
          } while (strcasecmp (tag, "content") != 0);
-         if (*path)
+         strncpy (attribute.src, convert (attribute.src), 250);
+         if (strcasecmp (prefix, ".") != 0)
             snprintf (eBook_struct[item].text_file, 250,
-                      "%s/%s", path, attribute.src);
+                      "%s/%s", prefix, attribute.src);
          else
-            strncpy (eBook_struct[item].text_file, attribute.src, 250);
+            snprintf (eBook_struct[item].text_file, 250, "%s", attribute.src);
          if (strchr (eBook_struct[item].text_file, '#'))
          {
             strncpy (eBook_struct[item].anchor,
@@ -827,64 +873,102 @@ int fill_struct_from_ncx (struct zip_file *ncx, int item)
          } // if
          break;
       } // if (strcasecmp (tag, "navlabel") == 0)
+      if (strcasecmp (tag, "style") == 0)
+      {
+         while (strcasecmp (tag, "/style") != 0)
+            get_tag_or_label (ncx);
+      } // if (strcasecmp (tag, "style") == 0)
    } // while
    return 0;
 } // fill_struct_from_ncx
 
-void read_eBook_struct ()
+void read_ncx (char *id)
 {
    int item;
    struct zip_file *ncx, *opf;
+   char str[255];
 
-   if (use_ncx)
+   strncpy (str, id, 90);
+   opf = zip_fopen (eBook, OPF, ZIP_FL_UNCHANGED);
+   while (1)
    {
-      if ((ncx = zip_fopen (eBook, NCX, ZIP_FL_UNCHANGED)) == NULL)
-      {
-         endwin ();
-         playfile (PREFIX"share/eBook-speaker/error.wav", "1");
-         printf (gettext ("Corrupt eBook structure %s\n"), NCX);
-         fflush (stdout);
-         _exit (1);
-      } // if
-      item = 0;
-      level = 0;
-      while (1)
-      {
-         if (fill_struct_from_ncx (ncx, item) == EOF)
+      get_tag_or_label (opf);
+      if (strcasecmp (tag, "item") == 0)
+         if (strcasecmp (str, attribute.id) == 0)
             break;
-         eBook_struct[item].level = level;
-         eBook_struct[item].screen = item / max_y;
-         eBook_struct[item].y = item - (eBook_struct[item].screen * max_y);
-         item++;
-      } // while
-      total_items = item;
-      zip_fclose (ncx);
-   } // if (use_ncx)
+   } // while
+   zip_fclose (opf);
+   if (strcasecmp (prefix, ".") != 0)
+      snprintf (NCX, 90, "%s/%s", prefix, attribute.href);
+   else
+      snprintf (NCX, 90, "%s", attribute.href);
+   if ((ncx = zip_fopen (eBook, NCX, ZIP_FL_UNCHANGED)) == NULL)
+   {
+      endwin ();
+      playfile (PREFIX"share/eBook-speaker/error.wav", "1");
+      printf (gettext ("Corrupt eBook structure %s\n"), NCX);
+      fflush (stdout);
+      _exit (1);
+   } // if
+   item = 0;
+   level = 0;
+   while (1)
+   {
+      if (fill_struct_from_ncx (ncx, item) == EOF)
+         break;
+      eBook_struct[item].level = level;
+      eBook_struct[item].screen = item / max_y;
+      eBook_struct[item].y = item - (eBook_struct[item].screen * max_y);
+      item++;
+   } // while
+   total_items = item;
+   zip_fclose (ncx);
+} // read_ncx
 
-   if (use_opf)
+void read_manifest (char *idref, int item)
+{
+   struct zip_file *manifest;
+
+   manifest = zip_fopen (eBook, OPF, ZIP_FL_UNCHANGED);
+   while (1)
    {
-      if ((opf = zip_fopen (eBook, OPF, ZIP_FL_UNCHANGED)) == NULL)
+      if (get_tag_or_label (manifest) == EOF)
+         break;
+      if (strcasecmp (attribute.id, idref) == 0)
       {
-         endwin ();
-         playfile (PREFIX"share/eBook-speaker/error.wav", "1");
-         printf (gettext ("Corrupt eBook structure %s\n"), NCX);
-         fflush (stdout);
-         _exit (1);
-      } // if
-      item = 0;
-      while (1)
-      {
-         if (get_element_tag_or_label (opf) == EOF)
-            break;
-         if (strcasecmp (attribute.media_type, "application/xhtml+xml") != 0)
-            continue;
+         snprintf (eBook_struct[item].label, 90, "%d", item + 1);
+         strncpy (eBook_struct[item].text_file, attribute.href, 250);
          eBook_struct[item].screen = item / max_y;
-         eBook_struct[item].y = item - (eBook_struct[item].screen * max_y);
-         if (*path)
-            snprintf (eBook_struct[item].text_file, 250,
-                      "%s/%s", path, attribute.href);
-         else
-            strncpy (eBook_struct[item].text_file, attribute.href, 250);
+         eBook_struct[item].y = item - eBook_struct[item].screen * max_y;
+         if (strchr (eBook_struct[item].text_file, '#'))
+         {
+            strncpy (eBook_struct[item].anchor,
+                     strchr (eBook_struct[item].text_file, '#') + 1, 250);
+            *strchr (eBook_struct[item].text_file, '#') = 0;
+         } // if
+         eBook_struct[item].level = 1;
+         eBook_struct[item].x = eBook_struct[item].level * 3 - 1;
+         break;
+      } // if
+   } // while
+   zip_fclose (manifest);
+}  // read_manifest
+
+void read_tours (struct zip_file *opf)
+{
+   int item = 0;
+
+   depth = 1;
+   while (1)
+   {
+      if (get_tag_or_label (opf) == EOF)
+         break;
+      if (strcasecmp (tag, "site") == 0)
+      {
+         strncpy (eBook_struct[item].label, attribute.title, 90);
+         strncpy (eBook_struct[item].text_file, attribute.href, 250);
+         eBook_struct[item].screen = item / max_y;
+         eBook_struct[item].y = item - eBook_struct[item].screen * max_y;
          if (strchr (eBook_struct[item].text_file, '#'))
          {
             strncpy (eBook_struct[item].anchor,
@@ -894,16 +978,76 @@ void read_eBook_struct ()
          eBook_struct[item].level = 1;
          eBook_struct[item].x = eBook_struct[item].level * 3 - 1;
          item++;
-      } // while
-      total_items = item;
-      zip_fclose (opf);
-   } // if (use_opf)
-   for (item = 0; item < total_items; item++)
+      } // if
+      if (strcasecmp (tag, "/tours") == 0)
+         break;
+   } // while
+   total_items = item;
+}  // read_tours
+
+void read_opf (struct zip_file *opf)
+{
+   int item = 0;
+
+   depth = 1;
+   while (1)
    {
+      if (get_tag_or_label (opf) == EOF)
+         break;
+      if (strcasecmp (tag, "itemref") == 0)
+      {
+         char idref[255];
+
+         strncpy (idref, attribute.idref, 90);
+         read_manifest (idref, item);
+         item++;
+      } // if
+      if (strcasecmp (tag, "/spine") == 0)
+         total_items = item;
+      if (strcasecmp (tag, "tours") == 0)
+      {
+// read tours tag and forget manifest
+         read_tours (opf);
+         break;
+      } // if
+   } // while
+} // read_opf
+
+void read_eBook_struct ()
+{
+   int item = 0;
+   struct zip_file *opf;
+
+   if ((opf = zip_fopen (eBook, OPF, ZIP_FL_UNCHANGED)) == NULL)
+   {
+      endwin ();
+      playfile (PREFIX"share/eBook-speaker/error.wav", "1");
+      printf (gettext ("Corrupt eBook structure %s\n"), OPF);
+      fflush (stdout);
+      _exit (1);
+   } // if
+   while (1)
+   {
+      if (get_tag_or_label (opf) == EOF)
+         break;
+      if (strcasecmp (tag, "spine") == 0)
+      {
+         if (*attribute.toc)
+         {
+            read_ncx (attribute.toc);
+// if toc is nevertheless empty, read opf
+            if (total_items == 0)
+               read_opf (opf);
+            break;
+         } // if
+         read_opf (opf);
+      } // if
+   } // while
+   zip_fclose (opf);
+   for (item = 0; item < total_items; item++)
       eBook_struct[item].n_phrases = count_phrases
          (eBook_struct[item].text_file, eBook_struct[item].anchor,
           eBook_struct[item + 1].text_file, eBook_struct[item + 1].anchor);
-   } // for
 } // read_eBook_struct
 
 void player_ended ()
@@ -925,38 +1069,23 @@ void open_text_file (char *text_file, char *anchor)
    } // if
    do
    {
-      if (get_element_tag_or_label (text_file_fd) == EOF)
+      if (get_tag_or_label (text_file_fd) == EOF)
          break;
    } while (strcasecmp (tag, "body") != 0);
-// look if anchor exists in this text_file
-   while (1)
-   {
-      if (get_element_tag_or_label (text_file_fd) == EOF)
-      {
-         *anchor = 0;
-         break;
-      } // if
-      if (strcasecmp (anchor, attribute.id) == 0)
-         break;
-   } // while
-   zip_fclose (text_file_fd);
 
-   text_file_fd = zip_fopen (eBook, text_file, ZIP_FL_UNCHANGED);
-   current_page_number = 0;
-   if (! *anchor)
-      return;
-   while (1)
+// look if anchor exists in this text_file
+   if (*anchor != 0)
    {
-      *attribute.id = 0;
-      if (get_element_tag_or_label (text_file_fd) == EOF)
+      strncpy (item_title, anchor, 250);
+      while (1)
       {
-         zip_fclose (text_file_fd);
-         return;
-      } // if
-      if (*anchor)
-         if (strcasecmp (anchor, attribute.id) == 0)
+         if (get_tag_or_label (text_file_fd) == EOF)
             break;
-   } // while
+         if (strcasecmp (anchor, attribute.id) == 0 ||
+             (*label && strcasecmp (anchor, label) == 0))
+            break;
+      } // while
+   } // if
 } // open_text_file
 
 void pause_resume ()
@@ -1053,8 +1182,9 @@ void previous_item ()
          beep ();
          break;
       } // if
-      displaying = current;
    } while (eBook_struct[current].level > level);
+   displaying = current;
+   phrase_nr = eBook_struct[playing].n_phrases - 3;
    view_screen ();
 } // previous_item
 
@@ -1083,34 +1213,35 @@ void skip_left ()
       return;
    } // if
    kill_player ();
-   if (phrase_nr == 2)
-   {
-      if (current <= 0)
-      {
-         beep ();
-         current = 0;
-         phrase_nr = 1;
-         return;
-      } // if
-      previous_item ();
-      playing = current;
-      phrase_nr = eBook_struct[current].n_phrases - 1;
-      return;
-   }  // if
-   open_text_file (eBook_struct[current].text_file,
-                   eBook_struct[current].anchor);
-   nr = 1;
+   open_text_file (eBook_struct[playing].text_file,
+                   eBook_struct[playing].anchor);
+   nr = 0;
    while (1)
    {
-      if (get_element_tag_or_label (text_file_fd) == EOF)
-         return;
+      if (get_tag_or_label (text_file_fd) == EOF)
+         break;
       if (*label)
       {
-         if (nr++ == phrase_nr)
+         if (phrase_nr == 2)
          {
-            phrase_nr = nr - 3;
-            return;
+            current = playing--;
+            phrase_nr = eBook_struct[playing].n_phrases - 1;
+            previous_item ();
+            break;
          } // if
+/* jos
+         if (phrase_nr == eBook_struct[playing].n_phrases)
+         {
+            phrase_nr = eBook_struct[playing].n_phrases - 3;
+            break;
+         } // if
+*/
+         if (nr == phrase_nr)
+         {
+            phrase_nr = nr - 2;
+            break;
+         } // if
+         nr++;
       } // if
    } // while
 } // skip_left
@@ -1145,7 +1276,7 @@ void read_rc ()
    char line[255], *p;
    struct passwd *pw = getpwuid (geteuid ());
 
-   chdir (pw->pw_dir);     
+   chdir (pw->pw_dir);
    strncpy (sound_dev, "default", 8);
    if ((r = fopen (".eBook-speaker.rc", "r")) == NULL)
       return;
@@ -1165,6 +1296,7 @@ void read_rc ()
                   break;
                strncpy (sound_dev, p, 15);
                sound_dev[15] = 0;
+               break;
             } // if
          } // while
       } // if
@@ -1182,6 +1314,17 @@ void read_rc ()
                break;
             } // if
          } // while
+      } // if
+      if ((p = strstr (line, "language")))
+      {
+         p += 9;
+         while (*p == ' ' || *p == '\t' || *p == '\n')
+            p++;
+         strncpy (dc_language, p, 5);
+         p = dc_language;
+         while (*p != ' ' && *p != '\t' && *p != 0)
+            p++;
+         *p = 0;
       } // if
    } // while
    fclose (r);
@@ -1201,13 +1344,16 @@ void save_rc ()
    fputs ("# If you edit this file by hand, be sure there is no eBook-speaker active\n", w);
    fputs ("# otherwise your changes will be lost.\n", w);
    fputs ("#\n", w);
-   fputs ("# On which ALSA-audio device should eBook-speaker play the DTB?\n", w);
+   fputs ("# On which ALSA-audio device should eBook-speaker read the book?\n", w);
    fputs ("# default: sound_dev=default\n", w);
    fprintf (w, "sound_dev=%s\n", sound_dev);
    fputs ("#\n", w);
-   fputs ("# At wich speed should the DTB be read?\n", w);
+   fputs ("# At wich speed should the book be read?\n", w);
    fputs ("# default: speed=160\n", w);
-   fprintf (w, "speed=%i\n", speed);
+   fprintf (w, "speed=%i\n", speed);                             
+   fputs ("#\n", w);
+   fputs ("# What should the language be if it is not specified in the book?\n", w);
+   fprintf (w, "language=%s\n", dc_language);
    fclose (w);
 } // save_rc
 
@@ -1313,7 +1459,7 @@ void kill_player ()
 void go_to_page_number ()
 {
    struct zip_file *fd;
-   char *p, filename[100], anchor[100], pre_filename[100], pre_anchor[100];
+   char *p, filename[255], anchor[255], pre_filename[255], pre_anchor[255];
    char pn[15];
 
    kill_player ();
@@ -1327,7 +1473,7 @@ void go_to_page_number ()
    view_screen ();
    if (! *pn || ! isdigit (*pn))
    {
-      beep ();
+      beep (); 
       skip_left ();
       return;
    } // if
@@ -1341,7 +1487,7 @@ void go_to_page_number ()
    } // if
    do
    {
-      if (get_element_tag_or_label (fd) == EOF)
+      if (get_tag_or_label (fd) == EOF)
       {
          beep ();
          zip_fclose (fd);
@@ -1384,7 +1530,7 @@ void select_next_output_device ()
 {
    FILE *r;
    int n, y;
-   char list[10][255], trash[100];
+   char list[10][255], trash[255];
 
    wclear (screenwin);
    wprintw (screenwin, "\nSelect an soundcard:\n\n");
@@ -1399,8 +1545,8 @@ void select_next_output_device ()
    for (n = 0; n < 10; n++)
    {
       *list[n] = 0;
-      fgets (list[n], 100, r);
-      fgets (trash, 100, r);
+      fgets (list[n], 250, r);
+      fgets (trash, 250, r);
       if (! *list[n])
          break;
       wprintw (screenwin, "   %s", list[n]);
@@ -1455,9 +1601,9 @@ void browse ()
          phrase_nr = 1;
          just_this_item = -1;
          view_screen ();
-         displaying = current = playing;
+         displaying = playing = current;
          kill_player ();
-         open_text_file (eBook_struct[current].text_file, 
+         open_text_file (eBook_struct[current].text_file,
                          eBook_struct[current].anchor);
          break;
       case '/':
@@ -1494,8 +1640,12 @@ void browse ()
             just_this_item = -1;
          else
          {
+            if (playing == -1)
+            {
+               phrase_nr = 1;
+               strncpy (item_title, eBook_struct[current].anchor, 250);
+            } // if
             playing = just_this_item = current;
-            phrase_nr = 1;
          } // if
          mvwprintw (screenwin, eBook_struct[current].y, 0, " ");
          if (playing == -1)
@@ -1587,6 +1737,8 @@ void browse ()
             break;
          } // if
          speed += 10;
+         if (playing == -1)
+            break;
          kill_player ();
          read_text (playing, phrase_nr - 1);
          break;
@@ -1597,11 +1749,15 @@ void browse ()
             break;
          } // if
          speed -= 10;
+         if (playing == -1)
+            break;
          kill_player ();
          read_text (playing, phrase_nr - 1);
          break;
       case KEY_HOME:
          speed = 160;
+         if (playing == -1)
+            break;
          kill_player ();
          read_text (playing, phrase_nr - 1);
          break;
@@ -1614,7 +1770,7 @@ void browse ()
          if (read_text (playing, phrase_nr++) == EOF)
          {
             phrase_nr = 1;
-            ++playing;
+            playing++;
             if (eBook_struct[playing].level <= level)
                current = displaying = playing;
             if (just_this_item != -1 && eBook_struct[playing].level <= level)
@@ -1673,7 +1829,7 @@ char *sort_by_playorder ()
    } // if
    do
    {
-      if (get_element_tag_or_label (r) == EOF)
+      if (get_tag_or_label (r) == EOF)
          break;
       if (*element)
          dprintf (w, "%s\n", element);
@@ -1684,14 +1840,14 @@ char *sort_by_playorder ()
    do
    {
       *attribute.playorder = 0;
-      if (get_element_tag_or_label (r) == EOF)
+      if (get_tag_or_label (r) == EOF)
          break;
       if (atoi (attribute.playorder) == n)
       {
          dprintf (w, "%s\n", element);
          do
          {
-            if (get_element_tag_or_label (r) == EOF)
+            if (get_tag_or_label (r) == EOF)
                break;
             if (*element)
                dprintf (w, "%s\n", element);
@@ -1706,14 +1862,15 @@ char *sort_by_playorder ()
    return tmp_ncx;
 } // sort_by_playorder
 
-const char *open_eBook (char *file)
+char *open_eBook (char *file)
 {
    int index;
-   const char *p;
+   char *p;
    struct zip_file *opf;
 
    if (! (eBook = zip_open (file, 0, NULL)))
    {
+      endwin ();
       printf ("%s is not an eBook!\n", file);
       playfile (PREFIX"share/eBook-speaker/error.wav", "1");
       _exit (1);
@@ -1721,26 +1878,28 @@ const char *open_eBook (char *file)
    index = 0;
    do
    {
-      if (! (p = zip_get_name (eBook, index, ZIP_FL_UNCHANGED)))
+      if (! (p = (char *)zip_get_name (eBook, index, ZIP_FL_UNCHANGED)))
          break;
       if (strcasecmp (p + strlen (p) - 4, ".opf") == 0)
          break;
    } while (index++ < zip_get_num_files (eBook));
    if (! p)
    {
+      endwin ();
       printf ("File %s doesn't contain an eBook!\n", file);
       playfile (PREFIX"share/eBook-speaker/error.wav", "1");
       _exit (1);
    } // if
    if (! (opf = zip_fopen (eBook, p, ZIP_FL_UNCHANGED)))
    {
+      endwin ();
       printf ("Cannot read: %s: %s\n", p, strerror (errno));
       playfile (PREFIX"share/eBook-speaker/error.wav", "1");
       _exit (1);
    } // if
    while (1)
    {
-      if (get_element_tag_or_label (opf) == EOF)
+      if (get_tag_or_label (opf) == EOF)
          break;
       if (*attribute.ncc_totalTime)
          strncpy (ncc_totalTime, attribute.ncc_totalTime, 8);
@@ -1748,12 +1907,14 @@ const char *open_eBook (char *file)
       {
          do
          {
-            get_element_tag_or_label (opf);
+            get_tag_or_label (opf);
          } while (! *label);
          strncpy (eBook_title, label, 90);
       } // if
    } // while
    zip_fclose (opf);
+   strncpy (prefix, p, 90);
+   strncpy (prefix, dirname (prefix), 90);
    return p;
 } // open_eBook
 
@@ -1764,16 +1925,18 @@ void set_language ()
    opf = zip_fopen (eBook, OPF, ZIP_FL_UNCHANGED);
    do
    {
-      if (get_element_tag_or_label (opf) == EOF)
+      if (get_tag_or_label (opf) == EOF)
          break;
    } while (strcasecmp (tag, "dc:language") != 0);
    do
    {
-      if (get_element_tag_or_label (opf) == EOF ||
+      if (get_tag_or_label (opf) == EOF ||
           strcasecmp (tag, "/dc:language") == 0)
          break;
    } while (! *label);
-   if (! *label || strcasecmp (label, "UND") == 0 || ! *label)
+   if (strcasecmp (label, "dut") == 0)
+      strncpy (label, "nl", 5);
+   if (! *label || strcasecmp (label, "UND") == 0)
    {
       endwin ();
       playfile (PREFIX"share/eBook-speaker/error.wav", "1");
@@ -1790,57 +1953,10 @@ void set_language ()
    zip_fclose (opf);
 } // set_language
 
-void get_depth ()
-{
-   struct zip_file *opf, *ncx;
-
-   if (use_ncx)
-   {
-      if ((ncx = zip_fopen (eBook, NCX, ZIP_FL_UNCHANGED)) == NULL)
-      {
-         endwin ();
-         playfile (PREFIX"share/eBook-speaker/error.wav", "1");
-         printf (gettext ("Corrupt eBook structure %s\n"), NCX);
-         fflush (stdout);
-         _exit (1);
-      } // if
-      while (1)
-      {
-         if (get_element_tag_or_label (ncx) == EOF)
-            break;
-         if (strcasecmp (tag, "navpoint") == 0)
-         {
-            eBook_struct[current].level++;
-            if (eBook_struct[current].level > depth)
-               depth = eBook_struct[current].level;
-         } // if
-         if (strcasecmp (tag, "/navpoint") == 0)
-            eBook_struct[current].level--;
-      } // while
-      zip_fclose (ncx);
-   } // if (use_ncx)
-
-   if (use_opf)                 
-   {
-endwin ();
-puts ("Not implemented yet");
-exit (0);
-      if ((opf = zip_fopen (eBook, OPF, ZIP_FL_UNCHANGED)) == NULL)
-      {
-         endwin ();
-         playfile (PREFIX"share/eBook-speaker/error.wav", "1");
-         printf (gettext ("Corrupt eBook structure %s\n"), NCX);
-         fflush (stdout);
-         _exit (1);
-      } // if
-      zip_fclose (opf);
-   } // if (use_opf)
-} // get_depth
-
 int main (int argc, char *argv[])
 {
-   struct zip_file *opf, *ncx;
-   int x, opt;
+   struct zip_file *opf;
+   int opt;
    char str[255], file[255];
 
    fclose (stderr); // discard SoX messages
@@ -1868,7 +1984,7 @@ int main (int argc, char *argv[])
       switch (opt)
       {
       case 'l':
-         strncpy (dc_language, optarg, 15);
+         strncpy (dc_language, optarg, 5);
          break;
       default:
          usage (prog_name);
@@ -1891,22 +2007,29 @@ int main (int argc, char *argv[])
       playfile (PREFIX"share/eBook-speaker/error.wav", "1");
       _exit (1);
    } // if
-   strcpy (daisy_version, "3");
 
-   strncpy (path, open_eBook (file), 250);
-   strncpy (OPF, path, 250);
-   if (strrchr (path, '/'))
-      *strchr (path, '/') = 0;
-   else
-      *path = 0;
-   if (! (opf = zip_fopen (eBook, OPF, 0)))
+// determine filetype
+   magic_t myt;
+
+   myt = magic_open (MAGIC_CONTINUE | MAGIC_MIME_TYPE);
+   magic_load (myt, NULL);
+   if (strcasecmp (magic_file (myt, file), "application/x-ms-reader") == 0)
    {
-      endwin ();
-      playfile (PREFIX"share/eBook-speaker/error.wav", "1");
-      printf (gettext ("\nCannot read %s\n"), OPF);
-      fflush (stdout);
-      _exit (1);
+      char cmd[512], tmpname[255];
+
+      chdir ("/tmp");
+      strncpy (tmpname, tempnam (".", "eBook"), 200);
+      snprintf (cmd, 500, "clit %s %s/ > /dev/null; \
+                           cd %s; \
+                           zip -q -1 -r ../%s.zip *", \
+               file, tmpname, tmpname, tmpname);
+      system (cmd);
+      snprintf (file, 200, "/tmp/%s.zip", tmpname);
    } // if
+   strncpy (OPF, open_eBook (file), 250);
+   magic_close (myt);
+
+   strcpy (daisy_version, "3");
 
    initscr ();
    titlewin = newwin (2, 80,  0, 0);
@@ -1928,48 +2051,26 @@ int main (int argc, char *argv[])
       endwin ();
       puts ("daisy 2.02 is not supported by eBook-speaker");
       _exit (0);
-      while (1)
-      {
-         if (get_element_tag_or_label (opf) == EOF)
-            break;
-         if (strcasecmp (tag, "title") == 0)
-         {
-            if (get_element_tag_or_label (opf) == EOF)
-               break;
-            if (*label)
-            {
-               for (x = strlen (label) - 1; x >= 0; x--)
-               {
-                  if (isspace (label[x]))
-                     label[x] = 0;
-                  else
-                     break;
-               } // for
-               strncpy (bookmark_title, label, 90);
-               break;
-            } // if
-         } // if
-      } // while
    } // if
    if (strcmp (daisy_version, "3") == 0)
    {
+      if ((opf = zip_fopen (eBook, OPF, ZIP_FL_NOCASE)) == NULL)
+      {
+         endwin ();
+         playfile (PREFIX"share/eBook-speaker/error.wav", "1");
+         printf (gettext ("\nCannot read %s\n"), OPF);
+         fflush (stdout);
+         _exit (1);
+      } // if
       while (1)
       {
-         if (get_element_tag_or_label (opf) == EOF)
+         if (get_tag_or_label (opf) == EOF)
             break;
-         if (strcasecmp (
-             attribute.media_type, "application/x-dtbncx+xml") == 0)
-         {
-            if (*path)
-               snprintf (NCX, 250, "%s/%s", path, attribute.href);
-            else
-               strncpy (NCX, attribute.href, 250);
-         } // if
          if (strcasecmp (tag, "dc:title") == 0)
          {
             do
             {
-               if (get_element_tag_or_label (opf) == EOF)
+               if (get_tag_or_label (opf) == EOF)
                   break;
             } while (! *label);
 
@@ -1983,31 +2084,8 @@ int main (int argc, char *argv[])
             strncpy (bookmark_title, label, 90);
          } // if
       } // while
+      zip_fclose (opf);
    } // if
-   zip_fclose (opf);
-
-// count items
-   if ((ncx = zip_fopen (eBook, NCX, ZIP_FL_UNCHANGED)) == NULL)
-   {
-      endwin ();
-      playfile (PREFIX"share/eBook-speaker/error.wav", "1");
-      printf (gettext ("Corrupt eBook structure %s\n"), NCX);
-      fflush (stdout);
-      _exit (1);
-   } // if
-   while (1)
-   {
-      if (get_element_tag_or_label (ncx) == EOF)
-         break;
-      if (strcasecmp (tag, "navlabel") == 0)
-         total_items++;
-   } // while
-   zip_fclose (ncx);
-   use_ncx = use_opf = 0;
-   if (total_items > 0)
-      use_ncx = 1;
-   else
-      use_opf = 1;
    read_eBook_struct ();
 
    if (strlen (eBook_title) + strlen (str) >= 80)
@@ -2022,8 +2100,6 @@ int main (int argc, char *argv[])
    *search_str = 0;
    if (! *dc_language)
       set_language ();
-   if (depth == 0)
-      get_depth ();
    browse ();
-   return 0;
+   return 0;                                              
 } // main
