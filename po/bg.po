@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gettext 0.11.2\n"
 "Report-Msgid-Bugs-To: <jos@jlemmens.nl>\n"
-"POT-Creation-Date: 2016-03-25 14:50+0100\n"
+"POT-Creation-Date: 2016-06-09 19:56+0200\n"
 "PO-Revision-Date: 2015-09-13 21:06+0200\n"
 "Last-Translator: Zahari Yurukov <zahari.yurukov@gmail.com>\n"
 "Language-Team: Zahari Yurukov <zahari.yurukov@gmail.com>\n"
@@ -30,39 +30,39 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/daisy3.c:50 src/daisy3.c:127 src/daisy3.c:240 src/daisy3.c:575
-#: src/daisy3.c:662 src/daisy3.c:765 src/daisy3.c:842 src/daisy3.c:910
-#: src/daisy3.c:1174 src/eBook-speaker.c:1554
+#: src/daisy3.c:51 src/daisy3.c:194 src/daisy3.c:542 src/daisy3.c:639
+#: src/daisy3.c:742 src/daisy3.c:819 src/daisy3.c:886 src/daisy3.c:1150
+#: src/eBook-speaker.c:1742 src/eBook-speaker.c:1744
 #, c-format
 msgid "Cannot read %s"
 msgstr "Невъзможно прочитане на %s"
 
-#: src/daisy3.c:497
+#: src/daisy3.c:459
 #, c-format
 msgid "Cannot read type: %d"
 msgstr "Невазможно прочитане на тип: %d"
 
-#: src/eBook-speaker.c:158
+#: src/eBook-speaker.c:162
 msgid "Select a Text-To-Speech application"
 msgstr "Избор на речев синтезатор"
 
-#: src/eBook-speaker.c:170
+#: src/eBook-speaker.c:174
 msgid "Provide a new TTS."
 msgstr "Посочете нов речев синтезатор."
 
-#: src/eBook-speaker.c:172
+#: src/eBook-speaker.c:176
 msgid "Be sure that the new TTS reads its information from the file"
 msgstr "Уверете се, че новият речев синтезатор прочита информацията от файла "
 
-#: src/eBook-speaker.c:174
+#: src/eBook-speaker.c:178
 msgid "eBook-speaker.txt and that it writes to the file eBook-speaker.wav."
 msgstr "eBook-speaker.txt и че записва във файла eBook-speaker.wav."
 
-#: src/eBook-speaker.c:176
+#: src/eBook-speaker.c:180
 msgid "Press DEL to delete a TTS"
 msgstr "Натиснете DEL за да изтриете речев синтезатор"
 
-#: src/eBook-speaker.c:563
+#: src/eBook-speaker.c:576 src/eBook-speaker.c:598
 #, c-format
 msgid ""
 "Be sure that the used TTS is installed:\n"
@@ -73,281 +73,291 @@ msgstr ""
 "\n"
 "   \"%s\"\n"
 
-#: src/eBook-speaker.c:712 src/list_dir.c:69 src/list_dir.c:263
+#: src/eBook-speaker.c:749 src/list_dir.c:71 src/list_dir.c:265
 msgid "'h' for help "
 msgstr "'h' за помощ "
 
-#: src/eBook-speaker.c:717
+#: src/eBook-speaker.c:754
 #, c-format
 msgid " %d pages "
 msgstr " %d страници "
 
-#: src/eBook-speaker.c:719
+#: src/eBook-speaker.c:756
 #, c-format
 msgid " level: %d of %d "
 msgstr " ниво: %d от %d "
 
-#: src/eBook-speaker.c:721
+#: src/eBook-speaker.c:758
 #, c-format
 msgid " total phrases: %d "
 msgstr " Общ брой фрази: %d "
 
-#: src/eBook-speaker.c:949 src/list_dir.c:180
+#: src/eBook-speaker.c:985 src/list_dir.c:182
 msgid "These commands are available in this version:"
 msgstr "В тази версия са налични следните команди:"
 
-#: src/eBook-speaker.c:953 src/list_dir.c:184
+#: src/eBook-speaker.c:989 src/list_dir.c:186
 msgid "cursor down,2   - move cursor to the next item"
 msgstr "Стрелка надолу,2     - Придвижване на курсора до следващия елемент"
 
-#: src/eBook-speaker.c:955 src/list_dir.c:186
+#: src/eBook-speaker.c:991 src/list_dir.c:188
 msgid "cursor up,8     - move cursor to the previous item"
 msgstr "Стрелка нагоре,8     - Придвижване на курсора до предишния елемент"
 
-#: src/eBook-speaker.c:957
+#: src/eBook-speaker.c:993
 msgid "cursor right,6  - skip to next phrase"
 msgstr "Стрелка надясно,6    - Прескачане до следваща фраза"
 
-#: src/eBook-speaker.c:959
+#: src/eBook-speaker.c:995
 msgid "cursor left,4   - skip to previous phrase"
 msgstr "Стрелка наляво,4     - Прескачане до предишна фраза"
 
-#: src/eBook-speaker.c:961 src/list_dir.c:192
+#: src/eBook-speaker.c:997 src/list_dir.c:194
 msgid "page-down,3     - view next page"
 msgstr "Страница надолу,3    - Преглед на следваща страница"
 
-#: src/eBook-speaker.c:963 src/list_dir.c:194
+#: src/eBook-speaker.c:999 src/list_dir.c:196
 msgid "page-up,9       - view previous page"
 msgstr "Страница нагоре,9    - Преглед на предишна страница"
 
-#: src/eBook-speaker.c:965
+#: src/eBook-speaker.c:1001
 msgid "enter           - start playing"
 msgstr "enter                - Възпроизвеждане"
 
-#: src/eBook-speaker.c:967
+#: src/eBook-speaker.c:1003
 msgid "space,0         - pause/resume playing"
 msgstr "Интервал,0           - Пауза/възобновяване"
 
-#: src/eBook-speaker.c:969
+#: src/eBook-speaker.c:1005
 msgid "home,*          - play on normal speed"
 msgstr "home,*               - Възпроизвеждане с нормална скорост"
 
-#: src/eBook-speaker.c:971 src/eBook-speaker.c:1013
+#: src/eBook-speaker.c:1007 src/eBook-speaker.c:1049
 msgid "Press any key for next page..."
 msgstr "Натиснете произволен клавиш за следваща страница..."
 
-#: src/eBook-speaker.c:978 src/list_dir.c:198
+#: src/eBook-speaker.c:1014 src/list_dir.c:200
 msgid "/               - search for a label"
 msgstr "/        - Търсене на етикет"
 
-#: src/eBook-speaker.c:980
+#: src/eBook-speaker.c:1016
 msgid "A               - store current item to disk in ASCII-format"
 msgstr "A        - Съхраняване на текущия елемент на диска в ASCII формат"
 
-#: src/eBook-speaker.c:982
+#: src/eBook-speaker.c:1018
 msgid "b               - consider the end of an input line as a phrase-break"
 msgstr "b        - Считане на новите редове за край на фраза"
 
-#: src/eBook-speaker.c:984
+#: src/eBook-speaker.c:1020
 msgid "B               - move cursor to the last item"
 msgstr "B        - Придвижване на курсора до последния елемент"
 
-#: src/eBook-speaker.c:986
+#: src/eBook-speaker.c:1022
 msgid "d               - store current item to disk in WAV-format"
 msgstr "d        - Съхраняване на текущия елемент на диска в WAV формат"
 
-#: src/eBook-speaker.c:988
+#: src/eBook-speaker.c:1024
 msgid "D,-             - decrease playing speed"
 msgstr "D,-      - намаляване на скоростта на възпроизвеждане"
 
-#: src/eBook-speaker.c:990
+#: src/eBook-speaker.c:1026
 msgid ""
 "f               - find the currently playing item and place the cursor there"
 msgstr ""
 "f        - Намиране на текущо-възпроизвеждания елемент и поставяне "
 "на                          курсора върху него"
 
-#: src/eBook-speaker.c:992
+#: src/eBook-speaker.c:1028
 msgid "g               - go to phrase in current item"
 msgstr "g        - Отиване до фраза в текущия елемент"
 
-#: src/eBook-speaker.c:995
+#: src/eBook-speaker.c:1031
 msgid "G               - go to page number"
 msgstr "G        - Отиване до страница"
 
-#: src/eBook-speaker.c:997 src/list_dir.c:202
+#: src/eBook-speaker.c:1033 src/list_dir.c:204
 msgid "h,?             - give this help"
 msgstr "h,?      - Извеждане на този текст"
 
-#: src/eBook-speaker.c:999
+#: src/eBook-speaker.c:1035
 msgid "j,5             - just play current item"
 msgstr "j,5      - Възпроизвеждане на текущия елемент"
 
-#: src/eBook-speaker.c:1001
+#: src/eBook-speaker.c:1037
 msgid "l               - switch to next level"
 msgstr "l        - Превключване до следващо ниво"
 
-#: src/eBook-speaker.c:1003
+#: src/eBook-speaker.c:1039
 msgid "L               - switch to previous level"
 msgstr "L        - Превключване до предишно ниво"
 
-#: src/eBook-speaker.c:1005 src/list_dir.c:206
+#: src/eBook-speaker.c:1041 src/list_dir.c:208
 msgid "n               - search forwards"
 msgstr "n        - Търсене напред"
 
-#: src/eBook-speaker.c:1007 src/list_dir.c:208
+#: src/eBook-speaker.c:1043 src/list_dir.c:210
 msgid "N               - search backwards"
 msgstr "N        - Търсене назад"
 
-#: src/eBook-speaker.c:1009
+#: src/eBook-speaker.c:1045
 msgid "o               - select next output sound device"
 msgstr "o        - Избиране на следващо изходно звъково устройство"
 
-#: src/eBook-speaker.c:1011
+#: src/eBook-speaker.c:1047
 msgid "p               - place a bookmark"
 msgstr "p        - Поставяне на отметка"
 
-#: src/eBook-speaker.c:1020
+#: src/eBook-speaker.c:1056
 msgid "q               - quit eBook-speaker and place a bookmark"
 msgstr "q        - Спиране на eBook-speaker и поставяне на отметка"
 
-#: src/eBook-speaker.c:1023
+#: src/eBook-speaker.c:1059
 msgid "r               - rotate scanned document"
 msgstr "r        - Завъртане на сканиран документ"
 
-#: src/eBook-speaker.c:1025
+#: src/eBook-speaker.c:1061
 msgid "s               - stop playing"
 msgstr "s        - Спиране на възпроизвеждането"
 
-#: src/eBook-speaker.c:1027
+#: src/eBook-speaker.c:1063
 msgid "t               - select next TTS"
 msgstr "t        - Избор на следващ речев синтезатор"
 
-#: src/eBook-speaker.c:1029
+#: src/eBook-speaker.c:1065
 msgid "T               - move cursor to the first item"
 msgstr "T        - Придвижване на курсорора до първия елемент"
 
-#: src/eBook-speaker.c:1031
+#: src/eBook-speaker.c:1067
 msgid "U,+             - increase playing speed"
 msgstr "U,+      - Увеличаване на скоростта на възпроизвеждане"
 
-#: src/eBook-speaker.c:1033
+#: src/eBook-speaker.c:1069
 msgid "v,1             - decrease playback volume"
 msgstr "v,1      - Намаляне на силата на звука"
 
-#: src/eBook-speaker.c:1035
+#: src/eBook-speaker.c:1071
 msgid "V,7             - increase playback volume (beware of Clipping)"
 msgstr "V,7      - Увеличаване на силата на звука (възможни са смущения)"
 
-#: src/eBook-speaker.c:1037
+#: src/eBook-speaker.c:1073
 msgid "x               - go to the file-manager"
 msgstr ""
 
-#: src/eBook-speaker.c:1039 src/list_dir.c:214
+#: src/eBook-speaker.c:1075 src/list_dir.c:216
 msgid "Press any key to leave help..."
 msgstr "Натиснете произволен клавиш за изход от помощта..."
 
-#: src/eBook-speaker.c:1286 src/list_dir.c:116
+#: src/eBook-speaker.c:1322 src/list_dir.c:118
 msgid "What do you search? "
 msgstr "Какво търсите? "
 
-#: src/eBook-speaker.c:1371
+#: src/eBook-speaker.c:1407
 msgid "Consider the end of an input line as a phrase-break (y/n) "
 msgstr "Считане на новите редове за край на фраза (y/n) "
 
-#: src/eBook-speaker.c:1408
+#: src/eBook-speaker.c:1444
 msgid "Select a soundcard:"
 msgstr "Избор на звукова карта:"
 
-#: src/eBook-speaker.c:1410
+#: src/eBook-speaker.c:1446
 msgid "Cannot read /proc/asound/cards"
 msgstr "Не мога да прочета /proc/asound/cards"
 
-#: src/eBook-speaker.c:1510
-msgid "Go to page number: "
-msgstr "Отиване до страница: "
-
-#: src/eBook-speaker.c:1647
+#: src/eBook-speaker.c:1663
 #, c-format
 msgid "Language code \"%s\" is not a valid tesseract code.\n"
 msgstr "Езиковият код \"%s\" не е валиден код за tesseract.\n"
 
-#: src/eBook-speaker.c:1649
+#: src/eBook-speaker.c:1665
 msgid "See the tesseract manual for valid codes."
 msgstr "Вижте ръководството на tesseract за валидни кодове."
 
-#: src/eBook-speaker.c:1651
+#: src/eBook-speaker.c:1667
 #, c-format
 msgid ""
 "Be sure the package \"tesseract-ocr-%s\" is installed onto your system.\n"
 msgstr ""
 "Уверете се, че пакета \"tesseract-ocr-%s\" е инсталиран на вашата система.\n"
 
-#: src/eBook-speaker.c:1733
+#: src/eBook-speaker.c:1675
+#, c-format
+msgid "Language code \"%s\" is not a valid cuneiform code.\n"
+msgstr "Езиковият код \"%s\" не е валиден код за tesseract.\n"
+
+#: src/eBook-speaker.c:1677
+msgid "See the cuneiform manual for valid codes."
+msgstr "Вижте ръководството на cuneiform за валидни кодове."
+
+#: src/eBook-speaker.c:1697
+msgid "Go to page number: "
+msgstr "Отиване до страница: "
+
+#: src/eBook-speaker.c:1863
 msgid "Go to phrase in current item: "
 msgstr "Отиване до фраза в текущият елемент: "
 
-#: src/eBook-speaker.c:1859 src/eBook-speaker.c:2578 src/eBook-speaker.c:2812
+#: src/eBook-speaker.c:1989 src/eBook-speaker.c:2715 src/eBook-speaker.c:2978
 msgid "Please wait..."
 msgstr "Изчакайте..."
 
-#: src/eBook-speaker.c:1872 src/eBook-speaker.c:2119 src/eBook-speaker.c:2138
-#: src/eBook-speaker.c:2159 src/eBook-speaker.c:2191 src/eBook-speaker.c:2403
-#: src/eBook-speaker.c:2616 src/eBook-speaker.c:2665 src/eBook-speaker.c:2868
+#: src/eBook-speaker.c:2002 src/eBook-speaker.c:2255 src/eBook-speaker.c:2272
+#: src/eBook-speaker.c:2293 src/eBook-speaker.c:2323 src/eBook-speaker.c:2536
+#: src/eBook-speaker.c:2755 src/eBook-speaker.c:2797 src/eBook-speaker.c:3054
 msgid "eBook-speaker cannot handle this file."
 msgstr "eBook-speaker не може да се справи с този файл."
 
-#: src/eBook-speaker.c:1908 src/eBook-speaker.c:2543
+#: src/eBook-speaker.c:2038 src/eBook-speaker.c:2680
 msgid "Press 'h' for help "
 msgstr "Натиснете 'h' за помощ "
 
-#: src/eBook-speaker.c:2167
+#: src/eBook-speaker.c:2301
 msgid "Unknown format"
 msgstr "Неизвестен формат"
 
-#: src/eBook-speaker.c:2374 src/eBook-speaker.c:2809
+#: src/eBook-speaker.c:2507 src/eBook-speaker.c:2975
 msgid "eBook-speaker - Version"
 msgstr "eBook-speaker - Версия"
 
-#: src/eBook-speaker.c:2378
+#: src/eBook-speaker.c:2511
 #, c-format
 msgid ""
-"Usage: %s [eBook_file | -s] [-o language-code] [-d ALSA_sound_device] [-h] [-"
-"i] [-t TTS_command] [-b n | y]"
+"Usage: %s [eBook_file | -s [-r resolution]] [-o language-code] [-d "
+"ALSA_sound_device] [-h] [-i] [-t TTS_command] [-b n | y] [-c]"
 msgstr ""
-"Употреба:  %s [файл_с_книга | -s] [-o езиков_код] [-d "
-"ALSA_звуково_устройство] [-h] [-i] [-t команда_за_синтезатора] [-b n | y]"
+"Употреба:  %s [файл_с_книга | -s [-r resolution]] [-o езиков_код] [-d "
+"ALSA_звуково_устройство] [-h] [-i] [-t команда_за_синтезатора] [-b n | y] [-"
+"c]"
 
-#: src/list_dir.c:65 src/list_dir.c:260
+#: src/list_dir.c:67 src/list_dir.c:262
 #, c-format
 msgid "%s - Choose an input-file"
 msgstr ""
 
-#: src/list_dir.c:188
+#: src/list_dir.c:190
 msgid "cursor right,6  - open this directory or file"
 msgstr ""
 
-#: src/list_dir.c:190
+#: src/list_dir.c:192
 msgid "cursor left,4   - open previous directory"
 msgstr ""
 
-#: src/list_dir.c:196
+#: src/list_dir.c:198
 msgid "enter,6         - open this directory or file"
 msgstr ""
 
-#: src/list_dir.c:200
+#: src/list_dir.c:202
 msgid "end,B           - move cursor to the last item"
 msgstr ""
 
-#: src/list_dir.c:204
+#: src/list_dir.c:206
 msgid "H,0             - display \"hidden\" files on/off"
 msgstr ""
 
-#: src/list_dir.c:210
+#: src/list_dir.c:212
 msgid "q               - quit eBook-speaker"
 msgstr ""
 
-#: src/list_dir.c:212
+#: src/list_dir.c:214
 msgid "home,T          - move cursor to the first item"
 msgstr ""
 

@@ -1,5 +1,6 @@
 /* daisy3.c - functions to insert daisy3 info into a struct.
- *  Copyright (C) 2016 J. Lemmens
+ *
+ * Copyright (C) 2016 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -82,7 +83,7 @@ void parse_audio (misc_t *misc, my_attribute_t *my_attribute,
             {
                if (! get_tag_or_label (misc, my_attribute, parse))
                   break;
-               if (*daisy[x + 1].anchor)
+               if (x + 1 < misc->total_items && *daisy[x + 1].anchor)
                   if (strcasecmp (my_attribute->id, daisy[x + 1].anchor) == 0)
                      break;
                if (strcasecmp (misc->tag, "audio") == 0)
@@ -102,65 +103,15 @@ void parse_audio (misc_t *misc, my_attribute_t *my_attribute,
    } // for
 } // parse_audio
 
-void get_page_number_3 (misc_t *misc, my_attribute_t *my_attribute)
-{
-   htmlDocPtr doc;
-   xmlTextReaderPtr page;
-   char *anchor = 0;
-
-   do
-   {
-      if (! get_tag_or_label (misc, my_attribute, misc->reader))
-         return;
-   } while (strcasecmp (misc->tag, "text") != 0);
-   if (strchr (my_attribute->src, '#'))
-   {
-      anchor = strdup (strchr (my_attribute->src, '#') + 1);
-      *strchr (my_attribute->src, '#') = 0;
-   } // if
-   doc = htmlParseFile (my_attribute->src, "UTF-8");
-   if (! (page = xmlReaderWalker (doc)))
-   {
-      endwin ();
-      beep ();
-      printf ("\n");
-      printf (gettext ("Cannot read %s"), my_attribute->src);
-      printf ("\n");
-      fflush (stdout);
-      _exit (1);
-   } // if
-   do
-   {
-      if (! get_tag_or_label (misc, my_attribute, page))
-      {
-         xmlTextReaderClose (page);
-         xmlFreeDoc (doc);
-         return;
-      } // if
-   } while (strcasecmp (my_attribute->id, anchor) != 0);
-   do
-   {
-      if (! get_tag_or_label (misc, my_attribute, page))
-      {
-         xmlTextReaderClose (page);
-         xmlFreeDoc (doc);
-         return;
-      } // if
-   } while (! *misc->label);
-   xmlTextReaderClose (page);
-   xmlFreeDoc (doc);
-   misc->current_page_number = atoi (misc->label);
-} // get_page_number_3
-
 void get_clips (misc_t *misc, my_attribute_t *my_attribute)
 {
    char begin_str[MAX_STR], *begin;
    char *orig_begin, *end;
 
-   orig_begin = my_attribute->clip_begin;
-   end = my_attribute->clip_end;
    if (misc->cd_type == CDIO_DISC_MODE_CD_DA)
       return;
+   orig_begin = my_attribute->clip_begin;
+   end = my_attribute->clip_end;
    if (! *orig_begin)
       return;
    strncpy (begin_str, orig_begin,  MAX_STR - 1);
@@ -210,7 +161,7 @@ float read_time (char *p)
 void parse_page_number (misc_t *misc, my_attribute_t *my_attribute,
                         daisy_t *daisy, xmlTextReaderPtr page)
 {
-   while (1)
+   while (1)   
    {
       if (! get_tag_or_label (misc, my_attribute, page))
          return;
@@ -220,14 +171,17 @@ void parse_page_number (misc_t *misc, my_attribute_t *my_attribute,
       {
          htmlDocPtr doc;
          xmlTextReaderPtr page;
-         char str[MAX_STR + 1], *anchor = 0;
+         char *str, *anchor;
 
-         strncpy (str, misc->daisy_mp, MAX_STR);
-         strncat (str, "/", MAX_STR);
-         strncat (str, my_attribute->src, MAX_STR);
+         str = malloc
+                (strlen (misc->daisy_mp) + strlen (my_attribute->src) + 1);
+         strcpy (str, misc->daisy_mp);
+         strcat (str, "/");
+         strcat (str, my_attribute->src);
+         anchor = strdup ("");
          if (strchr (str, '#'))
          {
-            anchor = strchr (str, '#') + 1;
+            anchor = strdup (strchr (str, '#') + 1);
             *strchr (str, '#') = 0;
          } // if
          doc = htmlParseFile (str, "UTF-8");
@@ -274,7 +228,7 @@ void parse_page_number (misc_t *misc, my_attribute_t *my_attribute,
 void get_attributes (misc_t *misc, my_attribute_t *my_attribute,
                      xmlTextReaderPtr ptr)
 {
-   char attr[MAX_STR];
+   char attr[MAX_STR + 1];
 
    snprintf (attr, MAX_STR - 1, "%s", (char *)
              xmlTextReaderGetAttribute (ptr, BAD_CAST "class"));
@@ -298,6 +252,7 @@ void get_attributes (misc_t *misc, my_attribute_t *my_attribute,
    if (strcmp (attr, "(null)"))
       strncpy (my_attribute->my_class, attr, MAX_STR - 1);
 #endif
+#ifdef DAISY_PLAYER
    snprintf (attr, MAX_STR - 1, "%s", (char *)
              xmlTextReaderGetAttribute (ptr, BAD_CAST "clip-begin"));
    if (strcmp (attr, "(null)"))
@@ -314,18 +269,21 @@ void get_attributes (misc_t *misc, my_attribute_t *my_attribute,
              xmlTextReaderGetAttribute (ptr, (const xmlChar *) "clipend"));
    if (strcmp (attr, "(null)"))
       strncpy (my_attribute->clip_end, attr, MAX_STR - 1);
+#endif      
    snprintf (attr, MAX_STR - 1, "%s", (char *)
              xmlTextReaderGetAttribute (ptr, (const xmlChar *) "href"));
    if (strcmp (attr, "(null)"))
       strncpy (my_attribute->href, attr, MAX_STR - 1);
-   snprintf (attr, MAX_STR - 1, "%s", (char *)
-             xmlTextReaderGetAttribute (ptr, (const xmlChar *) "id"));
-   if (strcmp (attr, "(null)"))
-      strncpy (my_attribute->id, attr, MAX_STR - 1);
-   snprintf (attr, MAX_STR - 1, "%s", (char *)
-             xmlTextReaderGetAttribute (ptr, (const xmlChar *) "idref"));
-   if (strcmp (attr, "(null)"))
-      strncpy (my_attribute->idref, attr, MAX_STR - 1);
+   if (xmlTextReaderGetAttribute (ptr, (const xmlChar *) "id") != NULL)
+   {
+      my_attribute->id = strdup ((char *) xmlTextReaderGetAttribute (ptr,
+               (const xmlChar *) "id"));
+   } // if
+   if (xmlTextReaderGetAttribute (ptr, (const xmlChar *) "idref") != NULL)
+   {
+      my_attribute->idref = strdup ((char *) xmlTextReaderGetAttribute (ptr,
+               (const xmlChar *) "idref"));
+   } // if
    snprintf (attr, MAX_STR - 1, "%s", (char *)
              xmlTextReaderGetAttribute (ptr, (const xmlChar *) "item"));
    if (strcmp (attr, "(null)"))
@@ -435,10 +393,11 @@ void get_attributes (misc_t *misc, my_attribute_t *my_attribute,
       if (misc->speed <= 0.1 || misc->speed >= 2)
          misc->speed = 1.0;
    } // if
-   snprintf (attr, MAX_STR - 1, "%s", (char *)
-             xmlTextReaderGetAttribute (ptr, (const xmlChar *) "src"));
-   if (strcmp (attr, "(null)"))
-      strncpy (my_attribute->src, attr, MAX_STR - 1);
+   if (xmlTextReaderGetAttribute (ptr, (const xmlChar *) "src") != NULL)
+   {
+      my_attribute->src = strdup ((char *) xmlTextReaderGetAttribute (ptr,
+               (const xmlChar *) "src"));
+   } // if
    snprintf (attr, MAX_STR - 1, "%s", (char *)
              xmlTextReaderGetAttribute (ptr, (const xmlChar *) "tts"));
    if (strcmp (attr, "(null)"))
@@ -457,7 +416,7 @@ int get_tag_or_label (misc_t *misc, my_attribute_t *my_attribute,
                       xmlTextReaderPtr reader)
 {
    int type;
-                             
+
    *misc->tag = 0;
    misc->label = malloc (10);
    *misc->label = 0;
@@ -465,10 +424,13 @@ int get_tag_or_label (misc_t *misc, my_attribute_t *my_attribute,
    *my_attribute->my_class = 0;
 #endif
    *my_attribute->class =
+#ifdef DAISY_PLAYER
    *my_attribute->clip_begin = *my_attribute->clip_end =
-   *my_attribute->href = *my_attribute->id = *my_attribute->media_type =
-   *my_attribute->playorder = * my_attribute->smilref = *my_attribute->src =
+#endif
+   *my_attribute->href = *my_attribute->media_type =
+   *my_attribute->playorder = * my_attribute->smilref =
    *my_attribute->toc = *my_attribute->value = 0;
+   my_attribute->id = my_attribute->idref = my_attribute->src = strdup ("");
 
    if (! reader)
       return 0;
@@ -524,7 +486,7 @@ int get_tag_or_label (misc_t *misc, my_attribute_t *my_attribute,
          else
             break;
       } // while
-      misc->label = (char *) realloc (misc->label, phrase_len + 1);
+      misc->label = realloc (misc->label, phrase_len + 1);
       snprintf (misc->label, phrase_len - x + 1, "%s", (char *)
                xmlTextReaderValue (reader) + x);
       for (x = strlen (misc->label) - 1; x >= 0 && isspace (misc->label[x]);
@@ -551,15 +513,20 @@ void parse_content (misc_t *misc, my_attribute_t *my_attribute,
    htmlDocPtr doc;
    xmlTextReaderPtr content;
 
-   strncpy (daisy[misc->current].smil_file, misc->daisy_mp,
-            MAX_STR - 1);
-   strncat (daisy[misc->current].smil_file, "/", MAX_STR - 1);
-   strncat (daisy[misc->current].smil_file, src, MAX_STR - 1);
-   *daisy[misc->current].anchor = 0;
+   if (src == NULL)
+      daisy[misc->current].smil_file = malloc (strlen (misc->daisy_mp) + 5);
+   else
+      daisy[misc->current].smil_file =
+         malloc (strlen (misc->daisy_mp) + strlen (src) + 5);
+   strcpy (daisy[misc->current].smil_file, misc->daisy_mp);
+   strcat (daisy[misc->current].smil_file, "/");
+   if (src != NULL)
+      strcat (daisy[misc->current].smil_file, src);
+   daisy[misc->current].anchor = strdup ("");
    if (strchr (daisy[misc->current].smil_file, '#'))
    {
-      strncpy (daisy[misc->current].anchor,
-               strchr (daisy[misc->current].smil_file, '#') + 1, MAX_STR - 1);
+      daisy[misc->current].anchor = strdup
+            (strchr (daisy[misc->current].smil_file, '#') + 1);
       *strchr (daisy[misc->current].smil_file, '#') = 0;
    } // if
    if (daisy[misc->current].x == 0)
@@ -568,22 +535,30 @@ void parse_content (misc_t *misc, my_attribute_t *my_attribute,
    if (! (content = xmlReaderWalker (doc)))
    {
       int e;
-      char str[MAX_STR];
+      char *str;
 
       e = errno;
-      snprintf (str, MAX_STR,
-             gettext ("Cannot read %s"), daisy[misc->current].smil_file);
+      str = strdup
+       ((gettext ("Cannot read %s"), daisy[misc->current].smil_file));
       failure (str, e);
    } // if
 
-   if (*daisy[misc->current].anchor)
+   if (daisy[misc->current].anchor)
    {
-      do
+      while (1)
       {
          if (! get_tag_or_label (misc, my_attribute, content))
             break;
-      } while
-            (strcasecmp (my_attribute->id, daisy[misc->current].anchor) != 0);
+         if (my_attribute->id != NULL &&
+             daisy[misc->current].anchor != NULL)
+         {
+            if (strcasecmp (my_attribute->id,
+                            daisy[misc->current].anchor) == 0)
+            {
+               break;
+            } // if
+         } // if
+      } // while
    } // if
 
    while (1)
@@ -642,14 +617,16 @@ void parse_text (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
    xmlTextReaderPtr text;
    int level = 1;
 
-   strncpy (daisy[misc->current].smil_file, misc->daisy_mp, MAX_STR - 1);
-   strncat (daisy[misc->current].smil_file, "/", MAX_STR - 1);
-   strncat (daisy[misc->current].smil_file, my_attribute->src, MAX_STR - 1);
+   daisy[misc->current].smil_file = malloc
+                (strlen (misc->daisy_mp) + strlen (my_attribute->src) + 10);
+   strcpy (daisy[misc->current].smil_file, misc->daisy_mp);
+   strcat (daisy[misc->current].smil_file, "/");
+   strcat (daisy[misc->current].smil_file, my_attribute->src);
+   daisy[misc->current].anchor = strdup ("");
    if (strchr (daisy[misc->current].smil_file, '#'))
    {
-      strncpy (daisy[misc->current].anchor,
-               strchr (daisy[misc->current].smil_file, '#') + 1,
-               MAX_STR - 1);
+      daisy[misc->current].anchor = strdup
+               (strchr (daisy[misc->current].smil_file, '#') + 1);
       *strchr (daisy[misc->current].smil_file, '#') = 0;
    } // if
    doc = htmlParseFile (daisy[misc->current].smil_file, "UTF-8");
@@ -699,11 +676,11 @@ void parse_text (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
          strncat (daisy[misc->current].clips_file, "/", MAX_STR);
          strncat (daisy[misc->current].clips_file, my_attribute->smilref,
                   MAX_STR);
+         daisy[misc->current].anchor = strdup ("");
          if (strchr (daisy[misc->current].clips_file, '#'))
          {
-            strncpy (daisy[misc->current].anchor,
-                     strchr (daisy[misc->current].clips_file, '#') + 1,
-                     MAX_STR - 1);
+            daisy[misc->current].anchor = strdup
+                     (strchr (daisy[misc->current].clips_file, '#') + 1);
             *strchr (daisy[misc->current].clips_file, '#') = 0;
          } // if
 #endif
@@ -779,7 +756,7 @@ void parse_href (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
 // some EPUB use this
       if (strcasecmp (misc->tag, "i") == 0)
       {
-         strncpy (daisy[misc->current].smil_file, str, MAX_STR - 1);
+         daisy[misc->current].smil_file = strdup (str);
          fill_item (misc, my_attribute, daisy, misc->tag[1] - 48, href);
          return;
       } // if
@@ -792,7 +769,7 @@ void parse_href (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
           strcasecmp (misc->tag, "h5") == 0 ||
           strcasecmp (misc->tag, "h6") == 0)
       {
-         strncpy (daisy[misc->current].smil_file, str, MAX_STR - 1);
+         daisy[misc->current].smil_file = strdup (str);
          fill_item (misc, my_attribute, daisy, misc->tag[1] - 48, href);
          return;
       } // if (strcasecmp (misc->tag, "h1") == 0 ||
@@ -828,9 +805,9 @@ void parse_manifest (misc_t *misc, my_attribute_t *my_attribute,
 {
    xmlTextReaderPtr manifest;
    htmlDocPtr doc;
-   char idref[MAX_STR + 1];
+   char *idref;
 
-   strncpy (idref, my_attribute->idref, MAX_STR);
+   idref = strdup (my_attribute->idref);
    if (! (doc = htmlParseFile (misc->opf_name, "UTF-8")))
       failure (misc->opf_name, errno);
    if (! (manifest = xmlReaderWalker (doc)))
@@ -841,24 +818,23 @@ void parse_manifest (misc_t *misc, my_attribute_t *my_attribute,
       e = errno;
       snprintf (str, MAX_STR, gettext ("Cannot read %s"), misc->opf_name);
       failure (str, e);
-   } // if     
+   } // if
    while (1)
    {
       if (! get_tag_or_label (misc, my_attribute, manifest))
          break;
       if (strcasecmp (my_attribute->id, idref) == 0)
       {
-         strncpy (daisy[misc->current].smil_file, misc->daisy_mp,
-                  MAX_STR - 1);
-         strncat (daisy[misc->current].smil_file, "/", MAX_STR - 1);
-         strncat (daisy[misc->current].smil_file, my_attribute->href,
-                  MAX_STR - 1);
-         *daisy[misc->current].anchor = 0;
+         daisy[misc->current].smil_file = malloc
+                 (strlen (misc->daisy_mp) + strlen (my_attribute->href) + 1);
+         strcpy (daisy[misc->current].smil_file, misc->daisy_mp);
+         strcat (daisy[misc->current].smil_file, "/");
+         strcat (daisy[misc->current].smil_file, my_attribute->href);
+         daisy[misc->current].anchor = strdup ("");
          if (strchr (daisy[misc->current].smil_file, '#'))
          {
-            strncpy (daisy[misc->current].anchor,
-                     strchr (daisy[misc->current].smil_file, '#') + 1,
-                     MAX_STR - 1);
+            daisy[misc->current].anchor = strdup
+                     (strchr (daisy[misc->current].smil_file, '#') + 1);
             *strchr (daisy[misc->current].smil_file, '#') = 0;
          } // if
          parse_href (misc, my_attribute, daisy);
@@ -1033,7 +1009,7 @@ daisy_t *create_daisy_struct (misc_t *misc, my_attribute_t *my_attribute)
       *misc->ncx_name = 0;
 
 // lookfor "*.opf""
-   snprintf (misc->cmd, MAX_STR - 1,
+   snprintf (misc->cmd, MAX_CMD - 1,
              "find \"%s\" -maxdepth 5 -iname \"*.opf\" -print0",
              misc->tmp_dir);
    p = popen (misc->cmd, "r");
@@ -1126,7 +1102,7 @@ void read_daisy_3 (misc_t *misc, my_attribute_t *my_attribute,
       misc->total_phrases = misc->phrases_in_ncx;
       parse_ncx (misc, my_attribute, daisy);
       for (i = 0; i < misc->items_in_ncx; i++)
-         strncpy (daisy[i].orig_smil, daisy[i].smil_file, MAX_STR - 1);
+         daisy[i].orig_smil = daisy[i].smil_file;
       return;
    } // if
 
@@ -1135,7 +1111,7 @@ void read_daisy_3 (misc_t *misc, my_attribute_t *my_attribute,
       misc->total_phrases = misc->phrases_in_opf;
       parse_opf (misc, my_attribute, daisy);
       for (i = 0; i < misc->items_in_opf; i++)
-         strncpy (daisy[i].orig_smil, daisy[i].smil_file, MAX_STR - 1);
+         daisy[i].orig_smil = daisy[i].smil_file;
       return;
    } // if
 #endif
@@ -1153,7 +1129,7 @@ void read_daisy_3 (misc_t *misc, my_attribute_t *my_attribute,
    } // if
 #ifdef EBOOK_SPEAKER
    for (i = 0; i < misc->total_items; i++)
-      strncpy (daisy[i].orig_smil, daisy[i].smil_file, MAX_STR - 1);
+      daisy[i].orig_smil = daisy[i].smil_file;
 #endif
 } // read_daisy_3
 
@@ -1178,8 +1154,10 @@ void parse_ncx (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
    misc->current = misc->displaying = misc->level = misc->depth = 0;
    while (1)
    {
+      if (misc->current >= misc->total_items)
+         break;
       daisy[misc->current].level = daisy[misc->current].page_number =
-      daisy[misc->current].x = daisy[misc->current].y = 0;
+         daisy[misc->current].x = daisy[misc->current].y = 0;
       if (! get_tag_or_label (misc, my_attribute, ncx))
          break;
       if (strcasecmp (misc->tag, "docTitle") == 0)
@@ -1246,8 +1224,10 @@ void parse_ncx (misc_t *misc, my_attribute_t *my_attribute, daisy_t *daisy)
                if (daisy[misc->current].level < 1)
                   daisy[misc->current].level = 1;
                misc->current++;
+               if (misc->current >= misc->total_items)
+                  break;
                daisy[misc->current].level = daisy[misc->current].page_number =
-               daisy[misc->current].x = daisy[misc->current].y = 0;
+                  daisy[misc->current].x = daisy[misc->current].y = 0;
                break;
             } // if (strcasecmp (misc->tag, "content") == 0)
          } // while

@@ -2,7 +2,7 @@
 <HTML><HEAD><TITLE>Man page of eBook-speaker</TITLE>
 </HEAD><BODY>
 <H1>eBook-speaker</H1>
-Section: Linux Reference Manual (1)<BR>Updated: 25 maart 2016<BR><A HREF="#index">Index</A>
+Section: Linux Reference Manual (1)<BR>Updated: 09 juni 2016<BR><A HREF="#index">Index</A>
 <A HREF="/cgi-bin/man/man2html">Return to Main Contents</A><HR>
 
 <A NAME="lbAB">&nbsp;</A>
@@ -14,7 +14,7 @@ Section: Linux Reference Manual (1)<BR>Updated: 25 maart 2016<BR><A HREF="#index
 <H2>SYNOPSIS</H2>
 
 <PRE>
-<B>eBook-speaker</B> [<I>eBook_file</I> | <B>-s</B>] [<B>-o</B> <I>language-code</I>] [<B>-h</B>] [<B>-i</B>] [<B>-d</B> <I>ALSA_sound_device</I>] [<B>-t</B> <I>TTS_command</I>] [<B>-b</B> <I>n</I> | <I>y</I>]
+<B>eBook-speaker</B> [<I>eBook_file</I> | <B>-s</B> [<B>-r</B> <I>resolution</I>]] [<B>-o</B> <I>language-code</I>] [<B>-h</B>] [<B>-i</B>] [<B>-d</B> <I>ALSA_sound_device</I>] [<B>-t</B> <I>TTS_command</I>] [<B>-b</B> <I>n</I> | <I>y</I>] [<B>-c</B>]
 
 </PRE>
 
@@ -43,6 +43,7 @@ Give an <I>eBook_file</I> as argument to <B>eBook-speaker</B>.  Many eBook forma
                 Supported formats
                 -----------------
                 AportisDoc
+                AppleSingle encoded Macintosh
                 ASCII mail text
                 ASCII text
                 awk script text
@@ -92,6 +93,10 @@ When no input-file is supplied, <B>eBook-speaker</B> will bring up a file-manage
 
 <DD>
 Set the initial break_on_EOL. After quiting <B>eBook-speaker</B>. this setting will be saved and used as default for future books. It can be overruled with the 'b'<B>-command</B> for each individual book. See the 'b' command.
+<DT><B>-c</B>
+
+<DD>
+<B>eBook-speaker</B> use tesseract for OCR by default. This option forces <B>eBook-speaker</B> to use cuneiform instead.
 <DT><B>-d</B> <I>ALSA_sound_device</I>
 
 <DD>
@@ -111,11 +116,15 @@ Deprecated. <B>eBook-speaker</B> now determines the file-type using the libmagic
 <DT><B>-o</B> <I>language-code</I>
 
 <DD>
-The language code for the tesseract OCR package to use. If this option not is specified. the language for tesseract is determined according to the current locale. See the tesseract manual for the available language codes.
+The language code for OCR to use. (typically an ISO 639-1 two-letter code. See &lt;<A HREF="https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes">https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes</A>&gt;). If this option not is specified. the language is determined according to the current locale.
+<DT><B>-r</B> <I>resolution</I>
+
+<DD>
+By default the option &quot;<B>-s</B>&quot; will scan at a <I>resolution</I> of 400  DPI. With this option one can force another <I>resolution</I>.
 <DT><B>-s</B>
 
 <DD>
-Scan a document using a hardware scanner and OCR it with the tool tesseract.
+Scan a document using a hardware scanner and OCR it with either tesseract or cuneiform.
 <DT><B>-t</B> TTS-command
 
 <DD>
@@ -261,7 +270,7 @@ Quit <B>eBook-speaker</B>. The reading-point is saved as bookmark.
 <DT><B>r</B>
 
 <DD>
-Rotate the scanned document. If the document is accidentally placed upside-down on the scanner, tesseract can not OCR it correctly. This command will rotate the scanned document 90 degrees.
+Rotate the scanned document. If the document is accidentally placed upside-down on the scanner, it can not be OCR'ed correctly. This command will rotate the scanned document 90 degrees.
 <DT><B>s</B>
 
 <DD>
@@ -278,18 +287,18 @@ Move cursor to the first item.
 
 <DD>
 Increase reading speed.
+<DT><B>V,7</B>
+
+<DD>
+Increase playback volume. (beware of Clipping)
+<DT><B>v,1</B>
+
+<DD>
+Decrease playback volume.
 <DT><B>x</B>
 
 <DD>
 Go to the file-manager.
-<DT><B>7</B>
-
-<DD>
-Increase playback volume. (beware of Clipping)
-<DT><B>1</B>
-
-<DD>
-Decrease playback volume.
 </DL>
 <A NAME="lbAH">&nbsp;</A>
 <H2>KEYBOARD COMMANDS IN THE FILEMANAGER</H2>
@@ -355,7 +364,7 @@ Move cursor to the first file.
 <A NAME="lbAI">&nbsp;</A>
 <H2>TTS</H2>
 
-When pressing the 't'<B>-command</B>, the TTS-selector appears. A few TTS-applications are defined by default. The first TTS in the TTS-selector will be espeak with option <B>-v</B> set according the current locale.
+When pressing the 't'<B>-command</B>, the TTS-selector appears. A few TTS-applications are defined by default. The first TTS in the TTS-selector will be espeak with option <B>-v</B> set according to the current locale.
 <DL COMPACT>
 <DT>&bull;<DD>
 Choose one by moving the cursor with the cursor-keys and select it by pressing the ENTER-key.
@@ -410,7 +419,7 @@ This file, in XML-format,  contains the name of the desired audio device, the de
 <A NAME="lbAL">&nbsp;</A>
 <H2>SEE ALSO</H2>
 
-<B><A HREF="/cgi-bin/man/man2html?1+ebook-convert">ebook-convert</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pandoc">pandoc</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+calibre">calibre</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+iconv">iconv</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+lowriter">lowriter</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+tesseract">tesseract</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+espeak">espeak</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+flite">flite</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+text2wave">text2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+mbrola">mbrola</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pico2wave">pico2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+scanimage">scanimage</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pnmflip">pnmflip</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?5+magic">magic</A></B>(5), <B><A HREF="/cgi-bin/man/man2html?1+man2html">man2html</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unar">unar</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+swift">swift</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unrtf">unrtf</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?7+locale">locale</A></B>(7)
+<B><A HREF="/cgi-bin/man/man2html?1+ebook-convert">ebook-convert</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pandoc">pandoc</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+calibre">calibre</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+iconv">iconv</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+lowriter">lowriter</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+tesseract">tesseract</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+cuneiform">cuneiform</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+espeak">espeak</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+flite">flite</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+text2wave">text2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+mbrola">mbrola</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pico2wave">pico2wave</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+scanimage">scanimage</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+pnmflip">pnmflip</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+gif2png">gif2png</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?5+magic">magic</A></B>(5), <B><A HREF="/cgi-bin/man/man2html?1+man2html">man2html</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unar">unar</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+swift">swift</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?1+unrtf">unrtf</A></B>(1), <B><A HREF="/cgi-bin/man/man2html?7+locale">locale</A></B>(7)
 <A NAME="lbAM">&nbsp;</A>
 <H2>AUTHOR</H2>
 
@@ -445,6 +454,6 @@ This program is free software; you can redistribute it and/or modify it under th
 This document was created by
 <A HREF="/cgi-bin/man/man2html">man2html</A>,
 using the manual pages.<BR>
-Time: 13:49:01 GMT, March 25, 2016
+Time: 17:52:59 GMT, June 09, 2016
 </BODY>
 </HTML>

@@ -134,7 +134,7 @@
 	eBook-speaker now uses the htmlParseFile() function of libxml2.
 	Added a Bulgarian translation.
 	All files will be treated now as UTF-8.
-	Playback volume can be altered with '7' and '1'.
+	Playback volume can be altered with 'v' and 'V'.
 	New option '-b' introduced. With this option one can choose what
 	the default value for the phrase-break command should be. This value
 	will be written to the .eBook-speaker.xml file. But it can be
@@ -148,3 +148,12 @@
 	   "Rich Text Format"
 3.1	File manager improvements.
 	Page-number improvements.
+3.2	Wait for "eBook-speaker.wav" to become available.
+	(Not longer then 1 second)
+	New option "-r" introduced. By default the option "-s" scans
+	at a resolution of 400 DPI.
+3.3	When number of phrases is 0, the variable misc->total_items is 0.
+	Now if misc->total_items == 0, misc->total_items = 1.
+	Added support for AppleSingle encoded Macintosh files.
+	GIF_image_data now works.
+4.0	For OCR one now can choose between tesseract or cuneiform.

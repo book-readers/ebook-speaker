@@ -61,6 +61,8 @@ void ls (misc_t *misc, size_t n, struct dirent **namelist)
    myt = magic_open (MAGIC_FLAGS);
    magic_load (myt, NULL);
    page = n / 23 + 1;
+   wclear (misc->titlewin);
+   wrefresh (misc->titlewin);
    mvwprintw (misc->titlewin, 0, 0,
               gettext ("%s - Choose an input-file"), misc->copyright);
    mvwprintw (misc->titlewin, 1,  0,
@@ -386,7 +388,7 @@ char *get_input_file (misc_t *misc, char *src)
       case '/':
          *search_str = 0;
          if ((search_flag = search_in_dir (misc, n + 1,
-                      misc->list_total - 1, '/', search_str, namelist)) != -1)
+                      misc->list_total, '/', search_str, namelist)) != -1)
             n = search_flag;
          break;
       case 'B':

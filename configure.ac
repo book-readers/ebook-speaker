@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([eBook-speaker], [3.1], [jos@jlemmens.nl], [], [www.jlemmens.nl])
+AC_INIT([eBook-speaker], [4.0], [jos@jlemmens.nl], [], [www.jlemmens.nl])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
@@ -32,7 +32,7 @@ AC_TYPE_SIZE_T
 
 # Checks for library functions.
 AC_FUNC_FORK
-AC_FUNC_MALLOC  
+AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRTOD
 AC_CHECK_FUNCS([strstr])
@@ -43,7 +43,7 @@ AC_CONFIG_FILES([Makefile
                  man/Makefile
                  doc/Makefile
                  po/Makefile.in
-                 src/Makefile])
+                 src/Makefile])                                   
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.18.3])
 AC_PROG_LN_S
