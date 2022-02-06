@@ -1,6 +1,6 @@
 /* header file for eBook-speaker
  *
- * Copyright (C)2020 J. Lemmens
+ * Copyright (C)2021 J. Lemmens
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -46,6 +46,7 @@
 #include <fnmatch.h>
 #include <grp.h>
 #include <time.h>
+#include <alsa/asoundlib.h>
 
 #undef PACKAGE
 #undef PACKAGE_BUGREPORT
@@ -86,35 +87,33 @@ typedef struct My_attribute
         toc[MAX_STR],
         value[MAX_STR];
 } my_attribute_t;
-
 typedef struct Misc
 {
    int playing, just_this_item, current_page_number;
    int current, max_y, max_x, total_items, level, ignore_bookmark;
    int phrase_nr, attr_tts_no, tts_no, depth, total_phrases, total_pages;
-   int option_b, tmp_wav_fd, scan_flag;
+   int option_b, tmp_wav_fd, scan_flag, current_sink, total_sinks;
    int items_in_opf, items_in_ncx, show_hidden_files, list_total;
    int total_phrases_in_opf, total_phrases_in_ncx;
    int use_cuneiform, pause_resume_playing, break_phrase;
    int ncx_failed, opf_failed, verbose;
    int start_arg_is_a_dir, no_smil_items, update_progress;
-   float speed;
+   double speed;
    htmlDocPtr doc;
    xmlTextReaderPtr reader;
    pid_t player_pid, main_pid;
-   int pulseaudio_device;
    char ncc_html[MAX_STR], ncc_totalTime[MAX_STR];
    char daisy_version[MAX_STR], daisy_title[MAX_STR], daisy_language[MAX_STR];
-   char tag[MAX_TAG], *label, ocr_language[5];
+   char tag[MAX_TAG], *label, *ocr_language;
    char bookmark_title[MAX_STR];
    char cd_dev[MAX_STR], tts[15][MAX_STR];
-   char option_t[MAX_STR];
-   char opf_name[MAX_STR], ncx_name[MAX_STR], copyright[MAX_STR], option_d[5];
+   char *option_d, *option_o, option_t[MAX_STR];
+   char opf_name[MAX_STR], ncx_name[MAX_STR], copyright[MAX_STR];
    char eBook_speaker_txt[MAX_STR + 1], tmp_wav[MAX_STR + 1];
    char cmd[MAX_CMD + 1], str[MAX_STR + 1];
    char *src_dir, *tmp_dir, *daisy_mp;
    char orig_input_file[MAX_STR], search_str[30];
-   char locale[25], xmlversion[MAX_STR + 1], encoding[MAX_STR + 1];
+   char *locale, xmlversion[MAX_STR + 1], encoding[MAX_STR + 1];
    char standalone[MAX_STR + 1], scan_resolution[10];
    WINDOW *screenwin, *titlewin;
    int use_OPF, use_NCX; // for testing
@@ -132,26 +131,49 @@ typedef struct Daisy
    int level, page_number;
 } daisy_t;
 
+typedef struct Audio_Info
+{
+   LSX_PARAM_IN_Z char device[10];
+   LSX_PARAM_IN_OPT_Z char type[15];
+   char name[100];
+   char muted[5];
+   char volume[5];
+} audio_info_t;
+
+typedef enum
+{
+   ALSA_LIST,
+   ALSA_VOLUME_SET,
+} audio_volume_action;
+
+typedef enum
+{
+   NO,
+   YES,
+} Whole_Book;
+
 extern int hidden_files (const struct dirent *);
 extern void failure (misc_t *, char *, int);
 extern void remove_tmp_dir (misc_t *);
 extern int get_tag_or_label (misc_t *, my_attribute_t *, xmlTextReaderPtr);
 extern void quit_eBook_speaker (misc_t *, my_attribute_t *, daisy_t *);
 extern void view_screen (misc_t *, daisy_t *);
-extern void pause_resume (misc_t *, my_attribute_t *, daisy_t *);
+extern void pause_resume (misc_t *, my_attribute_t *, daisy_t *,
+                          audio_info_t *);
 extern void open_xml_file (misc_t *, my_attribute_t *, daisy_t *,
                            char *, char *);
-extern void get_next_phrase (misc_t *, my_attribute_t *, daisy_t *, int);
+extern void get_next_phrase (misc_t *, my_attribute_t *, daisy_t *, 
+                             audio_info_t *, int);
 extern void get_path_name (char *, char *, char *);
 extern char *convert_URL_name (misc_t *, char *);
 extern void kill_player (misc_t *);
 extern int get_page_number_2 (misc_t *, my_attribute_t *, daisy_t *, char *);
-extern int get_page_number_3 (misc_t *, my_attribute_t *);        
-extern void playfile (misc_t *, char *, char *, char *, char *, char *);
+extern int get_page_number_3 (misc_t *, my_attribute_t *);
+extern void playfile (char *, char *, char *, char *, char *);
 extern void fill_page_numbers (misc_t *, daisy_t *, my_attribute_t *);
-extern void check_pulseaudio_device (misc_t *, daisy_t *);
-extern void select_next_output_device (misc_t *, daisy_t *);
-extern void go_to_page_number (misc_t *, my_attribute_t *, daisy_t *);
+extern void select_next_output_device (misc_t *, daisy_t *, audio_info_t *);
+extern void go_to_page_number (misc_t *, my_attribute_t *, daisy_t *,
+                               audio_info_t *);
 extern daisy_t *create_daisy_struct (misc_t *, my_attribute_t *, daisy_t *);
 extern void read_daisy_3 (misc_t *, my_attribute_t *, daisy_t *);
 extern void skip_right (misc_t *, daisy_t *);
@@ -162,19 +184,24 @@ extern void make_tmp_dir (misc_t *);
 extern void player_ended ();
 extern void parse_page_number (misc_t *, my_attribute_t *, xmlTextReaderPtr);
 extern void parse_ncx (misc_t *, my_attribute_t *, daisy_t *);
-extern void save_bookmark (misc_t *);
+extern void save_bookmark_and_xml (misc_t *);
 extern void free_all (misc_t *, my_attribute_t *, daisy_t *);
-extern void start_playing (misc_t *, my_attribute_t *, daisy_t *);
-extern void select_tts (misc_t *, daisy_t *);
+extern void start_playing (misc_t *, my_attribute_t *, daisy_t *,
+                           audio_info_t *);
+extern void select_tts (misc_t *, my_attribute_t *, daisy_t *);
 extern void put_bookmark (misc_t *);
 extern void go_to_phrase (misc_t *, my_attribute_t *, daisy_t *, int, int);
+extern void load_xml (misc_t *, my_attribute_t *);
 extern void save_xml (misc_t *);
 extern void check_phrases (misc_t *, my_attribute_t *, daisy_t *);
 extern void pandoc_to_epub (misc_t *, char *, char *);
-extern void store_item_as_WAV_file (misc_t *, my_attribute_t *, daisy_t *);
-extern void store_item_as_ASCII_file (misc_t *, my_attribute_t *, daisy_t *);
+extern void store_item_as_WAV_file (misc_t *, my_attribute_t *, daisy_t *,
+                                    audio_info_t *, int);
+extern void store_item_as_ASCII_file (misc_t *, my_attribute_t *, daisy_t *,
+                                      audio_info_t *);
 extern void create_epub (misc_t *, my_attribute_t *, daisy_t *, char *, int);
-extern void play_epub (misc_t *, my_attribute_t *, daisy_t *, char *);
+extern void play_epub (misc_t *, my_attribute_t *, daisy_t *,
+                       audio_info_t *, char *);
 extern char *ascii2html (misc_t *, char *);
 extern void write_ascii (misc_t *, my_attribute_t *, daisy_t *, int, char *);
 extern void get_real_pathname (char *, char *, char *);
@@ -182,3 +209,6 @@ extern void parse_opf (misc_t *, my_attribute_t *, daisy_t *);
 extern void reset_term_signal_handlers_after_fork (void);
 extern void parse_smil_opf (misc_t *, my_attribute_t *, daisy_t *, int);
 extern void show_progress (misc_t *, daisy_t *);
+extern int alsa_ctl (misc_t *, int, int, audio_info_t *);
+extern void usage ();
+extern void get_list_of_sound_devices (misc_t *, audio_info_t *);

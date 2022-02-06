@@ -382,9 +382,9 @@ char *pa_get_user_name_malloc(void) {
 #endif
         k = 32;
 
-    u = pa_xnew(char, k+1);
+    u = pa_xnew (char, (size_t) k + 1);
 
-    if (!(pa_get_user_name(u, k))) {
+    if (!(pa_get_user_name(u, (size_t) k))) {
         pa_xfree(u);
         return NULL;
     }
@@ -494,7 +494,7 @@ char *pa_replace(const char*s, const char*a, const char *b) {
         if (!(p = strstr(s, a)))
             break;
 
-        pa_strbuf_putsn(sb, s, p-s);
+        pa_strbuf_putsn(sb, s, (size_t) (p - s));
         pa_strbuf_puts(sb, b);
         s = p + an;
     }

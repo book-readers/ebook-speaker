@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([ebook-speaker], [5.5.2], [jos@jlemmens.nl], [], [www.jlemmens.nl])
+AC_INIT([ebook-speaker], [6.1], [jos@jlemmens.nl], [], [www.jlemmens.nl])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADERS([config.h])
@@ -21,6 +21,8 @@ AC_CHECK_LIB([sox], [main])
 AC_CHECK_LIB([xml2], [main])
 # FIXME: Replace `main' with a function in `-lpulse':
 AC_CHECK_LIB([pulse], [main])
+# FIXME: Replace `main' with a function in `-lasound':
+AC_CHECK_LIB([asound], [main])
 
 AM_SILENT_RULES([yes])
 

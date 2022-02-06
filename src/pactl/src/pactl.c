@@ -41,9 +41,6 @@
 #include "macro.h"
 #include "core-util.h"
 
-extern char *pactl (char *, char *, char *);
-extern char sink_info[10][100];
-
 static pa_context *context = NULL;
 static pa_mainloop_api *mainloop_api = NULL;
 
@@ -69,7 +66,8 @@ static enum volume_flags
     VOL_RELATIVE = 1 << 4,
 } volume_flags;
 
-static enum mute_flags {
+static enum mute_flags
+{
     INVALID_MUTE = -1,
     UNMUTE = 0,
     MUTE = 1,
@@ -94,6 +92,18 @@ static enum {
     SET_SINK_MUTE,
     LIST
 } action = SET_SINK_VOLUME;
+
+typedef struct Audio_Info
+{
+   char device[10];
+   char type[15];
+   char name[100];
+   char muted[5];
+   char volume[5];
+} audio_info_t;
+audio_info_t *audio_info;
+
+void pactl (char *, char *, char *);
 
 static void quit(int ret)
 {
@@ -134,8 +144,8 @@ static inline const char *pa_strnull(const char *x)
     return x ? x : "(null)";
 }
 
-static void get_sink_info_callback (pa_context *c, const pa_sink_info *i,
-                                    int is_last, void *userdata)
+static void get_sink_info_callback (pa_context *c, const pa_sink_info *i, int is_last,
+                                    void *userdata)
 {
 c = c; // avoid notification
 userdata = userdata; // avoid notification
@@ -162,10 +172,8 @@ userdata = userdata; // avoid notification
     char *str;
     int x;
 
-    strncpy (sink_info[i->index], i->description, 70);
-    for (x = strlen (sink_info[i->index]); x < 55; x++)
-      sink_info[i->index][x] = ' ';
-    sink_info[i->index][52] = 0;
+// pactl-set-cmd jos
+ strncpy (audio_info->name, i->description, 70);
     str = malloc (255);
     sprintf (str, _("%s"),
            pa_cvolume_snprint_verbose (cv, sizeof (cv), &i->volume,
@@ -186,8 +194,10 @@ userdata = userdata; // avoid notification
       if (--x == 0)
         break;
     }
-    sprintf (sink_info[i->index] + 52, " Muted: %3s Volume:%s",
-               pa_yes_no_localised(i->mute), str + x);
+// pactl-set-cmd jos
+ strcpy (audio_info->muted, pa_yes_no_localised(i->mute));
+// pactl-set-cmd jos
+ strcpy (audio_info->volume, str + x);
 } // get_sink_info_callback
 
 static void simple_callback (pa_context *c, int success, void *userdata)
@@ -263,7 +273,7 @@ userdata = userdata; // avoid notification
 
 static void sink_toggle_mute_callback (pa_context *c, const pa_sink_info *i, int is_last, void *userdata)
 {
-userdata = userdata; // avoid notification                              
+userdata = userdata; // avoid notification
     if (is_last < 0) {
         quit(1);
         return;
@@ -356,7 +366,7 @@ static int parse_volumes (char *args, unsigned n)
         return -1;
     }
 
-    volume.channels = n;
+    volume.channels = (uint8_t) n;
     for (i = 0; i < volume.channels; i++) {
         enum volume_flags flags;
 
@@ -456,20 +466,22 @@ userdata = userdata; // avoid notification
     }
 } // context_state_callback
 
-char *pactl (char *cmd, char *device, char *arg)
+void pactl (char *cmd, char *device, char *arg)
 {
     pa_mainloop *m = NULL;
     int ret = 1;
     char *server = NULL;
 
     setlocale(LC_ALL, "");
-\
+
     proplist = pa_proplist_new();
 
     if (pa_streq (cmd, "set-sink-volume"))
     {
         action = SET_SINK_VOLUME;
         sink_name = pa_xstrdup (device);
+// pactl-set-cmd        strcpy (audio_info.device, device);
+// pactl-set-cmd        strcpy (audio_info.type, "pulseaudio");
         if (parse_volumes (arg, 1) < 0)
             goto quit;
     }
@@ -508,7 +520,7 @@ char *pactl (char *cmd, char *device, char *arg)
         goto quit;
     }
 
-    if (pa_mainloop_run(m, &ret) < 0) 
+    if (pa_mainloop_run(m, &ret) < 0)
     {
         goto quit;
     }
@@ -536,12 +548,9 @@ quit:
     pa_xfree(profile_name);
     pa_xfree(port_name);
     pa_xfree(formats);
-
     if (sndfile)
         sf_close(sndfile);
-
     if (proplist)
         pa_proplist_free(proplist);
-
-    return (char *) sink_info;
+    return;
 } // pactl

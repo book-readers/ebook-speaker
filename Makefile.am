@@ -28,7 +28,6 @@ EXTRA_DIST = config.rpath m4/Makefile.in doc/COMPILE \
              src/pactl/src/Makefile.am \
              src/pactl/src/Makefile.in \
              src/pactl/src/pactl.c \
-             src/pactl/src/pactl-set-cmd.c \
              src/pactl/src/socket.h \
              src/pactl/src/strbuf.h \
              src/pactl/src/strlist.h \
@@ -68,9 +67,12 @@ checkinstall:
 	@echo
 	make distdir
 	cd $(PACKAGE)-$(VERSION)
-	checkinstall -D --fstrans enable --pkgname "$(PACKAGE)" \
+	checkinstall -D --fstrans --pkgname "$(PACKAGE)" \
 	--pkgversion $(VERSION) --pkggroup audio \
-	--maintainer "Jos Lemmens <jos@jlemmens.nl>" --strip --stripso \
+	--maintainer "Jos Lemmens \<jos\@jlemmens.nl\>" \
+	--provides "ebook-speaker" \
+	--requires "unar,alsa-utils,pulseaudio-utils,sox,calibre,pandoc,unrtf" \
+	--strip --stripso \
 	--review-control
 
 .PHONY: check-gettext update-po update-gmo force-update-gmo
