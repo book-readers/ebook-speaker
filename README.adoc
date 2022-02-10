@@ -1,17 +1,19 @@
-eBook-speaker - read eBooks with Linux using a speech-synthesizer
+== eBook-speaker
+
+Read eBooks with Linux using a speech-synthesizer +
 (C)2019 J. Lemmens
 
-DESCRIPTION
-eBook-speaker reads an eBook and uses a speech synthisizer for output.
+=== Description
+eBook-speaker reads an eBook and uses a speech synthisizer for output. +
 eBook-speaker reads the EPUB format. If the given file is not an
 EPUB it will be converted using several tools like calibre, lowriter,
 pandoc, pdftotext, scanimage, pnmflip, unrtf or tesseract.
-(http://en.wikipedia.org/wiki/Comparison_of_e-book_formats)
+(http://en.wikipedia.org/wiki/Comparison_of_e-book_formats) +
 eBook-speaker can use any TTS (Text-To_speech) tool, as long as the TTS
-can read the text from a file and writes the audio to a .wav file.
+can read the text from a file and writes the audio to a .wav file. +
 The file ~/.eBook-speaker.xml contains TTS tools to use.
 
-REQUIREMENTS
+=== Requirements
 Be sure the following extra packages exist on your system:
 
    libncursesw5
@@ -43,7 +45,7 @@ The following packages are needed to make the manual and the html document:
    txt2man
    man2html
 
-USAGE
+=== Usage
 As a mortal user, give on the command line,:
 
    $ ebook-speaker
@@ -66,12 +68,16 @@ of that item.
 For keyboard navigation, plese press 'h' or '?'.
 
 eBook-speaker is multilingual. The following languages are currently
-supported:
-bulgarian, dutch, english, finnish, french, german, portuguese, 
+supported: +
+bulgarian, dutch, english, finnish, french, german, portuguese,
 Serbian, spanish.
 
 Enjoy
 
 Jos Lemmens
-jos@jlemmens.nl
-http://www.jlemmens.nl
+
+==== Note
+From his brother Kees on November 9, 2021 : I am very sorry to inform you that Jos quietly passed away this morning.
+He will be remembered as our own dear, clever, little "Stephen Hawking".
+
+On behalf of users of eBook-speaker and Daisy-player, current mainteners would also thank him for his tremendous work. Jos, we miss you.
