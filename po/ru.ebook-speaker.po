@@ -1,0 +1,355 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Jos Lemmens <jos@jlemmens.nl>
+# This file is distributed under the same license as the ebook-speaker package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ebook-speaker 6.2\n"
+"Report-Msgid-Bugs-To: https://github.com/book-readers/ebook-speaker/issues\n"
+"POT-Creation-Date: 2021-08-21 13:35+0200\n"
+"PO-Revision-Date: 2022-02-15 13:04+0300\n"
+"Last-Translator: \n"
+"Language-Team: Vsevolod Popov<sevapopov13@gmail.com>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"X-Generator: Poedit 3.0.1\n"
+
+#: src/alsa_ctl.c:38
+msgid "Cannot read /proc/asound/cards"
+msgstr "Невозможно прочесть /proc/asound/cards"
+
+#: src/common.c:33 src/common.c:294 src/common.c:510 src/ebook-speaker.c:2111
+#: src/ebook-speaker.c:2122
+msgid "Please try to play this book with daisy-player"
+msgstr "Пожалуйста, попробуйте воспроизвести эту книгу с помощью Daisy-плеера"
+
+#: src/common.c:773
+#, c-format
+msgid "Cannot read type: %d"
+msgstr "Невозможно прочесть тип: %d"
+
+#: src/common.c:838
+msgid "Go to page number:"
+msgstr "Перейти на страницу: "
+
+#: src/common.c:856 src/ebook-speaker.c:1674 src/ebook-speaker.c:2627
+#: src/ebook-speaker.c:2932
+msgid "Please wait..."
+msgstr "Пожалуйста, подождите..."
+
+#: src/common.c:1096
+msgid "Select a soundcard:"
+msgstr "Выберите звуковую карту:"
+
+#: src/daisy2.02.c:49 src/daisy2.02.c:130 src/daisy2.02.c:236
+#: src/ebook-speaker.c:2514
+#, c-format
+msgid "Cannot read %s"
+msgstr "Невозможно прочесть %s"
+
+#: src/ebook-speaker.c:304
+msgid "Select a Text-To-Speech application"
+msgstr "Выберите синтезатор речи"
+
+#: src/ebook-speaker.c:322
+msgid "Maximum number of TTS's is reached."
+msgstr "Достигнут максимальный набор допустимых синтезаторов речи"
+
+#: src/ebook-speaker.c:682 src/list_dir.c:55 src/list_dir.c:251
+msgid "'h' for help"
+msgstr "'h' для справки"
+
+#: src/ebook-speaker.c:687
+#, c-format
+msgid "%d pages"
+msgstr "%d страниц"
+
+#: src/ebook-speaker.c:692
+#, c-format
+msgid "level: %d of %d"
+msgstr "Уровень: %d из %d"
+
+#: src/ebook-speaker.c:696
+#, c-format
+msgid "total phrases: %d"
+msgstr "Всего фраз: %d"
+
+#: src/ebook-speaker.c:782 src/list_dir.c:165
+msgid "These commands are available in this version:"
+msgstr "Следующие команды доступны в этой версии:"
+
+#: src/ebook-speaker.c:786 src/list_dir.c:169
+msgid "cursor down,2   - move cursor to the next item"
+msgstr "курсор вниз,2   - переместить курсор на следующий элемент"
+
+#: src/ebook-speaker.c:788 src/list_dir.c:171
+msgid "cursor up,8     - move cursor to the previous item"
+msgstr "курсор вверх,8   - переместить курсор на предыдущий элемент"
+
+#: src/ebook-speaker.c:790
+msgid "cursor right,6  - skip to next phrase"
+msgstr "курсор вправо,6     - перейти к следующей фразе"
+
+#: src/ebook-speaker.c:792
+msgid "cursor left,4   - skip to previous phrase"
+msgstr "курсор влево,4      - перейти к предыдущей фразе"
+
+#: src/ebook-speaker.c:794 src/list_dir.c:177
+msgid "page-down,3     - view next page"
+msgstr "страница вниз,3     - просмотреть следующую страницу"
+
+#: src/ebook-speaker.c:796 src/list_dir.c:179
+msgid "page-up,9       - view previous page"
+msgstr "страница вверх,9     - просмотреть предыдущую страницу"
+
+#: src/ebook-speaker.c:798
+msgid "enter           - start playing"
+msgstr "enter         - начать воспроизведение"
+
+#: src/ebook-speaker.c:800
+msgid "space,0         - pause/resume playing"
+msgstr "пробел,0       - приостановить/возобновить воспроизведение"
+
+#: src/ebook-speaker.c:802
+msgid "home,*          - play on normal speed"
+msgstr "home,*         - воспроизведение на средней скорости"
+
+#: src/ebook-speaker.c:804 src/ebook-speaker.c:848
+msgid "Press any key for next page..."
+msgstr "Нажмите любую клавишу для следующей страницы..."
+
+#: src/ebook-speaker.c:811 src/list_dir.c:183
+msgid "/               - search for a label"
+msgstr "/             - поиск метки"
+
+#: src/ebook-speaker.c:813
+msgid "A               - store current item to disk in ASCII-format"
+msgstr "A          - сохранить текущий элемент на диск в формате ASCII"
+
+#: src/ebook-speaker.c:815
+msgid "b               - consider the end of an input line as a phrase-break"
+msgstr "b           - принять конец входной строки за конец фразы"
+
+#: src/ebook-speaker.c:817
+msgid "B               - move cursor to the last item"
+msgstr "B            - переместить курсор на последний элемент"
+
+#: src/ebook-speaker.c:819
+msgid "d               - store current item to disk in WAV-format"
+msgstr "d               - сохранить текущий элемент на диск в WAV формат"
+
+#: src/ebook-speaker.c:821
+msgid "D,-             - decrease playing speed"
+msgstr "D,-                - уменьшить скорость воспроизведения"
+
+#: src/ebook-speaker.c:823
+msgid ""
+"f               - find the currently playing item and place the cursor there"
+msgstr "f               - найти и поместить курсор на проигрываемый элемент"
+
+#: src/ebook-speaker.c:825
+msgid "g               - go to phrase in current item"
+msgstr "g                        - перейти на фразу в текущем элементе"
+
+#: src/ebook-speaker.c:828
+msgid "G               - go to page number"
+msgstr "G                - перейти на страницу"
+
+#: src/ebook-speaker.c:830 src/list_dir.c:187
+msgid "h,?             - give this help"
+msgstr "h,?           -показать данную справку"
+
+#: src/ebook-speaker.c:832
+msgid "j,5             - just play current item"
+msgstr "j,5                      - проиграть текущий элемент"
+
+#: src/ebook-speaker.c:834
+msgid "l               - switch to next level"
+msgstr "l               - перейти на следующий уровень"
+
+#: src/ebook-speaker.c:836
+msgid "L               - switch to previous level"
+msgstr "L             - перейти на предыдущий уровень"
+
+#: src/ebook-speaker.c:838
+msgid "m               - mute sound output on/off"
+msgstr "m              - включение/выключение приглушения звука"
+
+#: src/ebook-speaker.c:840 src/list_dir.c:193
+msgid "n               - search forwards"
+msgstr "n           - искать вперёд"
+
+#: src/ebook-speaker.c:842 src/list_dir.c:195
+msgid "N               - search backwards"
+msgstr "N            - искать в обратном направлении"
+
+#: src/ebook-speaker.c:844
+msgid "o               - select next output sound device"
+msgstr "o           - выбрать следующее устройство воспроизведения"
+
+#: src/ebook-speaker.c:846
+msgid "p               - place a bookmark"
+msgstr "p               - установить закладку"
+
+#: src/ebook-speaker.c:855
+msgid "q               - quit eBook-speaker and place a bookmark"
+msgstr "q               - завершить работу ebook-speaker и установить закладку"
+
+#: src/ebook-speaker.c:858
+msgid "r               - rotate scanned document"
+msgstr "r             - повернуть отсканированный документ"
+
+#: src/ebook-speaker.c:860
+msgid "s               - stop playing"
+msgstr "s             - остановить воспроизведение"
+
+#: src/ebook-speaker.c:862
+msgid "S               - show progress on/off"
+msgstr "S        - показ прогресса включен/выключен"
+
+#: src/ebook-speaker.c:864
+msgid "t               - select next TTS"
+msgstr "t               - выбрать следующий синтезатор речи"
+
+#: src/ebook-speaker.c:866
+msgid "T               - move cursor to the first item"
+msgstr "T             - переместить курсор к первому элементу"
+
+#: src/ebook-speaker.c:868
+msgid "U,+             - increase playing speed"
+msgstr "U,+              - увеличить скорость воспроизведения"
+
+#: src/ebook-speaker.c:870
+msgid "v,1             - decrease playback volume"
+msgstr "v,1             - уменьшить громкость воспроизведения"
+
+#: src/ebook-speaker.c:872
+msgid "V,7             - increase playback volume (beware of Clipping)"
+msgstr "V,7           - увеличить громкость воспроизведения (учитывайте перегрузку)"
+
+#: src/ebook-speaker.c:874
+msgid "w               - store whole book to disk in WAV-format"
+msgstr "w          - сохранить книгу на диск в WAV формате"
+
+#: src/ebook-speaker.c:876
+msgid "x               - go to the file-manager"
+msgstr "x           - открыть файловый менеджер"
+
+#: src/ebook-speaker.c:878 src/list_dir.c:201 src/list_dir.c:454
+msgid "Press any key to leave help..."
+msgstr "Нажмите любую клавишу для закрытия справки..."
+
+#: src/ebook-speaker.c:1134 src/list_dir.c:101
+msgid "What do you search?"
+msgstr "Что вы ищете?"
+
+#: src/ebook-speaker.c:1214
+msgid "Break phrases at EOL or at a specific position (y/n/position)"
+msgstr ""
+
+#: src/ebook-speaker.c:1377
+msgid "Be sure the package \"tesseract-ocr\" is installed onto your system."
+msgstr "Убедитесь, что пакет \"tesseract-ocr\" установлен в вашей системе"
+
+#: src/ebook-speaker.c:1379
+#, c-format
+msgid "Language code \"%s\" is not a valid tesseract code."
+msgstr "Языковой код \"%s\" не является действительным кодом tesseract."
+
+#: src/ebook-speaker.c:1381
+#, c-format
+msgid "See the tesseract manual for valid codes."
+msgstr "Обратитесь к руководству пользователя Tesseract за информацией о действительных кодах."
+
+#: src/ebook-speaker.c:1392
+#, c-format
+msgid "Language code \"%s\" is not a valid cuneiform code."
+msgstr "Языковой код \"%s\" не является действительным кодом cuneiform."
+
+#: src/ebook-speaker.c:1394
+msgid "See the cuneiform manual for valid codes."
+msgstr "Обратитесь к руководству пользователя Cuneiform за информацией о действительных кодах."
+
+#: src/ebook-speaker.c:1544
+msgid "Go to phrase in current item:"
+msgstr "Перейти к фразе в текущем элементе:"
+
+#: src/ebook-speaker.c:1688 src/ebook-speaker.c:1949 src/ebook-speaker.c:1968
+#: src/ebook-speaker.c:1993 src/ebook-speaker.c:2024 src/ebook-speaker.c:2446
+#: src/ebook-speaker.c:2666 src/ebook-speaker.c:2710 src/ebook-speaker.c:3095
+#: src/ebook-speaker.c:3146
+msgid "eBook-speaker cannot handle this file."
+msgstr "eBook-speaker не может обработать данный файл."
+
+#: src/ebook-speaker.c:1726 src/ebook-speaker.c:2584
+msgid "Press 'h' for help"
+msgstr "Нажмите 'h' для справки"
+
+#: src/ebook-speaker.c:2002
+msgid "Unknown format"
+msgstr "Неизвестный формат"
+
+#: src/ebook-speaker.c:2417 src/ebook-speaker.c:2929
+msgid "eBook-speaker - Version"
+msgstr "eBook-speaker - версия"
+
+#: src/ebook-speaker.c:2421
+#, c-format
+msgid ""
+"Usage: %s [eBook_file | URL | -s [-r resolution]] [-b n | y | position] [-c] "
+"[-d audio_device:audio_type] [-h] [-H] [-i] [-o language-code] [-S] [-t "
+"TTS_command] [-v]"
+msgstr ""
+"Использование: %s [eBook_file | URL | -s [-r resolution]] [-b n | y | position] [-c] "
+"[-d audio_device:audio_type] [-h] [-H] [-i] [-o language-code] [-S] [-t "
+"TTS_command] [-v]"
+
+#: src/list_dir.c:51 src/list_dir.c:248
+#, c-format
+msgid "%s - Choose an input-file"
+msgstr "%s - Выберите входной файл"
+
+#: src/list_dir.c:173
+msgid "cursor right,6  - open this directory or file"
+msgstr "курсор вправо,6  - открыть эту папку или файл"
+
+#: src/list_dir.c:175
+msgid "cursor left,4   - open previous directory"
+msgstr "курсор влево,4 - открыть предыдущую папку"
+
+#: src/list_dir.c:181
+msgid "enter,6         - open this directory or file"
+msgstr "enter,6 - открыть эту папку или файл"
+
+#: src/list_dir.c:185
+msgid "end,B           - move cursor to the last item"
+msgstr "end,B         - переместить курсор к последнему элементу"
+
+#: src/list_dir.c:189
+msgid "H,0             - display \"hidden\" files on/off"
+msgstr "H,0         - отображать \"скрытые\" файлы и папки включено/выключено"
+
+#: src/list_dir.c:191
+msgid "i               - give some information about current file"
+msgstr "i          - предоставить краткую информацию о текущем файле"
+
+#: src/list_dir.c:197
+msgid "q               - quit eBook-speaker"
+msgstr "q       - завершить работу eBook-speaker"
+
+#: src/list_dir.c:199
+msgid "home,T          - move cursor to the first item"
+msgstr "home,T              - переместить курсор к первому элементу"
+
+#: src/ncx.c:265
+msgid "No items found. Try option \"-O\"."
+msgstr "Элементов не найдено. Попробуйте использовать опцию \"-O\"."
+
+#: src/playfile.c:89
+msgid "Try option \"-i\"."
+msgstr "Попробуйте использовать опцию \"-i\"."
