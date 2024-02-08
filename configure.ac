@@ -60,11 +60,3 @@ AM_GNU_GETTEXT_VERSION([0.18.3])
 AC_PROG_LN_S
 AC_CONFIG_SUBDIRS([src/pactl])
 AC_OUTPUT                    
-
-dnl pulseaudio/pactl stuff
-
-echo
-echo "Configure pulseaudio/pactl..."
-echo
-
-(cd src/pactl && ./configure)
