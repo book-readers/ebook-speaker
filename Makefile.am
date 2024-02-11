@@ -4,6 +4,8 @@ SUBDIRS = man doc po src
 
 ACLOCAL_AMFLAGS = -I m4
 
+doc_DATA = README.adoc
+
 EXTRA_DIST = config.rpath m4/Makefile.in doc/COMPILE \
              doc/COPYING doc/Changelog doc/License doc/Readme doc/TODO \
              doc/ebook-speaker.* \
