@@ -54,7 +54,6 @@ AC_CONFIG_FILES([Makefile
                  src/Makefile
                  src/pactl/Makefile])
                  
-AM_INIT_AUTOMAKE
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.18.3])
 AC_PROG_LN_S
