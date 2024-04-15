@@ -137,8 +137,8 @@ typedef struct Audio_Info
    LSX_PARAM_IN_Z char device[10];
    LSX_PARAM_IN_OPT_Z char type[15];
    char name[100];
-   char muted[5];
-   char volume[5];
+   char muted[6];
+   char volume[6];
 } audio_info_t;
 
 typedef enum
