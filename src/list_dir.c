@@ -82,8 +82,33 @@ void ls (misc_t *misc, size_t n, struct dirent **namelist)
 
 int hidden_files (const struct dirent *entry)
 {
+
+int      r = 0;
+char     my_pattern1[] = "*.jpg";
+char     my_pattern2[] = "*.opf";
+char     my_pattern3[] = "*.pdf";
+char     my_pattern4[] = "*.db";
+char     my_pattern5[] = "*.json";
+
    if (*entry->d_name == '.')
       return 0;
+
+   r = fnmatch (my_pattern1, entry->d_name, FNM_PERIOD | FNM_CASEFOLD);
+   if (r == 0)
+      return 0;
+   r = fnmatch (my_pattern2, entry->d_name, FNM_PERIOD | FNM_CASEFOLD);
+   if (r == 0)
+      return 0;
+   r = fnmatch (my_pattern3, entry->d_name, FNM_PERIOD | FNM_CASEFOLD);
+   if (r == 0)
+      return 0;
+   r = fnmatch (my_pattern4, entry->d_name, FNM_PERIOD | FNM_CASEFOLD);
+   if (r == 0)
+      return 0;
+   r = fnmatch (my_pattern5, entry->d_name, FNM_PERIOD | FNM_CASEFOLD);
+   if (r == 0)
+      return 0;
+
    return 1;
 } // hidden)files
 
