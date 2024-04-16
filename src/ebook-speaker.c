@@ -711,7 +711,7 @@ void view_screen (misc_t *misc, daisy_t *daisy)
       if (l / 2 * 2 == l)
          waddstr (misc->screenwin, " ");
       for (x = l; x < 56; x += 2)
-         waddstr (misc->screenwin, " .");
+         waddstr (misc->screenwin, "  ");
       if (daisy[i].page_number)
       {
          mvwprintw (misc->screenwin, daisy[i].y, 63,
@@ -2926,8 +2926,8 @@ int main (int argc, char *argv[])
    noecho ();
    misc.player_pid = -2;
    sprintf (misc.scan_resolution, "400");
-   snprintf (misc.copyright, MAX_STR - 1, "%s %s - (C)2021 J. Lemmens",
-             gettext ("eBook-speaker - Version"), PACKAGE_VERSION);
+   snprintf (misc.copyright, MAX_STR - 1, "%s                        ",
+             gettext ("eBook-speaker          "));
    wattron (misc.titlewin, A_BOLD);
    wprintw (misc.titlewin, "%s - %s", misc.copyright,
             gettext ("Please wait..."));
