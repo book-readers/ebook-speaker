@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: ebook-speaker 6.2\n"
 "Report-Msgid-Bugs-To: https://github.com/book-readers/ebook-speaker/issues\n"
 "POT-Creation-Date: 2021-08-21 13:35+0200\n"
-"PO-Revision-Date: 2022-02-15 13:04+0300\n"
-"Last-Translator: Vsevolod Popov <sevapopov13@gmail.com>\n"
+"PO-Revision-Date: 2025-01-07 02:08+0300\n"
+"Last-Translator: Nikita Tseykovets <tseikovets@rambler.ru>\n"
 "Language-Team: Vsevolod Popov <sevapopov13@gmail.com>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
-"X-Generator: Poedit 3.0.1\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 "
+"|| n%100>14) ? 1 : 2);\n"
+"X-Generator: Poedit 3.5\n"
 
 #: src/alsa_ctl.c:38
 msgid "Cannot read /proc/asound/cards"
@@ -26,7 +26,7 @@ msgstr "Невозможно прочесть /proc/asound/cards"
 #: src/common.c:33 src/common.c:294 src/common.c:510 src/ebook-speaker.c:2111
 #: src/ebook-speaker.c:2122
 msgid "Please try to play this book with daisy-player"
-msgstr "Пожалуйста, попробуйте воспроизвести эту книгу с помощью Daisy-плеера"
+msgstr "Пожалуйста, попробуйте воспроизвести эту книгу с помощью daisy-player"
 
 #: src/common.c:773
 #, c-format
@@ -37,8 +37,7 @@ msgstr "Невозможно прочесть тип: %d"
 msgid "Go to page number:"
 msgstr "Перейти на страницу: "
 
-#: src/common.c:856 src/ebook-speaker.c:1674 src/ebook-speaker.c:2627
-#: src/ebook-speaker.c:2932
+#: src/common.c:856 src/ebook-speaker.c:1674 src/ebook-speaker.c:2627 src/ebook-speaker.c:2932
 msgid "Please wait..."
 msgstr "Пожалуйста, подождите..."
 
@@ -46,8 +45,7 @@ msgstr "Пожалуйста, подождите..."
 msgid "Select a soundcard:"
 msgstr "Выберите звуковую карту:"
 
-#: src/daisy2.02.c:49 src/daisy2.02.c:130 src/daisy2.02.c:236
-#: src/ebook-speaker.c:2514
+#: src/daisy2.02.c:49 src/daisy2.02.c:130 src/daisy2.02.c:236 src/ebook-speaker.c:2514
 #, c-format
 msgid "Cannot read %s"
 msgstr "Невозможно прочесть %s"
@@ -141,15 +139,14 @@ msgstr "B                - переместить курсор на послед
 
 #: src/ebook-speaker.c:819
 msgid "d               - store current item to disk in WAV-format"
-msgstr "d                - сохранить текущий элемент на диск в WAV формат"
+msgstr "d                - сохранить текущий элемент на диск в WAV-формат"
 
 #: src/ebook-speaker.c:821
 msgid "D,-             - decrease playing speed"
 msgstr "D,-              - уменьшить скорость воспроизведения"
 
 #: src/ebook-speaker.c:823
-msgid ""
-"f               - find the currently playing item and place the cursor there"
+msgid "f               - find the currently playing item and place the cursor there"
 msgstr "f                - найти и поместить курсор на проигрываемый элемент"
 
 #: src/ebook-speaker.c:825
@@ -210,7 +207,7 @@ msgstr "s                - остановить воспроизведение"
 
 #: src/ebook-speaker.c:862
 msgid "S               - show progress on/off"
-msgstr "S                - показ прогресса включен/выключен"
+msgstr "S                - показ прогресса включён/выключен"
 
 #: src/ebook-speaker.c:864
 msgid "t               - select next TTS"
@@ -234,7 +231,7 @@ msgstr "V,7              - увеличить громкость воспрои�
 
 #: src/ebook-speaker.c:874
 msgid "w               - store whole book to disk in WAV-format"
-msgstr "w                - сохранить книгу на диск в WAV формате"
+msgstr "w                - сохранить книгу на диск в WAV-формате"
 
 #: src/ebook-speaker.c:876
 msgid "x               - go to the file-manager"
@@ -250,7 +247,7 @@ msgstr "Что вы ищете?"
 
 #: src/ebook-speaker.c:1214
 msgid "Break phrases at EOL or at a specific position (y/n/position)"
-msgstr ""
+msgstr "Разрыв фразы в конце строки или в определённой позиции (y/n/position)"
 
 #: src/ebook-speaker.c:1377
 msgid "Be sure the package \"tesseract-ocr\" is installed onto your system."
@@ -301,13 +298,11 @@ msgstr "eBook-speaker - версия"
 #: src/ebook-speaker.c:2421
 #, c-format
 msgid ""
-"Usage: %s [eBook_file | URL | -s [-r resolution]] [-b n | y | position] [-c] "
-"[-d audio_device:audio_type] [-h] [-H] [-i] [-o language-code] [-S] [-t "
-"TTS_command] [-v]"
+"Usage: %s [eBook_file | URL | -s [-r resolution]] [-b n | y | position] [-c] [-d "
+"audio_device:audio_type] [-h] [-H] [-i] [-o language-code] [-S] [-t TTS_command] [-v]"
 msgstr ""
-"Использование: %s [eBook_file | URL | -s [-r resolution]] [-b n | y | position] [-c] "
-"[-d audio_device:audio_type] [-h] [-H] [-i] [-o language-code] [-S] [-t "
-"TTS_command] [-v]"
+"Использование: %s [eBook_file | URL | -s [-r resolution]] [-b n | y | position] [-c] [-d "
+"audio_device:audio_type] [-h] [-H] [-i] [-o language-code] [-S] [-t TTS_command] [-v]"
 
 #: src/list_dir.c:51 src/list_dir.c:248
 #, c-format
