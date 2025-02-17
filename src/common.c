@@ -109,10 +109,11 @@ void failure (misc_t *misc, char *str, int e)
    _exit (EXIT_FAILURE);
 } // failure
 
-void player_ended ()
+void player_ended (int sig)
 {
    pid_t kidpid;
    int status;
+   (void) sig;
 
    while ((kidpid = waitpid (-1, &status, WNOHANG)) > 0);
 } // player_ended

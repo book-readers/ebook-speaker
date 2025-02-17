@@ -182,7 +182,7 @@ extern char *pactl (char *, char *, char *);
 extern char *get_input_file (misc_t *, my_attribute_t *, daisy_t *, char *);
 extern void fill_daisy_struct_2 (misc_t *, my_attribute_t *,daisy_t *);
 extern void make_tmp_dir (misc_t *);
-extern void player_ended ();
+extern void player_ended (int sig);
 extern void parse_page_number (misc_t *, my_attribute_t *, xmlTextReaderPtr);
 extern void parse_ncx (misc_t *, my_attribute_t *, daisy_t *);
 extern void save_bookmark_and_xml (misc_t *);
