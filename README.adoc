@@ -3,6 +3,8 @@
 Read eBooks with Linux using a speech-synthesizer +
 (C)2019 J. Lemmens
 
+https://github.com/book-readers/ebook-speaker
+
 === Description
 eBook-speaker reads an eBook and uses a speech synthisizer for output. +
 eBook-speaker reads the EPUB format. If the given file is not an
